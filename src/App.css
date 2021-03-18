@@ -1,5 +1,9 @@
 .card.col-lg-12.ml-auto.mr-auto{
-  margin-top: 15%;
+  margin-top: 30px;
   padding: 20px;
 
+}
+
+.connect.text-center{
+  padding: 100px;
 }
