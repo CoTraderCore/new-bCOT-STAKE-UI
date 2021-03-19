@@ -1,4 +1,4 @@
-import Button from '@material-ui/core/Button';
+import Button from "@material-ui/core/Button";
 
 const Deposit = () => {
   return (
@@ -12,7 +12,15 @@ const Deposit = () => {
           required
         ></input>
       </div>
-      <div className="text-center">
+      <div >
+        <select className="form-control" >
+          <option selected value="dogecoin"> Dogecoin</option>
+          <option value="ether">Ether</option>
+          <option value="btc">Bitcoin</option>
+        </select>
+      </div>
+
+      <div className="deposit text-center">
         <Button variant="outlined" color="secondary">
           Deposit
         </Button>

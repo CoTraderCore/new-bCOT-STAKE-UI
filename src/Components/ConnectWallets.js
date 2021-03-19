@@ -7,6 +7,7 @@ function ConnectWallet () {
   const [myWeb3, setMyWeb3] = useState();
   async function connectWallet() {
     await getweb3().then((response) => {
+      
       setMyWeb3(response);
       response.eth.getAccounts().then((result) => console.log(result));
     });
