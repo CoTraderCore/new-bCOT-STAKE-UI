@@ -6,21 +6,23 @@ import WalletConnectProvider from "@walletconnect/web3-provider";
 import { makeObservable, observable,autorun } from "mobx"
 
 class WalletStore{
-  loading:boolean=false;
+  loading:boolean=true;
+  account:boolean=false;
   web3:unknown;
 
   constructor() {
     makeObservable(this, {
+      account:observable,
       loading: observable,
       web3: observable
       });
-      autorun(async () => this.web3 = await this.getweb3());
+    // autorun(async () => this.web3 = await this.getweb3());
     }
 
   
 
   async getweb3() {
-    this.loading=true;
+    this.loading=false;
     let providerOptions;
     let web3Modal;
     let web3;
@@ -75,6 +77,7 @@ class WalletStore{
     
     web3 = new Web3(provider);
     this.loading=false;
+    this.account=true;
     return web3;
   }
 }

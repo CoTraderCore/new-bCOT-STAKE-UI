@@ -7,7 +7,7 @@ export default observer(
   class Wallet extends Component {
 
     connectWallet=async() =>{
-      console.log(this.props.store.loading);
+      console.log(this.props.store.account);
       await this.props.store.getweb3().then((response) => {
         response.eth.getAccounts().then((result) => console.log(result));
       });
@@ -16,7 +16,7 @@ export default observer(
     render() { 
       return (
         <div>
-        {(this.props.store.loading)? <Button variant="outlined" color="secondary">Thanks!</Button>: <Button variant="outlined" color="secondary" onClick = {this.connectWallet}>Connect</Button>}
+        {(this.props.store.account)? <Button variant="outlined" color="secondary">Thanks!</Button>: <Button variant="outlined" color="secondary" onClick = {this.connectWallet}>Connect</Button>}
         </div>
          
         );
