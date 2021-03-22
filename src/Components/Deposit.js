@@ -1,21 +1,19 @@
 import Button from "@material-ui/core/Button";
 import { useState } from 'react';
-import { ABIDepositor,ABIWithdraw } from './ABI';
-import { AddressDepositor,AddressWithdraw } from './Addresses';
+import { ABIDepositor} from './ABI';
+import { AddressDepositor } from './Addresses';
 import { observer } from "mobx-react"
 
 const handleDeposit=(props,isClaimable,userInput)=>{
-
-  console.log(props.store.web3)
-
   //checking if web3 is undefined
   if(props.store.web3 && props.store.accounts)
   {
     const contract = new props.store.web3.eth.Contract(ABIDepositor, AddressDepositor)
-    contract.methods.deposit(isClaimable).send({from:props.store.accounts['0'],value:props.store.web3.utils.toWei(userInput)}); 
-    console.log('Done');
+    contract.methods.deposit(isClaimable).send({from:props.store.accounts['0'],value:props.store.web3.utils.toWei(userInput)});
+  } else{
+    alert("Please connect to web3");
   }
- 
+
 }
 
 const Deposit =observer( (props) => {
@@ -40,9 +38,9 @@ const Deposit =observer( (props) => {
           <option value="false">False</option>
         </select>
       </div>
-   
+
       <div className="deposit text-center">
-        <Button variant="outlined" color="secondary" onClick={handleDeposit(props,isClaimable,amount)}>
+        <Button variant="outlined" color="secondary" onClick={() => handleDeposit(props,isClaimable,amount)}>
           Deposit
         </Button>
       </div>
