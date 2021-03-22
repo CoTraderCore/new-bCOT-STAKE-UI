@@ -9,12 +9,14 @@ class WalletStore {
   loading: boolean = false;
   account: boolean = false;
   web3: unknown;
+  accounts:unknown;
 
   constructor() {
     makeObservable(this, {
       account: observable,
       loading: observable,
       web3: observable,
+      accounts:observable,
     });
     // autorun(async () => this.web3 = await this.getweb3());
   }

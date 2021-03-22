@@ -1,19 +1,18 @@
 import Button from "@material-ui/core/Button";
 import { useState } from 'react';
-import { getABI } from './ABI';
-import { getAddress } from './Addresses';
+import { ABIDepositor,ABIWithdraw } from './ABI';
+import { AddressDepositor,AddressWithdraw } from './Addresses';
 import { observer } from "mobx-react"
 
-const handleDeposit=(props,isClaimable)=>{
-  var ABIDeposit=getABI();
-  var addressDeposit=getAddress();
+const handleDeposit=(props,isClaimable,userInput)=>{
+
   console.log(props.store.web3)
 
   //checking if web3 is undefined
-  if(props.store.web3)
+  if(props.store.web3 && props.store.accounts)
   {
-    const contract = new props.store.web3.eth.Contract(ABIDeposit, addressDeposit)
-    contract.methods.deposit(isClaimable); 
+    const contract = new props.store.web3.eth.Contract(ABIDepositor, AddressDepositor)
+    contract.methods.deposit(isClaimable).send({from:props.store.accounts['0'],value:props.store.web3.utils.toWei(userInput)}); 
     console.log('Done');
   }
  
@@ -21,6 +20,7 @@ const handleDeposit=(props,isClaimable)=>{
 
 const Deposit =observer( (props) => {
   const [isClaimable, setIsClaimable] = useState(true);
+  const [amount, setAmount] = useState('0');
 
   return (
     <form>
@@ -31,6 +31,7 @@ const Deposit =observer( (props) => {
           className="form-control"
           placeholder="Enter Amount"
           required
+          onChange={(e)=>setAmount(e.currentTarget.value)}
         ></input>
       </div>
       <div >
@@ -41,7 +42,7 @@ const Deposit =observer( (props) => {
       </div>
    
       <div className="deposit text-center">
-        <Button variant="outlined" color="secondary" onClick={handleDeposit(props,isClaimable)}>
+        <Button variant="outlined" color="secondary" onClick={handleDeposit(props,isClaimable,amount)}>
           Deposit
         </Button>
       </div>

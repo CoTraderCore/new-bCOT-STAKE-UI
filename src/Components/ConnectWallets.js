@@ -8,7 +8,7 @@ export default observer(
 
     connectWallet=async() =>{
       await this.props.store.getweb3().then((response) => {
-        response.eth.getAccounts().then((result) => console.log(result));
+        response.eth.getAccounts().then((result) => {console.log(result);this.props.store.accounts=result});
       });
     }
     

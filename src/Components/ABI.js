@@ -1,4 +1,4 @@
-const ABI=[
+export const ABIDepositor=[
 	{
 		"inputs": [
 			{
@@ -14,6 +14,18 @@ const ABI=[
 	}
 ]
 
-export function getABI(){
-    return ABI;
-}
+export const ABIWithdraw=[
+	{
+		"inputs": [
+			{
+				"internalType": "bool",
+				"name": "_isClaimAbleStake",
+				"type": "bool"
+			}
+		],
+		"name": "withdraw",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	}
+]
