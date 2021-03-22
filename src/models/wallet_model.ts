@@ -3,10 +3,10 @@ import Web3Modal from "web3modal";
 import Authereum from "authereum";
 import Fortmatic from "fortmatic";
 import WalletConnectProvider from "@walletconnect/web3-provider";
-import { makeObservable, observable,autorun } from "mobx"
+import { makeObservable, observable } from "mobx"
 
 class WalletStore{
-  loading:boolean=true;
+  loading:boolean=false;
   account:boolean=false;
   web3:unknown;
 
@@ -22,7 +22,7 @@ class WalletStore{
   
 
   async getweb3() {
-    this.loading=false;
+    this.loading=true;
     let providerOptions;
     let web3Modal;
     let web3;
@@ -50,13 +50,16 @@ class WalletStore{
     web3Modal = new Web3Modal({
       network:
         "mainnet",
-      cacheProvider: true,
+      cacheProvider: false,
+      disableInjectedProvider:false,
       providerOptions,
     });
 
     const provider = await web3Modal.connect();
 
     provider.on("accountsChanged", (accounts: string[]) => {
+      console.log('Account Disconnected');
+      this.account=false;
       console.log(accounts);
     });
     
@@ -66,15 +69,16 @@ class WalletStore{
     });
     
     // Subscribe to provider connection
-    provider.on("connect", (info: { chainId: number }) => {
+    provider.on("connect",(info: { chainId: number }) => { 
       console.log(info);
-    });
+    })
     
     // Subscribe to provider disconnection
-    provider.on("disconnect", (error: { code: number; message: string }) => {
+    provider.on("disconnect",(error: { code: number; message: string }) => {
       console.log(error);
     });
     
+
     web3 = new Web3(provider);
     this.loading=false;
     this.account=true;
