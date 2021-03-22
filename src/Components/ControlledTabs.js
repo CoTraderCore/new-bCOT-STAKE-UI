@@ -3,7 +3,7 @@ import Deposit from './Deposit'
 import Tabs  from 'react-bootstrap/Tabs';
 import Tab  from 'react-bootstrap/Tab';
 
-export default function ControlledTabs()
+export default function ControlledTabs(props)
 {
     const [key,setKey]=useState('deposit')
 
@@ -14,7 +14,7 @@ export default function ControlledTabs()
         >
         
         <Tab eventKey="deposit" title="Deposit">
-        <Deposit/>
+        <Deposit store={props.store}/>
         </Tab>
 
         <Tab eventKey="withdraw" title="Withdraw">

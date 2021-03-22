@@ -1,22 +1,27 @@
-import {useState } from "react";
-import Wallet_Model from "../models/wallet_model";
+import React, { Component } from 'react';
 import Button  from '@material-ui/core/Button';
+import { observer } from "mobx-react"
 
-function ConnectWallet () {
-  const { web3Loading, getweb3 } = Wallet_Model();
-  const [myWeb3, setMyWeb3] = useState();
-  async function connectWallet() {
-    await getweb3().then((response) => {
-      setMyWeb3(response);
-      response.eth.getAccounts().then((result) => console.log(result));
-    });
+export default observer(
+  
+  class Wallet extends Component {
+
+    connectWallet=async() =>{
+      await this.props.store.getweb3().then((response) => {
+        response.eth.getAccounts().then((result) => {console.log(result);this.props.store.accounts=result});
+      });
+    }
+    
+    render() { 
+      return (
+        <div>
+        {(this.props.store.account)? <h1>Account Connected Successfully!</h1>: <Button variant="outlined" color="secondary" onClick = {this.connectWallet}>Connect</Button>}
+        </div>
+         
+        );
+    }
   }
-  return (
-  <div>
-  {(web3Loading)? <Button variant="outlined" color="secondary">Thanks!</Button>: <Button variant="outlined" color="secondary"onClick = {connectWallet}>Connect</Button>}
-  </div>
-   
-  );
-};
+  
+);
 
-export default ConnectWallet;
+
