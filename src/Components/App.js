@@ -17,7 +17,7 @@ class App extends Component {
         >
           <div></div>
           <h1 className="cardheader text-center">Rover Capital</h1>
-          <ControlledTabs />
+          <ControlledTabs store={walletStore}/>
         </div>
       </div>
     );
