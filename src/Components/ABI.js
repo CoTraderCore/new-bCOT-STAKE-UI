@@ -17,6 +17,19 @@ export const ABIDepositor=[
 export const ABIWithdraw=[
 	{
 		"inputs": [],
+		"name": "END_STAKE",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
 		"name": "exit",
 		"outputs": [],
 		"stateMutability": "nonpayable",
