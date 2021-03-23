@@ -22,6 +22,7 @@ class WalletStore {
   }
 
   async getweb3() {
+    
     this.loading = true;
     let providerOptions;
     let web3Modal;
@@ -35,7 +36,7 @@ class WalletStore {
         package: WalletConnectProvider, // required
         options: {
           infuraId:
-            "https://mainnet.infura.io/v3/36b6921562ec407e826fb24562a5c9db", // required
+          process.env.REACT_APP_NETWORK_URL, // required
         },
       },
 

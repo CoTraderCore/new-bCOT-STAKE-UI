@@ -18,8 +18,8 @@ const NonClaimable = observer((props) => {
               ABIWithdraw,
               NonClaimableAddress
             );
-      
-            console.log(contract.methods);
+            console.log('run');
+           // console.log(contract.methods);
             const unixDate = await contract.methods.END_STAKE().call()
             console.log(unixDate);
             
