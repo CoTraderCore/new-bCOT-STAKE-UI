@@ -9,6 +9,7 @@ const handleDeposit=(props,isClaimable,userInput)=>{
   if(props.store.web3 && props.store.accounts)
   {
     const contract = new props.store.web3.eth.Contract(ABIDepositor, AddressDepositor)
+    console.log(contract.methods)
     contract.methods.deposit(isClaimable).send({from:props.store.accounts['0'],value:props.store.web3.utils.toWei(userInput)});
   } else{
     alert("Please connect to web3");
