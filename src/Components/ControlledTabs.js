@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import Deposit from './Deposit'
+import Deposit from './Deposit';
+import Withdraw from './Withdraw';
 import Tabs  from 'react-bootstrap/Tabs';
 import Tab  from 'react-bootstrap/Tab';
 
@@ -18,7 +19,7 @@ export default function ControlledTabs(props)
         </Tab>
 
         <Tab eventKey="withdraw" title="Withdraw">
-            Withdraw...
+        <Withdraw store={props.store}/>
         </Tab>
 
         <Tab eventKey="stats" title="Stats">

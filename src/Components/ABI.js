@@ -16,11 +16,25 @@ export const ABIDepositor=[
 
 export const ABIWithdraw=[
 	{
+		"inputs": [],
+		"name": "exit",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "getReward",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
 		"inputs": [
 			{
-				"internalType": "bool",
-				"name": "_isClaimAbleStake",
-				"type": "bool"
+				"internalType": "uint256",
+				"name": "amount",
+				"type": "uint256"
 			}
 		],
 		"name": "withdraw",

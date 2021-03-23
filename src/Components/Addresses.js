@@ -1,2 +1,3 @@
 export const AddressDepositor='0x77905bae66AF11d7179DE3F7dDBFE4b820BA6FB0'
-export const AddressWithdraw='0x77905bae66AF11d7179DE3F7dDBFE4b820BA6FB0'
+export const ClaimableAddress='0xaa72d42e0eB92665ceba49edE5A444C7dE5FaC41'
+export const NonClaimableAddress='0x4A8f4cAdccf06dF816d9117E5889B9F2380416C1'
