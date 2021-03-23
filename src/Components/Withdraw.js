@@ -15,9 +15,8 @@ const handleWithdraw = (props, isClaimable, userInput) => {
       contractAddress
     );
     console.log(contract.methods);
-    contract.methods.withdraw(isClaimable).send({
-      from: props.store.accounts["0"],
-      value: props.store.web3.utils.toWei(userInput),
+    contract.methods.withdraw(props.store.web3.utils.toWei(userInput)).send({
+      from: props.store.accounts["0"]
     });
   } else {
     alert("Please connect to web3");
