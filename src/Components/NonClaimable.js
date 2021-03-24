@@ -10,15 +10,15 @@ const NonClaimable = observer((props) => {
   const [amount, setAmount] = useState("0");
   const [isDisabled, setIsDisabled] = useState(true);
 
-
   useEffect(() => {
+    console.log('hello')
     async function checkDate() {
         if (props.store.web3 && props.store.accounts) {
             const contract = new props.store.web3.eth.Contract(
               ABIWithdraw,
               NonClaimableAddress
             );
-            console.log('run');
+           
            // console.log(contract.methods);
             const unixDate = await contract.methods.END_STAKE().call()
             console.log(unixDate);
@@ -26,12 +26,10 @@ const NonClaimable = observer((props) => {
             if((Date.now() / 1000) > unixDate){
               setIsDisabled(false)
           };
-
-         
       }
     };
     checkDate();
-}, [isDisabled,props]);
+}, [isDisabled,props.store.web3,props.store.accounts]);
 
   const handleNonClaimableWithdraw =async (props, userInput) => {
     //checking if web3 is undefined
@@ -40,15 +38,6 @@ const NonClaimable = observer((props) => {
         ABIWithdraw,
         NonClaimableAddress
       );
-
-      console.log(contract.methods);
-      const unixDate = await contract.methods.END_STAKE().call()
-      console.log(unixDate);
-      
-      if((Date.now() / 1000) > unixDate){
-        setIsDisabled(false)
-    }
-      
       contract.methods.withdraw(props.store.web3.utils.toWei(userInput)).send({
         from: props.store.accounts["0"],
       });

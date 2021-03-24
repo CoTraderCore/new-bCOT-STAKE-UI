@@ -11,13 +11,14 @@ export default function ControlledWithdrawTabs(props)
     const [key,setKey]=useState('claimable')
 
     return (
+     
         <Tabs id="controlled-tabs"
         activeKey={key}
         onSelect={(k)=>setKey(k)}
         >
         
         <Tab eventKey="claimable" title="Claimable">
-        <Claimable store={props.store}/>
+        <Claimable store={props.store} key={key}/>
         </Tab>
 
         <Tab eventKey="nonClaimable" title="Non-Claimable">
@@ -27,5 +28,6 @@ export default function ControlledWithdrawTabs(props)
         
 
         </Tabs>
+        
     )
 }

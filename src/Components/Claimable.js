@@ -86,7 +86,7 @@ const Claimable = observer((props) => {
         ></input>
       </div>
       <div>
-        <h10>Rewards Claimed:</h10>
+        <h6>Rewards:</h6>
         <br />
         <span className="block-example border">
           {rewardsClaimed === "" ? "0" : rewardsClaimed}

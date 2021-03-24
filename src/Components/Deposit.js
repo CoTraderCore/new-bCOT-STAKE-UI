@@ -52,7 +52,7 @@ const Deposit = observer((props) => {
         ></input>
       </div>
       <div>
-        <h10>Your Estimated Rewards:</h10>
+        <h6>Your Estimated Rewards:</h6>
         <br />
         <span className="block-example border">
           {estimatedRewards === "" ? "0" : estimatedRewards}
