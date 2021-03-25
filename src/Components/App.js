@@ -1,24 +1,21 @@
 import React, { Component } from "react";
 import "../App.css";
-import ControlledTabs from "./ControlledTabs";
-import ConnectWallet from './ConnectWallets'
-import {walletStore} from "../models/wallet_model";
+import { Route, Switch, Redirect } from "react-router-dom";
+import { walletStore } from "../models/wallet_model";
+import NotFound from './NotFound';
+import Main from './Main'
 
 class App extends Component {
-  
   render() {
-    
     return (
-      <div className="connect text-center">
-        <ConnectWallet store={walletStore}/>
-        <div
-          className="card col-lg-12 ml-auto mr-auto"
-          style={{ maxWidth: "320px" }}
-        >
-          <div></div>
-          <h1 className="cardheader text-center">Rover Capital</h1>
-          <ControlledTabs store={walletStore}/>
-        </div>
+      <div>
+        <main className="container ">
+          <Switch>
+            <Route path="/swap" render={(props) => <Main walletStore={walletStore} {...props}/>}></Route>
+            <Route path="/not-found" component={NotFound} ></Route>
+            <Redirect to="not-found"></Redirect>
+          </Switch>
+        </main>
       </div>
     );
   }

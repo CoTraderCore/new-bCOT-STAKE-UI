@@ -9,24 +9,24 @@ class WalletStore {
   loading: boolean = false;
   account: boolean = false;
   web3: unknown;
-  accounts:unknown;
+  accounts: unknown;
 
   constructor() {
     makeObservable(this, {
       account: observable,
       loading: observable,
       web3: observable,
-      accounts:observable,
+      accounts: observable,
     });
     // autorun(async () => this.web3 = await this.getweb3());
   }
 
   async getweb3() {
-    
     this.loading = true;
     let providerOptions;
     let web3Modal;
     let web3;
+
     providerOptions = {
       authereum: {
         package: Authereum, // required
@@ -35,8 +35,7 @@ class WalletStore {
       walletconnect: {
         package: WalletConnectProvider, // required
         options: {
-          infuraId:
-          process.env.REACT_APP_NETWORK_URL, // required
+          infuraId: process.env.REACT_APP_NETWORK_URL, // required
         },
       },
 
