@@ -11,7 +11,7 @@ class App extends Component {
       <div>
         <main className="container ">
           <Switch>
-            <Route path="/swap" render={(props) => <Main walletStore={walletStore} {...props}/>}></Route>
+            <Route path="/" render={(props) => <Main walletStore={walletStore} {...props}/>}></Route>
             <Route path="/not-found" component={NotFound} ></Route>
             <Redirect to="not-found"></Redirect>
           </Switch>

@@ -3,7 +3,7 @@ import "../App.css";
 import ControlledTabs from "./ControlledTabs";
 import ConnectWallet from './ConnectWallets'
 
-class Main extends Component {
+class Trial extends Component {
   
   render() {
     
@@ -23,4 +23,4 @@ class Main extends Component {
   }
 }
 
-export default Main;
+export default Trial;
