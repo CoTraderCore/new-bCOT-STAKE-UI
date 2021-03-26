@@ -26,21 +26,11 @@ function Nav({ activeIndex=0 }: { activeIndex?: number }) {
         <ButtonMenuItem to="/withdraw" as={Link}>
        Withdraw
         </ButtonMenuItem>
-        <ButtonMenuItem to="/swap" as={Link}>
-       Swap
+        <ButtonMenuItem to="/stats" as={Link}>
+       Stats
         </ButtonMenuItem>
-        <ButtonMenuItem to="/pool" as={Link}>
-        Liquidity
-        </ButtonMenuItem>
-        <ButtonMenuItem
-          id="pool-nav-link"
-          as="a"
-          href="https://www.binance.org/en/bridge?utm_source=PancakeSwap"
-          target="_blank"
-          rel="noreferrer noopener"
-        >
-          Bridge
-        </ButtonMenuItem>
+      
+        
       </ButtonMenu>
     </StyledNav>
   )

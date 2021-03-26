@@ -11,6 +11,7 @@ import Pool from './Pool'
 import PoolFinder from './PoolFinder'
 import RemoveLiquidity from './RemoveLiquidity'
 import Swap from './Swap'
+import Stats from './Stats'
 import Deposit from './Deposit'
 import Withdraw from './Withdraw'
 import { RedirectPathToSwapOnly } from './Swap/redirects'
@@ -131,7 +132,7 @@ export default function App() {
                       <Route exact strict path="/swap" component={Swap} />
                       <Route exact strict path="/deposit" component={Deposit}/>
                       <Route exact strict path="/withdraw" component={Withdraw}/>
-                
+                      <Route exact strict path="/stats" component={Stats} />
                       <Route exact strict path="/find" component={PoolFinder} />
                       <Route exact strict path="/pool" component={Pool} />
                       <Route exact path="/add" component={AddLiquidity} />
