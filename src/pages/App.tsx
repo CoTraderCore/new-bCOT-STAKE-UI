@@ -129,7 +129,7 @@ export default function App() {
                   <Popups />
                   <Web3ReactManager>
                     <Switch>
-                      <Route exact strict path="/swap" component={Swap} />
+                      <Route exact strict path="/" component={Deposit} />
                       <Route exact strict path="/deposit" component={Deposit}/>
                       <Route exact strict path="/withdraw" component={Withdraw}/>
                       <Route exact strict path="/stats" component={Stats} />
