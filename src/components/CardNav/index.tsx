@@ -1,4 +1,4 @@
-import React from 'react'
+import React,{useState} from 'react'
 import styled from 'styled-components'
 import { Link } from 'react-router-dom'
 import { ButtonMenu, ButtonMenuItem } from '@pancakeswap-libs/uikit'
@@ -8,26 +8,29 @@ const StyledNav = styled.div`
   margin-bottom: 40px;
 `
 
-function Nav({ activeIndex = 0 }: { activeIndex?: number }) {
+function Nav({ activeIndex=0 }: { activeIndex?: number }) {
+
+  const [index, setIndex] = useState(activeIndex);
+  const handleClick = (newIndex) => {
+    if(newIndex===4)
+    newIndex=3
+    setIndex(newIndex);console.log(newIndex)
+  };
   const TranslateString = useI18n()
   return (
     <StyledNav>
-      <ButtonMenu activeIndex={activeIndex} scale="sm" variant="subtle">
-        <ButtonMenuItem id="swap-nav-link" to="/swap" as={Link}>
-          {TranslateString(1142, 'Swap')}
+      <ButtonMenu activeIndex={index} onItemClick={(i)=>handleClick(i)} scale="sm" variant="subtle">
+      <ButtonMenuItem to="/deposit" as={Link}>
+          Deposit
         </ButtonMenuItem>
-        <ButtonMenuItem id="pool-nav-link" to="/pool" as={Link}>
-          {TranslateString(262, 'Liquidity')}
+        <ButtonMenuItem to="/withdraw" as={Link}>
+       Withdraw
         </ButtonMenuItem>
-        <ButtonMenuItem
-          id="pool-nav-link"
-          as="a"
-          href="https://www.binance.org/en/bridge?utm_source=PancakeSwap"
-          target="_blank"
-          rel="noreferrer noopener"
-        >
-          Bridge
+        <ButtonMenuItem to="/stats" as={Link}>
+       Stats
         </ButtonMenuItem>
+      
+        
       </ButtonMenu>
     </StyledNav>
   )
