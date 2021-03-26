@@ -41,6 +41,8 @@ import PageHeader from 'components/PageHeader'
 import ConnectWalletButton from 'components/ConnectWalletButton'
 import AppBody from '../AppBody'
 
+import '../../App.css'
+
 const Stats = () => {
   const loadedUrlParams = useDefaultsFromURLSearch()
   const TranslateString = useI18n()
@@ -274,7 +276,7 @@ const Stats = () => {
         transactionType={syrupTransactionType}
         onConfirm={handleConfirmSyrupWarning}
       />
-      <CardNav activeIndex={2}/>
+      <CardNav activeIndex={0}/>
       <AppBody>
         <Wrapper id="swap-page">
           <ConfirmSwapModal
@@ -292,9 +294,8 @@ const Stats = () => {
           />
           <PageHeader
             title={TranslateString(8, 'Stats')}
-            description={TranslateString(1192, 'Your Stats')}
+            description={TranslateString(1192, 'Your wonderful stats are here:')}
           />
-
           <CardBody>
             <AutoColumn gap="md">
               <CurrencyInputPanel
@@ -336,9 +337,9 @@ const Stats = () => {
                 </>
               ) : null}
 
-              <div>
-                <select onChange={(e) => setIsClaimable(e.currentTarget.value==="true")} className="form-control">
-                  <option selected value="true">
+              <div style={{width: '300px'}}>
+                <select  onChange={(e) => setIsClaimable(e.currentTarget.value==="true")} className="form-control">
+                  <option className="select-option" selected value="true">
                     {' '}
                     True
                   </option>
