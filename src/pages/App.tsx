@@ -11,13 +11,15 @@ import Pool from './Pool'
 import PoolFinder from './PoolFinder'
 import RemoveLiquidity from './RemoveLiquidity'
 import Swap from './Swap'
+import Stats from './Stats'
+import Deposit from './Deposit'
+import Withdraw from './Withdraw'
 import { RedirectPathToSwapOnly } from './Swap/redirects'
 import { EN, allLanguages } from '../constants/localisation/languageCodes'
 import { LanguageContext } from '../hooks/LanguageContext'
 import { TranslationsContext } from '../hooks/TranslationsContext'
 
 import Menu from '../components/Menu'
-import useGetDocumentTitlePrice from '../hooks/useGetDocumentTitlePrice'
 
 const AppWrapper = styled.div`
   display: flex;
@@ -114,8 +116,6 @@ export default function App() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedLanguage])
 
-  useGetDocumentTitlePrice()
-
   return (
     <Suspense fallback={null}>
       <HashRouter>
@@ -129,7 +129,10 @@ export default function App() {
                   <Popups />
                   <Web3ReactManager>
                     <Switch>
-                      <Route exact strict path="/swap" component={Swap} />
+                      <Route exact strict path="/" component={Deposit} />
+                      <Route exact strict path="/deposit" component={Deposit}/>
+                      <Route exact strict path="/withdraw" component={Withdraw}/>
+                      <Route exact strict path="/stats" component={Stats} />
                       <Route exact strict path="/find" component={PoolFinder} />
                       <Route exact strict path="/pool" component={Pool} />
                       <Route exact path="/add" component={AddLiquidity} />
