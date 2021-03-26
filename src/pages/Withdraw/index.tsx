@@ -1,9 +1,8 @@
-
 import { Link } from 'react-router-dom'
 import { CurrencyAmount, JSBI, Token, Trade } from '@pancakeswap-libs/sdk'
 import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import { ArrowDown } from 'react-feather'
-import { CardBody, ArrowDownIcon, Button, IconButton, Text,ButtonMenu,ButtonMenuItem } from '@pancakeswap-libs/uikit'
+import { CardBody, ArrowDownIcon, Button, IconButton, Text, ButtonMenu, ButtonMenuItem } from '@pancakeswap-libs/uikit'
 import { ThemeContext } from 'styled-components'
 import AddressInputPanel from 'components/AddressInputPanel'
 import Card, { GreyCard } from 'components/Card'
@@ -19,7 +18,6 @@ import TradePrice from 'components/swap/TradePrice'
 import TokenWarningModal from 'components/TokenWarningModal'
 import SyrupWarningModal from 'components/SyrupWarningModal'
 import ProgressSteps from 'components/ProgressSteps'
-
 
 import { INITIAL_ALLOWED_SLIPPAGE } from 'constants/index'
 import { useActiveWeb3React } from 'hooks'
@@ -41,12 +39,11 @@ import Claimable from '../Claimable'
 import NonClaimable from '../Non-Claimable'
 import AppBody from '../AppBody'
 
-
+import '../../App.css'
 
 const Withdraw = () => {
-
-  const [index, setIndex] = useState(0);
-  const handleClick = (newIndex) => setIndex(newIndex);
+  const [index, setIndex] = useState(0)
+  const handleClick = (newIndex) => setIndex(newIndex)
   const loadedUrlParams = useDefaultsFromURLSearch()
   const TranslateString = useI18n()
 
@@ -278,7 +275,7 @@ const Withdraw = () => {
         transactionType={syrupTransactionType}
         onConfirm={handleConfirmSyrupWarning}
       />
-      <CardNav activeIndex={1}/>
+      <CardNav activeIndex={1} />
       <AppBody>
         <Wrapper id="swap-page">
           <ConfirmSwapModal
@@ -298,19 +295,16 @@ const Withdraw = () => {
             title={TranslateString(8, 'Withdraw')}
             description={TranslateString(1192, 'Withdraw tokens in an instant')}
           />
-          <CardBody>
 
-          <Row>
-        <ButtonMenu activeIndex={index} onItemClick={(i)=>handleClick(i)} scale="sm" variant="subtle">
-          <ButtonMenuItem id="claimable-nav-link" >Claimable</ButtonMenuItem>
-          <ButtonMenuItem id="non-claimable-nav-link" >Non Claimable</ButtonMenuItem>
-        </ButtonMenu>
-      </Row>
-
-      {index===0?<Claimable/>:<NonClaimable/>}
-
-           
-          </CardBody>
+          <Row className="row">
+            <div className="button-menu">
+              <ButtonMenu activeIndex={index} onItemClick={(i) => handleClick(i)} scale="sm" variant="subtle">
+                <ButtonMenuItem id="claimable-nav-link">Claimable</ButtonMenuItem>
+                <ButtonMenuItem id="non-claimable-nav-link">Non Claimable</ButtonMenuItem>
+              </ButtonMenu>
+            </div>
+          </Row>
+          <CardBody>{index === 0 ? <Claimable /> : <NonClaimable />}</CardBody>
         </Wrapper>
       </AppBody>
       <AdvancedSwapDetailsDropdown trade={trade} />

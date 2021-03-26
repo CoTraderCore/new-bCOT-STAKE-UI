@@ -36,6 +36,8 @@ import PageHeader from 'components/PageHeader'
 import ConnectWalletButton from 'components/ConnectWalletButton'
 import AppBody from '../AppBody'
 
+import '../../App.css'
+
 const NonClaimable = () => {
   const loadedUrlParams = useDefaultsFromURLSearch()
   const TranslateString = useI18n()
@@ -423,9 +425,9 @@ const NonClaimable = () => {
                 </Button>
               )}
 
-              <br />
-              <Button>Exit</Button>
-              <br />
+             
+              <Button className="button-exit">Exit</Button>
+             
               {showApproveFlow && <ProgressSteps steps={[approval === ApprovalState.APPROVED]} />}
               {isExpertMode && swapErrorMessage ? <SwapCallbackError error={swapErrorMessage} /> : null}
             </BottomGrouping>

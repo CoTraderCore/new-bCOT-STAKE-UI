@@ -36,6 +36,8 @@ import PageHeader from 'components/PageHeader'
 import ConnectWalletButton from 'components/ConnectWalletButton'
 import AppBody from '../AppBody'
 
+import '../../App.css'
+
 const Claimable = () => {
   const loadedUrlParams = useDefaultsFromURLSearch()
   const TranslateString = useI18n()
@@ -422,11 +424,13 @@ const Claimable = () => {
                       : `Swap${priceImpactSeverity > 2 ? ' Anyway' : ''}`)}
                 </Button>
               )}
+              <div className="button-div">
+      
+              <Button className="button-claim-rewards">Claim Rewards</Button>
               <br/>
-              <Button>Claim Rewards</Button>
+              <Button className="button-exit">Exit</Button>
               <br/>
-              <Button>Exit</Button>
-              <br/>
+              </div>
               {showApproveFlow && <ProgressSteps steps={[approval === ApprovalState.APPROVED]} />}
               {isExpertMode && swapErrorMessage ? <SwapCallbackError error={swapErrorMessage} /> : null}
             </BottomGrouping>
