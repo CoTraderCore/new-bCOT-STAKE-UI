@@ -12,9 +12,7 @@ function Nav({ activeIndex=0 }: { activeIndex?: number }) {
 
   const [index, setIndex] = useState(activeIndex);
   const handleClick = (newIndex) => {
-    if(newIndex===4)
-    newIndex=3
-    setIndex(newIndex);console.log(newIndex)
+    setIndex(newIndex);
   };
   const TranslateString = useI18n()
   return (

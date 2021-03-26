@@ -276,7 +276,7 @@ const Stats = () => {
         transactionType={syrupTransactionType}
         onConfirm={handleConfirmSyrupWarning}
       />
-      <CardNav activeIndex={0}/>
+      <CardNav activeIndex={2}/>
       <AppBody>
         <Wrapper id="swap-page">
           <ConfirmSwapModal
