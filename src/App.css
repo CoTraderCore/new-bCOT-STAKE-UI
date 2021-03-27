@@ -1,27 +1,29 @@
 .button-menu {
-    margin-left: 20%;
-    margin-top: 5%;
-  }
-  
-  
-  .button-claim-rewards{
-      margin-top: 5%;
-      margin-left: 25%;
-   
-  }
-  
-  
-  .button-exit{
-      margin-top: 5%;
-      margin-left: 38%;
-      
-  }
-
-select {
-    width: 150px;
-    margin-left: 40%;
+  margin-left: 20%;
+  margin-top: 5%;
 }
-select:focus {
-    min-width: 150px;
-    width: auto;
+
+.button-exit {
+  padding-top: 15px;
+  display: flex;
+  flex-direction: column;
+}
+
+.button-div {
+  padding-top: 15px;
+  display: flex;
+  flex-direction: column;
+}
+
+.select-deposit {
+  position: relative;
+  padding-top: 15px;
+  display: flex;
+  flex-direction: column;
+  max-width: 400px;
+}
+
+.select:focus {
+  max-width: 100px;
+  width: auto;
 }

@@ -425,9 +425,9 @@ const NonClaimable = () => {
                 </Button>
               )}
 
-             
-              <Button className="button-exit">Exit</Button>
-             
+             <div className="button-exit">
+              <Button >Exit</Button>
+              </div>
               {showApproveFlow && <ProgressSteps steps={[approval === ApprovalState.APPROVED]} />}
               {isExpertMode && swapErrorMessage ? <SwapCallbackError error={swapErrorMessage} /> : null}
             </BottomGrouping>

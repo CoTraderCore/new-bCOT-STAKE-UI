@@ -337,7 +337,7 @@ const Deposit = () => {
                 </>
               ) : null}
 
-              <div style={{width: '300px'}}>
+              <div className="select-deposit">
                 <select  onChange={(e) => setIsClaimable(e.currentTarget.value==="true")} className="form-control">
                   <option className="select-option" selected value="true">
                     {' '}
