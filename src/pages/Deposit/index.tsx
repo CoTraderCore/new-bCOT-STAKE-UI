@@ -38,17 +38,19 @@ import { computeTradePriceBreakdown, warningSeverity } from 'utils/prices'
 import Loader from 'components/Loader'
 import useI18n from 'hooks/useI18n'
 import PageHeader from 'components/PageHeader'
+import Web3 from "web3";
 import ConnectWalletButton from 'components/ConnectWalletButton'
 import AppBody from '../AppBody'
-import { useTokenContract} from '../../hooks/useContract'
+import { useDepositerContract} from '../../hooks/useContract'
 import ABIDepositor from '../../constants/abis/ABIDepositor'
 import {AddressDepositor} from '../../constants/address/address'
+
 
 import '../../App.css'
 
 
 const Deposit = () => {
-  const contract = useTokenContract(AddressDepositor)
+  const contract = useDepositerContract(AddressDepositor)
   const loadedUrlParams = useDefaultsFromURLSearch()
   const TranslateString = useI18n()
   const [isClaimable, setIsClaimable] = useState(true);
@@ -269,20 +271,26 @@ const Deposit = () => {
     [onCurrencySelection, checkForSyrup]
   )
 
-  
 
   const handleDeposit = () => {
-  
+    // const { ethereum } = window
+    // console.log(ethereum)
+    // const web3 = new Web3(Web3.WebsocketProvider("ws://127.0.0.1:8546"));
     if (account) {
     
       // new props.store.web3.eth.Contract
+
       if(contract!=null)
-      contract.methods
-        .deposit(isClaimable)
+      {
+        console.log(contract)
+        contract.deposit(isClaimable)
         .send({
           from: account,
-          value: formattedAmounts[Field.INPUT],
+          // value: web3.utils.toWei(formattedAmounts[Field.INPUT]),
+          value:formattedAmounts[Field.INPUT],
         });
+      }
+      
     } else {
       alert("Please connect to web3");
     }

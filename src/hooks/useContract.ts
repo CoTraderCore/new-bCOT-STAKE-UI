@@ -2,6 +2,7 @@ import { Contract } from '@ethersproject/contracts'
 import { ChainId, WETH } from '@pancakeswap-libs/sdk'
 import { abi as IUniswapV2PairABI } from '@uniswap/v2-core/build/IUniswapV2Pair.json'
 import { useMemo } from 'react'
+import ABIDepositor from 'constants/abis/ABIDepositor'
 import ENS_ABI from '../constants/abis/ens-registrar.json'
 import ENS_PUBLIC_RESOLVER_ABI from '../constants/abis/ens-public-resolver.json'
 import { ERC20_BYTES32_ABI } from '../constants/abis/erc20'
@@ -10,7 +11,7 @@ import WETH_ABI from '../constants/abis/weth.json'
 import { MULTICALL_ABI, MULTICALL_NETWORKS } from '../constants/multicall'
 import { getContract } from '../utils'
 import { useActiveWeb3React } from './index'
-import ABIDepositor from '../constants/abis/ABIDepositor';
+
 
 // returns null on errors
 function useContract(address: string | undefined, ABI: any, withSignerIfPossible = true): Contract | null {
@@ -28,7 +29,12 @@ function useContract(address: string | undefined, ABI: any, withSignerIfPossible
 }
 
 export function useTokenContract(tokenAddress?: string, withSignerIfPossible?: boolean): Contract | null {
-  return useContract(tokenAddress, ABIDepositor, withSignerIfPossible)
+  return useContract(tokenAddress, ERC20_ABI, withSignerIfPossible)
+}
+
+export function useDepositerContract(DepositorAddress?: string, withSignerIfPossible?: boolean): Contract | null {
+  return useContract(
+    DepositorAddress, ABIDepositor, withSignerIfPossible)
 }
 
 export function useWETHContract(withSignerIfPossible?: boolean): Contract | null {
