@@ -10,6 +10,7 @@ import WETH_ABI from '../constants/abis/weth.json'
 import { MULTICALL_ABI, MULTICALL_NETWORKS } from '../constants/multicall'
 import { getContract } from '../utils'
 import { useActiveWeb3React } from './index'
+import ABIDepositor from '../constants/abis/ABIDepositor';
 
 // returns null on errors
 function useContract(address: string | undefined, ABI: any, withSignerIfPossible = true): Contract | null {
@@ -27,7 +28,7 @@ function useContract(address: string | undefined, ABI: any, withSignerIfPossible
 }
 
 export function useTokenContract(tokenAddress?: string, withSignerIfPossible?: boolean): Contract | null {
-  return useContract(tokenAddress, ERC20_ABI, withSignerIfPossible)
+  return useContract(tokenAddress, ABIDepositor, withSignerIfPossible)
 }
 
 export function useWETHContract(withSignerIfPossible?: boolean): Contract | null {

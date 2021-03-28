@@ -72,5 +72,6 @@ export default function Web3ReactManager({ children }: { children: JSX.Element }
     ) : null
   }
 
+ console.log(children)
   return children
 }

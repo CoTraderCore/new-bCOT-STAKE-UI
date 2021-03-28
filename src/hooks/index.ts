@@ -12,6 +12,7 @@ import { NetworkContextName } from '../constants'
 export function useActiveWeb3React(): Web3ReactContextInterface<Web3Provider> & { chainId?: ChainId } {
   const context = useWeb3ReactCore<Web3Provider>()
   const contextNetwork = useWeb3ReactCore<Web3Provider>(NetworkContextName)
+  // console.log(context)
   return context.active ? context : contextNetwork
 }
 
@@ -55,7 +56,7 @@ export function useInactiveListener(suppress = false) {
 
   useEffect(() => {
     const { ethereum } = window
-
+   // console.log(window)
     if (ethereum && ethereum.on && !active && !error && !suppress) {
       const handleChainChanged = () => {
         // eat errors

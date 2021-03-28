@@ -124,7 +124,7 @@ export default function CurrencyInputPanel({
             </RowBetween>
           </LabelRow>
         )}
-        <InputRow style={hideInput ? { padding: '0', borderRadius: '8px' } : {}} selected={disableCurrencySelect}>
+        <InputRow style={hideInput ? {padding: '0', borderRadius: '8px' } : {}} selected={disableCurrencySelect}>
           {!hideInput && (
             <>
               <NumericalInput
@@ -141,6 +141,7 @@ export default function CurrencyInputPanel({
               )}
             </>
           )}
+         
           <CurrencySelect
             selected={!!currency}
             className="open-currency-select-button"

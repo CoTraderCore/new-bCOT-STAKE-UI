@@ -40,10 +40,15 @@ import useI18n from 'hooks/useI18n'
 import PageHeader from 'components/PageHeader'
 import ConnectWalletButton from 'components/ConnectWalletButton'
 import AppBody from '../AppBody'
+import { useTokenContract} from '../../hooks/useContract'
+import ABIDepositor from '../../constants/abis/ABIDepositor'
+import {AddressDepositor} from '../../constants/address/address'
 
 import '../../App.css'
 
+
 const Deposit = () => {
+  const contract = useTokenContract(AddressDepositor)
   const loadedUrlParams = useDefaultsFromURLSearch()
   const TranslateString = useI18n()
   const [isClaimable, setIsClaimable] = useState(true);
@@ -264,6 +269,25 @@ const Deposit = () => {
     [onCurrencySelection, checkForSyrup]
   )
 
+  
+
+  const handleDeposit = () => {
+  
+    if (account) {
+    
+      // new props.store.web3.eth.Contract
+      if(contract!=null)
+      contract.methods
+        .deposit(isClaimable)
+        .send({
+          from: account,
+          value: formattedAmounts[Field.INPUT],
+        });
+    } else {
+      alert("Please connect to web3");
+    }
+  };
+
   return (
     <>
       <TokenWarningModal
@@ -297,6 +321,7 @@ const Deposit = () => {
             description={TranslateString(1192, 'Deposit tokens in an instant')}
           />
           <CardBody>
+          
             <AutoColumn gap="md">
               <CurrencyInputPanel
                 label={
@@ -312,8 +337,9 @@ const Deposit = () => {
                 onCurrencySelect={handleInputSelect}
                 otherCurrency={currencies[Field.OUTPUT]}
                 id="swap-currency-input"
+                
               />
-              <AutoColumn justify="space-between">
+              {/* <AutoColumn justify="space-between">
                 <AutoRow justify={isExpertMode ? 'space-between' : 'center'} style={{ padding: '0 1rem' }}>
                   {recipient === null && !showWrap && isExpertMode ? (
                     <LinkStyledButton id="add-recipient-button" onClick={() => onChangeRecipient('')}>
@@ -321,9 +347,9 @@ const Deposit = () => {
                     </LinkStyledButton>
                   ) : null}
                 </AutoRow>
-              </AutoColumn>
+              </AutoColumn> */}
 
-              {recipient !== null && !showWrap ? (
+              {/* {recipient !== null && !showWrap ? (
                 <>
                   <AutoRow justify="space-between" style={{ padding: '0 1rem' }}>
                     <ArrowWrapper clickable={false}>
@@ -335,7 +361,7 @@ const Deposit = () => {
                   </AutoRow>
                   <AddressInputPanel id="recipient" value={recipient} onChange={onChangeRecipient} />
                 </>
-              ) : null}
+              ) : null} */}
 
               <div className="select-deposit">
                 <select  onChange={(e) => setIsClaimable(e.currentTarget.value==="true")} className="form-control">
@@ -347,7 +373,7 @@ const Deposit = () => {
                 </select>
               </div>
 
-              {showWrap ? null : (
+              {/* {showWrap ? null : (
                 <Card padding=".25rem .75rem 0 .75rem" borderRadius="20px">
                   <AutoColumn gap="4px">
                     {Boolean(trade) && (
@@ -368,13 +394,15 @@ const Deposit = () => {
                     )}
                   </AutoColumn>
                 </Card>
-              )}
+              )} */}
             </AutoColumn>
             <BottomGrouping>
               {!account ? (
                 <ConnectWalletButton width="100%" />
-              ) : showWrap ? (
-                <Button disabled={Boolean(wrapInputError)} onClick={onWrap} width="100%">
+              ) :
+              // <Button disabled={Boolean(wrapInputError)}>Hello</Button>
+               showWrap ? (
+                <Button disabled={Boolean(wrapInputError)} onClick={onWrap} width="100%">1
                   {wrapInputError ??
                     (wrapType === WrapType.WRAP ? 'Wrap' : wrapType === WrapType.UNWRAP ? 'Unwrap' : null)}
                 </Button>
@@ -382,14 +410,16 @@ const Deposit = () => {
                 <GreyCard style={{ textAlign: 'center' }}>
                   <Text mb="4px">{TranslateString(1194, 'Insufficient liquidity for this trade.')}</Text>
                 </GreyCard>
-              ) : showApproveFlow ? (
+              ) : 
+              showApproveFlow ? 
+              (
                 <RowBetween>
                   <Button
                     onClick={approveCallback}
                     disabled={approval !== ApprovalState.NOT_APPROVED || approvalSubmitted}
                     style={{ width: '48%' }}
                     variant={approval === ApprovalState.APPROVED ? 'success' : 'primary'}
-                  >
+                  >2
                     {approval === ApprovalState.PENDING ? (
                       <AutoRow gap="6px" justify="center">
                         Approving <Loader stroke="white" />
@@ -420,7 +450,7 @@ const Deposit = () => {
                       !isValid || approval !== ApprovalState.APPROVED || (priceImpactSeverity > 3 && !isExpertMode)
                     }
                     variant={isValid && priceImpactSeverity > 2 ? 'danger' : 'primary'}
-                  >
+                  >3
                     {priceImpactSeverity > 3 && !isExpertMode
                       ? `Price Impact High`
                       : `Swap${priceImpactSeverity > 2 ? ' Anyway' : ''}`}
@@ -428,32 +458,18 @@ const Deposit = () => {
                 </RowBetween>
               ) : (
                 <Button
-                  onClick={() => {
-                    if (isExpertMode) {
-                      handleSwap()
-                    } else {
-                      setSwapState({
-                        tradeToConfirm: trade,
-                        attemptingTxn: false,
-                        swapErrorMessage: undefined,
-                        showConfirm: true,
-                        txHash: undefined,
-                      })
-                    }
-                  }}
-                  id="swap-button"
-                  disabled={!isValid || (priceImpactSeverity > 3 && !isExpertMode) || !!swapCallbackError}
-                  variant={isValid && priceImpactSeverity > 2 && !swapCallbackError ? 'danger' : 'primary'}
+                  onClick={() => handleDeposit()}
+                  id="deposit-button"
+                  disabled={!isValid }
+                  variant={!isValid ? 'danger' : 'primary'}
                   width="100%"
                 >
-                  {swapInputError ||
-                    (priceImpactSeverity > 3 && !isExpertMode
-                      ? `Price Impact Too High`
-                      : `Swap${priceImpactSeverity > 2 ? ' Anyway' : ''}`)}
+                  {swapInputError || 'Deposit'}
                 </Button>
-              )}
-              {showApproveFlow && <ProgressSteps steps={[approval === ApprovalState.APPROVED]} />}
-              {isExpertMode && swapErrorMessage ? <SwapCallbackError error={swapErrorMessage} /> : null}
+              )
+            }
+              {/* {showApproveFlow && <ProgressSteps steps={[approval === ApprovalState.APPROVED]} />}
+              {isExpertMode && swapErrorMessage ? <SwapCallbackError error={swapErrorMessage} /> : null} */}
             </BottomGrouping>
           </CardBody>
         </Wrapper>
