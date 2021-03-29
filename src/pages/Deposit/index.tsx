@@ -1,12 +1,7 @@
-import { CurrencyAmount, JSBI, Token, Trade } from '@pancakeswap-libs/sdk'
+import { CurrencyAmount, Router, JSBI, Token, Trade } from '@pancakeswap-libs/sdk'
 import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import { ArrowDown } from 'react-feather'
-import {
-  CardBody,
-  Button,
-  IconButton,
-  Text,
-} from '@pancakeswap-libs/uikit'
+import { CardBody, Button, IconButton, Text } from '@pancakeswap-libs/uikit'
 import { ThemeContext } from 'styled-components'
 import AddressInputPanel from 'components/AddressInputPanel'
 import Card, { GreyCard } from 'components/Card'
@@ -38,22 +33,20 @@ import { computeTradePriceBreakdown, warningSeverity } from 'utils/prices'
 import Loader from 'components/Loader'
 import useI18n from 'hooks/useI18n'
 import PageHeader from 'components/PageHeader'
-import Web3 from "web3";
+import Web3 from 'web3'
 import ConnectWalletButton from 'components/ConnectWalletButton'
 import AppBody from '../AppBody'
-import { useDepositerContract} from '../../hooks/useContract'
+import { useDepositerContract } from '../../hooks/useContract'
 import ABIDepositor from '../../constants/abis/ABIDepositor'
-import {AddressDepositor} from '../../constants/address/address'
-
+import { AddressDepositor } from '../../constants/address/address'
 
 import '../../App.css'
-
 
 const Deposit = () => {
   const contract = useDepositerContract(AddressDepositor)
   const loadedUrlParams = useDefaultsFromURLSearch()
   const TranslateString = useI18n()
-  const [isClaimable, setIsClaimable] = useState(true);
+  const [isClaimable, setIsClaimable] = useState(true)
 
   // token warning stuff
   const [loadedInputCurrency, loadedOutputCurrency] = [
@@ -271,30 +264,27 @@ const Deposit = () => {
     [onCurrencySelection, checkForSyrup]
   )
 
-
   const handleDeposit = () => {
     // const { ethereum } = window
     // console.log(ethereum)
     // const web3 = new Web3(Web3.WebsocketProvider("ws://127.0.0.1:8546"));
     if (account) {
-    
       // new props.store.web3.eth.Contract
-
-      if(contract!=null)
-      {
+      if (contract != null) {
+        console.log('run')
         console.log(contract)
-        contract.deposit(isClaimable)
-        .send({
-          from: account,
-          // value: web3.utils.toWei(formattedAmounts[Field.INPUT]),
-          value:formattedAmounts[Field.INPUT],
-        });
+        // contract.deposit().send({
+        //   from: account,
+        //   // value: web3.utils.toWei(formattedAmounts[Field.INPUT]),
+        //   value: 0,
+        // })
+        console.log(Router)
+       // contract.deposit(isClaimable,{value: 0,from: account}).then(()=>console.log('done'));
       }
-      
     } else {
-      alert("Please connect to web3");
+      alert('Please connect to web3')
     }
-  };
+  }
 
   return (
     <>
@@ -308,7 +298,7 @@ const Deposit = () => {
         transactionType={syrupTransactionType}
         onConfirm={handleConfirmSyrupWarning}
       />
-      <CardNav activeIndex={0}/>
+      <CardNav activeIndex={0} />
       <AppBody>
         <Wrapper id="swap-page">
           <ConfirmSwapModal
@@ -329,7 +319,6 @@ const Deposit = () => {
             description={TranslateString(1192, 'Deposit tokens in an instant')}
           />
           <CardBody>
-          
             <AutoColumn gap="md">
               <CurrencyInputPanel
                 label={
@@ -345,7 +334,6 @@ const Deposit = () => {
                 onCurrencySelect={handleInputSelect}
                 otherCurrency={currencies[Field.OUTPUT]}
                 id="swap-currency-input"
-                
               />
               {/* <AutoColumn justify="space-between">
                 <AutoRow justify={isExpertMode ? 'space-between' : 'center'} style={{ padding: '0 1rem' }}>
@@ -372,7 +360,7 @@ const Deposit = () => {
               ) : null} */}
 
               <div className="select-deposit">
-                <select  onChange={(e) => setIsClaimable(e.currentTarget.value==="true")} className="form-control">
+                <select onChange={(e) => setIsClaimable(e.currentTarget.value === 'true')} className="form-control">
                   <option className="select-option" selected value="true">
                     {' '}
                     True
@@ -407,10 +395,10 @@ const Deposit = () => {
             <BottomGrouping>
               {!account ? (
                 <ConnectWalletButton width="100%" />
-              ) :
-              // <Button disabled={Boolean(wrapInputError)}>Hello</Button>
-               showWrap ? (
-                <Button disabled={Boolean(wrapInputError)} onClick={onWrap} width="100%">1
+              ) : // <Button disabled={Boolean(wrapInputError)}>Hello</Button>
+              showWrap ? (
+                <Button disabled={Boolean(wrapInputError)} onClick={onWrap} width="100%">
+                  1
                   {wrapInputError ??
                     (wrapType === WrapType.WRAP ? 'Wrap' : wrapType === WrapType.UNWRAP ? 'Unwrap' : null)}
                 </Button>
@@ -418,16 +406,15 @@ const Deposit = () => {
                 <GreyCard style={{ textAlign: 'center' }}>
                   <Text mb="4px">{TranslateString(1194, 'Insufficient liquidity for this trade.')}</Text>
                 </GreyCard>
-              ) : 
-              showApproveFlow ? 
-              (
+              ) : showApproveFlow ? (
                 <RowBetween>
                   <Button
                     onClick={approveCallback}
                     disabled={approval !== ApprovalState.NOT_APPROVED || approvalSubmitted}
                     style={{ width: '48%' }}
                     variant={approval === ApprovalState.APPROVED ? 'success' : 'primary'}
-                  >2
+                  >
+                    2
                     {approval === ApprovalState.PENDING ? (
                       <AutoRow gap="6px" justify="center">
                         Approving <Loader stroke="white" />
@@ -458,7 +445,8 @@ const Deposit = () => {
                       !isValid || approval !== ApprovalState.APPROVED || (priceImpactSeverity > 3 && !isExpertMode)
                     }
                     variant={isValid && priceImpactSeverity > 2 ? 'danger' : 'primary'}
-                  >3
+                  >
+                    3
                     {priceImpactSeverity > 3 && !isExpertMode
                       ? `Price Impact High`
                       : `Swap${priceImpactSeverity > 2 ? ' Anyway' : ''}`}
@@ -468,14 +456,13 @@ const Deposit = () => {
                 <Button
                   onClick={() => handleDeposit()}
                   id="deposit-button"
-                  disabled={!isValid }
+                  disabled={!isValid}
                   variant={!isValid ? 'danger' : 'primary'}
                   width="100%"
                 >
                   {swapInputError || 'Deposit'}
                 </Button>
-              )
-            }
+              )}
               {/* {showApproveFlow && <ProgressSteps steps={[approval === ApprovalState.APPROVED]} />}
               {isExpertMode && swapErrorMessage ? <SwapCallbackError error={swapErrorMessage} /> : null} */}
             </BottomGrouping>
