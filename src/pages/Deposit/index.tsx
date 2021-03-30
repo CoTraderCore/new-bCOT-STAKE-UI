@@ -17,7 +17,9 @@ import TradePrice from 'components/swap/TradePrice'
 import TokenWarningModal from 'components/TokenWarningModal'
 import SyrupWarningModal from 'components/SyrupWarningModal'
 import ProgressSteps from 'components/ProgressSteps'
+import { parseEther } from '@ethersproject/units'
 
+import { useTransactionAdder } from 'state/transactions/hooks'
 import { INITIAL_ALLOWED_SLIPPAGE } from 'constants/index'
 import { useActiveWeb3React } from 'hooks'
 import { useCurrency } from 'hooks/Tokens'
@@ -25,7 +27,7 @@ import { ApprovalState, useApproveCallbackFromTrade } from 'hooks/useApproveCall
 import { useSwapCallback } from 'hooks/useSwapCallback'
 import useWrapCallback, { WrapType } from 'hooks/useWrapCallback'
 import { Field } from 'state/swap/actions'
-import { useDefaultsFromURLSearch, useDerivedSwapInfo, useSwapActionHandlers, useSwapState } from 'state/swap/hooks'
+import { tryParseAmount, useDefaultsFromURLSearch, useDerivedSwapInfo, useSwapActionHandlers, useSwapState } from 'state/swap/hooks'
 import { useExpertModeManager, useUserDeadline, useUserSlippageTolerance } from 'state/user/hooks'
 import { LinkStyledButton } from 'components/Shared'
 import { maxAmountSpend } from 'utils/maxAmountSpend'
@@ -34,6 +36,7 @@ import Loader from 'components/Loader'
 import useI18n from 'hooks/useI18n'
 import PageHeader from 'components/PageHeader'
 import Web3 from 'web3'
+import Web3Modal from "web3modal";
 import ConnectWalletButton from 'components/ConnectWalletButton'
 import AppBody from '../AppBody'
 import { useDepositerContract } from '../../hooks/useContract'
@@ -43,6 +46,7 @@ import { AddressDepositor } from '../../constants/address/address'
 import '../../App.css'
 
 const Deposit = () => {
+  const addTransaction = useTransactionAdder()
   const contract = useDepositerContract(AddressDepositor)
   const loadedUrlParams = useDefaultsFromURLSearch()
   const TranslateString = useI18n()
@@ -264,14 +268,25 @@ const Deposit = () => {
     [onCurrencySelection, checkForSyrup]
   )
 
-  const handleDeposit = () => {
-   
+  const handleDeposit = async () => {
+    
     if (account) {
       if (contract != null) {
         console.log('run')
         console.log(contract)
-        contract.deposit(isClaimable,{value: 0,from: account});
-       
+        try{
+          console.log(formattedAmounts[Field.INPUT])
+          const inputAmount=parseEther(formattedAmounts[Field.INPUT].toString())
+          console.log(inputAmount);
+          
+          const txReceipt = await contract.deposit(isClaimable, {value: inputAmount._hex});
+          addTransaction(txReceipt)
+        }
+        catch(error)
+        {
+          console.error('Could not deposit', error)
+        }
+        
       }
     } else {
       alert('Please connect to web3')
