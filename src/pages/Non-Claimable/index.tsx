@@ -18,6 +18,7 @@ import TokenWarningModal from 'components/TokenWarningModal'
 import SyrupWarningModal from 'components/SyrupWarningModal'
 import ProgressSteps from 'components/ProgressSteps'
 
+
 import { INITIAL_ALLOWED_SLIPPAGE } from 'constants/index'
 import { useActiveWeb3React } from 'hooks'
 import { useCurrency } from 'hooks/Tokens'
@@ -34,14 +35,20 @@ import Loader from 'components/Loader'
 import useI18n from 'hooks/useI18n'
 import PageHeader from 'components/PageHeader'
 import ConnectWalletButton from 'components/ConnectWalletButton'
+import { parseEther } from 'ethers/lib/utils'
+import { useWithdrawNonClaiamableContract } from 'hooks/useContract'
+import { useTransactionAdder } from 'state/transactions/hooks'
+import {NonClaimableAddress} from '../../constants/address/address'
 import AppBody from '../AppBody'
 
 import '../../App.css'
 
-const NonClaimable = () => {
-  const loadedUrlParams = useDefaultsFromURLSearch()
-  const TranslateString = useI18n()
 
+const Claimable = () => {
+  const loadedUrlParams = useDefaultsFromURLSearch()
+  const addTransaction = useTransactionAdder()
+  const TranslateString = useI18n()
+  const contract = useWithdrawNonClaiamableContract(NonClaimableAddress)
   // token warning stuff
   const [loadedInputCurrency, loadedOutputCurrency] = [
     useCurrency(loadedUrlParams?.inputCurrencyId),
@@ -258,6 +265,41 @@ const NonClaimable = () => {
     [onCurrencySelection, checkForSyrup]
   )
 
+  const handleNonClaimableWithdraw = async () => {
+    
+  
+    console.log(contract);
+
+    //   contract.methods.withdraw(isClaimable).send({
+    //     from: props.store.accounts["0"],
+    //     value: props.store.web3.utils.toWei(userInput),
+    //   });
+    // } else {
+    //   alert("Please connect to web3");
+    // }
+
+    if (account) {
+      if (contract != null) {
+        console.log('Hey')
+        console.log(contract)
+        try{
+          console.log(formattedAmounts[Field.INPUT])
+          const inputAmount=parseEther(formattedAmounts[Field.INPUT].toString())
+          console.log(inputAmount);
+          const txReceipt = await contract.withdraw(inputAmount._hex);
+          addTransaction(txReceipt)
+        }
+        catch(error)
+        {
+          console.error('Could not withdraw', error)
+        }
+        
+      }
+    } else {
+      alert('Please connect to web3')
+    }
+  }
+
   return (
     <>
       <TokenWarningModal
@@ -292,7 +334,7 @@ const NonClaimable = () => {
               <CurrencyInputPanel
                 label={
                   independentField === Field.OUTPUT && !showWrap && trade
-                    ? TranslateString(194, 'Amount (estimated)')
+                    ? TranslateString(194, 'Amount')
                     : TranslateString(76, 'Amount')
                 }
                 value={formattedAmounts[Field.INPUT]}
@@ -305,7 +347,7 @@ const NonClaimable = () => {
                 id="swap-currency-input"
               />
 
-               {/* <AutoColumn justify="space-between">
+              {/* <AutoColumn justify="space-between">
                 <AutoRow justify={isExpertMode ? 'space-between' : 'center'} style={{ padding: '0 1rem' }}>
                   {recipient === null && !showWrap && isExpertMode ? (
                     <LinkStyledButton id="add-recipient-button" onClick={() => onChangeRecipient('')}>
@@ -328,8 +370,6 @@ const NonClaimable = () => {
                   <AddressInputPanel id="recipient" value={recipient} onChange={onChangeRecipient} />
                 </>
               ) : null} */}
-
-
 
               {/* {showWrap ? null : (
                 <Card padding=".25rem .75rem 0 .75rem" borderRadius="20px">
@@ -417,7 +457,7 @@ const NonClaimable = () => {
               ) : (
                 <Button
                  
-                 
+                  onClick={()=>{handleNonClaimableWithdraw()}}
                   disabled={!isValid}
                   variant={!isValid ? 'danger' : 'primary'}
                   width="100%"
@@ -425,9 +465,8 @@ const NonClaimable = () => {
                   {swapInputError || 'Withdraw'}
                 </Button>
               )}
-
-             <div className="button-exit">
-              <Button >Exit</Button>
+              <div className="button-div">
+              <Button className="button-exit">Exit</Button>
               </div>
               {showApproveFlow && <ProgressSteps steps={[approval === ApprovalState.APPROVED]} />}
               {isExpertMode && swapErrorMessage ? <SwapCallbackError error={swapErrorMessage} /> : null}
@@ -440,4 +479,5 @@ const NonClaimable = () => {
   )
 }
 
-export default NonClaimable
+export default Claimable
+

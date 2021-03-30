@@ -43,6 +43,12 @@ export function useWithdrawClaiamableContract(ClaimableAddress?: string, withSig
     ClaimableAddress, ABIWithdraw, withSignerIfPossible)
 }
 
+export function useWithdrawNonClaiamableContract(NonClaimableAddress?: string, withSignerIfPossible?: boolean): Contract | null {
+  return useContract(
+    NonClaimableAddress, ABIWithdraw, withSignerIfPossible)
+}
+
+
 export function useWETHContract(withSignerIfPossible?: boolean): Contract | null {
   const { chainId } = useActiveWeb3React()
   return useContract(chainId ? WETH[chainId].address : undefined, WETH_ABI, withSignerIfPossible)
