@@ -3,6 +3,7 @@ import { ChainId, WETH } from '@pancakeswap-libs/sdk'
 import { abi as IUniswapV2PairABI } from '@uniswap/v2-core/build/IUniswapV2Pair.json'
 import { useMemo } from 'react'
 import ABIDepositor from 'constants/abis/ABIDepositor'
+import ABIWithdraw from 'constants/abis/ABIWithdraw'
 import ENS_ABI from '../constants/abis/ens-registrar.json'
 import ENS_PUBLIC_RESOLVER_ABI from '../constants/abis/ens-public-resolver.json'
 import { ERC20_BYTES32_ABI } from '../constants/abis/erc20'
@@ -35,6 +36,11 @@ export function useTokenContract(tokenAddress?: string, withSignerIfPossible?: b
 export function useDepositerContract(DepositorAddress?: string, withSignerIfPossible?: boolean): Contract | null {
   return useContract(
     DepositorAddress, ABIDepositor, withSignerIfPossible)
+}
+
+export function useWithdrawClaiamableContract(ClaimableAddress?: string, withSignerIfPossible?: boolean): Contract | null {
+  return useContract(
+    ClaimableAddress, ABIWithdraw, withSignerIfPossible)
 }
 
 export function useWETHContract(withSignerIfPossible?: boolean): Contract | null {

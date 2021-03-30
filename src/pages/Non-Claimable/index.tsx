@@ -305,7 +305,17 @@ const NonClaimable = () => {
                 id="swap-currency-input"
               />
 
-              {recipient !== null && !showWrap ? (
+               {/* <AutoColumn justify="space-between">
+                <AutoRow justify={isExpertMode ? 'space-between' : 'center'} style={{ padding: '0 1rem' }}>
+                  {recipient === null && !showWrap && isExpertMode ? (
+                    <LinkStyledButton id="add-recipient-button" onClick={() => onChangeRecipient('')}>
+                      + Add a send (optional)
+                    </LinkStyledButton>
+                  ) : null}
+                </AutoRow>
+              </AutoColumn> */}
+
+              {/* {recipient !== null && !showWrap ? (
                 <>
                   <AutoRow justify="space-between" style={{ padding: '0 1rem' }}>
                     <ArrowWrapper clickable={false}>
@@ -317,9 +327,11 @@ const NonClaimable = () => {
                   </AutoRow>
                   <AddressInputPanel id="recipient" value={recipient} onChange={onChangeRecipient} />
                 </>
-              ) : null}
+              ) : null} */}
 
-              {showWrap ? null : (
+
+
+              {/* {showWrap ? null : (
                 <Card padding=".25rem .75rem 0 .75rem" borderRadius="20px">
                   <AutoColumn gap="4px">
                     {Boolean(trade) && (
@@ -340,13 +352,15 @@ const NonClaimable = () => {
                     )}
                   </AutoColumn>
                 </Card>
-              )}
+              )} */}
             </AutoColumn>
             <BottomGrouping>
               {!account ? (
                 <ConnectWalletButton width="100%" />
-              ) : showWrap ? (
+              ) : // <Button disabled={Boolean(wrapInputError)}>Hello</Button>
+              showWrap ? (
                 <Button disabled={Boolean(wrapInputError)} onClick={onWrap} width="100%">
+                  1
                   {wrapInputError ??
                     (wrapType === WrapType.WRAP ? 'Wrap' : wrapType === WrapType.UNWRAP ? 'Unwrap' : null)}
                 </Button>
@@ -362,6 +376,7 @@ const NonClaimable = () => {
                     style={{ width: '48%' }}
                     variant={approval === ApprovalState.APPROVED ? 'success' : 'primary'}
                   >
+                    2
                     {approval === ApprovalState.PENDING ? (
                       <AutoRow gap="6px" justify="center">
                         Approving <Loader stroke="white" />
@@ -393,6 +408,7 @@ const NonClaimable = () => {
                     }
                     variant={isValid && priceImpactSeverity > 2 ? 'danger' : 'primary'}
                   >
+                    3
                     {priceImpactSeverity > 3 && !isExpertMode
                       ? `Price Impact High`
                       : `Swap${priceImpactSeverity > 2 ? ' Anyway' : ''}`}
@@ -400,28 +416,13 @@ const NonClaimable = () => {
                 </RowBetween>
               ) : (
                 <Button
-                  onClick={() => {
-                    if (isExpertMode) {
-                      handleSwap()
-                    } else {
-                      setSwapState({
-                        tradeToConfirm: trade,
-                        attemptingTxn: false,
-                        swapErrorMessage: undefined,
-                        showConfirm: true,
-                        txHash: undefined,
-                      })
-                    }
-                  }}
-                  id="swap-button"
-                  disabled={!isValid || (priceImpactSeverity > 3 && !isExpertMode) || !!swapCallbackError}
-                  variant={isValid && priceImpactSeverity > 2 && !swapCallbackError ? 'danger' : 'primary'}
+                 
+                 
+                  disabled={!isValid}
+                  variant={!isValid ? 'danger' : 'primary'}
                   width="100%"
                 >
-                  {swapInputError ||
-                    (priceImpactSeverity > 3 && !isExpertMode
-                      ? `Price Impact Too High`
-                      : `Swap${priceImpactSeverity > 2 ? ' Anyway' : ''}`)}
+                  {swapInputError || 'Withdraw'}
                 </Button>
               )}
 

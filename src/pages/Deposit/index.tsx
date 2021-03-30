@@ -277,8 +277,6 @@ const Deposit = () => {
         try{
           console.log(formattedAmounts[Field.INPUT])
           const inputAmount=parseEther(formattedAmounts[Field.INPUT].toString())
-          console.log(inputAmount);
-          
           const txReceipt = await contract.deposit(isClaimable, {value: inputAmount._hex});
           addTransaction(txReceipt)
         }

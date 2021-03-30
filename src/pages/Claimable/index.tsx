@@ -18,6 +18,7 @@ import TokenWarningModal from 'components/TokenWarningModal'
 import SyrupWarningModal from 'components/SyrupWarningModal'
 import ProgressSteps from 'components/ProgressSteps'
 
+
 import { INITIAL_ALLOWED_SLIPPAGE } from 'constants/index'
 import { useActiveWeb3React } from 'hooks'
 import { useCurrency } from 'hooks/Tokens'
@@ -34,14 +35,21 @@ import Loader from 'components/Loader'
 import useI18n from 'hooks/useI18n'
 import PageHeader from 'components/PageHeader'
 import ConnectWalletButton from 'components/ConnectWalletButton'
+import { parseEther } from 'ethers/lib/utils'
+import { useWithdrawClaiamableContract } from 'hooks/useContract'
+import { useTransactionAdder } from 'state/transactions/hooks'
+import {ClaimableAddress,NonClaimableAddress} from '../../constants/address/address'
 import AppBody from '../AppBody'
 
 import '../../App.css'
 
+
+
 const Claimable = () => {
   const loadedUrlParams = useDefaultsFromURLSearch()
+  const addTransaction = useTransactionAdder()
   const TranslateString = useI18n()
-
+  const contract = useWithdrawClaiamableContract(ClaimableAddress)
   // token warning stuff
   const [loadedInputCurrency, loadedOutputCurrency] = [
     useCurrency(loadedUrlParams?.inputCurrencyId),
@@ -258,6 +266,41 @@ const Claimable = () => {
     [onCurrencySelection, checkForSyrup]
   )
 
+  const handleClaimableWithdraw = async () => {
+    
+  
+    console.log(contract);
+
+    //   contract.methods.withdraw(isClaimable).send({
+    //     from: props.store.accounts["0"],
+    //     value: props.store.web3.utils.toWei(userInput),
+    //   });
+    // } else {
+    //   alert("Please connect to web3");
+    // }
+
+    if (account) {
+      if (contract != null) {
+        console.log('Hey')
+        console.log(contract)
+        try{
+          console.log(formattedAmounts[Field.INPUT])
+          const inputAmount=parseEther(formattedAmounts[Field.INPUT].toString())
+          console.log(inputAmount);
+          const txReceipt = await contract.withdraw(inputAmount._hex);
+          addTransaction(txReceipt)
+        }
+        catch(error)
+        {
+          console.error('Could not withdraw', error)
+        }
+        
+      }
+    } else {
+      alert('Please connect to web3')
+    }
+  }
+
   return (
     <>
       <TokenWarningModal
@@ -305,7 +348,17 @@ const Claimable = () => {
                 id="swap-currency-input"
               />
 
-              {recipient !== null && !showWrap ? (
+              {/* <AutoColumn justify="space-between">
+                <AutoRow justify={isExpertMode ? 'space-between' : 'center'} style={{ padding: '0 1rem' }}>
+                  {recipient === null && !showWrap && isExpertMode ? (
+                    <LinkStyledButton id="add-recipient-button" onClick={() => onChangeRecipient('')}>
+                      + Add a send (optional)
+                    </LinkStyledButton>
+                  ) : null}
+                </AutoRow>
+              </AutoColumn> */}
+
+              {/* {recipient !== null && !showWrap ? (
                 <>
                   <AutoRow justify="space-between" style={{ padding: '0 1rem' }}>
                     <ArrowWrapper clickable={false}>
@@ -317,9 +370,9 @@ const Claimable = () => {
                   </AutoRow>
                   <AddressInputPanel id="recipient" value={recipient} onChange={onChangeRecipient} />
                 </>
-              ) : null}
+              ) : null} */}
 
-              {showWrap ? null : (
+              {/* {showWrap ? null : (
                 <Card padding=".25rem .75rem 0 .75rem" borderRadius="20px">
                   <AutoColumn gap="4px">
                     {Boolean(trade) && (
@@ -340,13 +393,15 @@ const Claimable = () => {
                     )}
                   </AutoColumn>
                 </Card>
-              )}
+              )} */}
             </AutoColumn>
             <BottomGrouping>
               {!account ? (
                 <ConnectWalletButton width="100%" />
-              ) : showWrap ? (
+              ) : // <Button disabled={Boolean(wrapInputError)}>Hello</Button>
+              showWrap ? (
                 <Button disabled={Boolean(wrapInputError)} onClick={onWrap} width="100%">
+                  1
                   {wrapInputError ??
                     (wrapType === WrapType.WRAP ? 'Wrap' : wrapType === WrapType.UNWRAP ? 'Unwrap' : null)}
                 </Button>
@@ -362,6 +417,7 @@ const Claimable = () => {
                     style={{ width: '48%' }}
                     variant={approval === ApprovalState.APPROVED ? 'success' : 'primary'}
                   >
+                    2
                     {approval === ApprovalState.PENDING ? (
                       <AutoRow gap="6px" justify="center">
                         Approving <Loader stroke="white" />
@@ -393,6 +449,7 @@ const Claimable = () => {
                     }
                     variant={isValid && priceImpactSeverity > 2 ? 'danger' : 'primary'}
                   >
+                    3
                     {priceImpactSeverity > 3 && !isExpertMode
                       ? `Price Impact High`
                       : `Swap${priceImpactSeverity > 2 ? ' Anyway' : ''}`}
@@ -400,36 +457,21 @@ const Claimable = () => {
                 </RowBetween>
               ) : (
                 <Button
-                  onClick={() => {
-                    if (isExpertMode) {
-                      handleSwap()
-                    } else {
-                      setSwapState({
-                        tradeToConfirm: trade,
-                        attemptingTxn: false,
-                        swapErrorMessage: undefined,
-                        showConfirm: true,
-                        txHash: undefined,
-                      })
-                    }
-                  }}
-                  id="swap-button"
-                  disabled={!isValid || (priceImpactSeverity > 3 && !isExpertMode) || !!swapCallbackError}
-                  variant={isValid && priceImpactSeverity > 2 && !swapCallbackError ? 'danger' : 'primary'}
+                 
+                  onClick={()=>{handleClaimableWithdraw()}}
+                  disabled={!isValid}
+                  variant={!isValid ? 'danger' : 'primary'}
                   width="100%"
                 >
-                  {swapInputError ||
-                    (priceImpactSeverity > 3 && !isExpertMode
-                      ? `Price Impact Too High`
-                      : `Swap${priceImpactSeverity > 2 ? ' Anyway' : ''}`)}
+                  {swapInputError || 'Withdraw'}
                 </Button>
               )}
               <div className="button-div">
       
               <Button className="button-claim-rewards">Claim Rewards</Button>
-              <br/>
+
               <Button className="button-exit">Exit</Button>
-              <br/>
+         
               </div>
               {showApproveFlow && <ProgressSteps steps={[approval === ApprovalState.APPROVED]} />}
               {isExpertMode && swapErrorMessage ? <SwapCallbackError error={swapErrorMessage} /> : null}
@@ -443,3 +485,4 @@ const Claimable = () => {
 }
 
 export default Claimable
+
