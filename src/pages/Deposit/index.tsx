@@ -265,21 +265,13 @@ const Deposit = () => {
   )
 
   const handleDeposit = () => {
-    // const { ethereum } = window
-    // console.log(ethereum)
-    // const web3 = new Web3(Web3.WebsocketProvider("ws://127.0.0.1:8546"));
+   
     if (account) {
-      // new props.store.web3.eth.Contract
       if (contract != null) {
         console.log('run')
         console.log(contract)
-        // contract.deposit().send({
-        //   from: account,
-        //   // value: web3.utils.toWei(formattedAmounts[Field.INPUT]),
-        //   value: 0,
-        // })
-        console.log(Router)
-       // contract.deposit(isClaimable,{value: 0,from: account}).then(()=>console.log('done'));
+        contract.deposit(isClaimable,{value: 0,from: account});
+       
       }
     } else {
       alert('Please connect to web3')
