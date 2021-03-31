@@ -84,7 +84,7 @@ const Deposit = () => {
 
   // swap state
   const { independentField, typedValue, recipient } = useSwapState()
-  const { v2Trade, currencyBalances, parsedAmount, currencies, inputError: swapInputError } = useDerivedSwapInfo()
+  const { v2Trade, currencyBalances, parsedAmount, currencies, inputError } = useDerivedSwapInfo()
   const { wrapType, execute: onWrap, inputError: wrapInputError } = useWrapCallback(
     currencies[Field.INPUT],
     currencies[Field.OUTPUT],
@@ -104,7 +104,7 @@ const Deposit = () => {
       }
 
   const { onSwitchTokens, onCurrencySelection, onUserInput, onChangeRecipient } = useSwapActionHandlers()
-  const isValid = !swapInputError
+  const isValid = !inputError
   const dependentField: Field = independentField === Field.INPUT ? Field.OUTPUT : Field.INPUT
 
   const handleTypeInput = useCallback(
@@ -174,32 +174,6 @@ const Deposit = () => {
 
   const { priceImpactWithoutFee } = computeTradePriceBreakdown(trade)
 
-  const handleSwap = useCallback(() => {
-    if (priceImpactWithoutFee && !confirmPriceImpactWithoutFee(priceImpactWithoutFee)) {
-      return
-    }
-    if (!swapCallback) {
-      return
-    }
-    setSwapState((prevState) => ({ ...prevState, attemptingTxn: true, swapErrorMessage: undefined, txHash: undefined }))
-    swapCallback()
-      .then((hash) => {
-        setSwapState((prevState) => ({
-          ...prevState,
-          attemptingTxn: false,
-          swapErrorMessage: undefined,
-          txHash: hash,
-        }))
-      })
-      .catch((error) => {
-        setSwapState((prevState) => ({
-          ...prevState,
-          attemptingTxn: false,
-          swapErrorMessage: error.message,
-          txHash: undefined,
-        }))
-      })
-  }, [priceImpactWithoutFee, swapCallback, setSwapState])
 
   // errors
   const [showInverted, setShowInverted] = useState<boolean>(false)
@@ -210,7 +184,7 @@ const Deposit = () => {
   // show approve flow when: no error on inputs, not approved or pending, or approved in current session
   // never show if price impact is above threshold in non expert mode
   const showApproveFlow =
-    !swapInputError &&
+    !inputError &&
     (approval === ApprovalState.NOT_APPROVED ||
       approval === ApprovalState.PENDING ||
       (approvalSubmitted && approval === ApprovalState.APPROVED)) &&
@@ -306,19 +280,7 @@ const Deposit = () => {
       <CardNav activeIndex={0} />
       <AppBody>
         <Wrapper id="swap-page">
-          <ConfirmSwapModal
-            isOpen={showConfirm}
-            trade={trade}
-            originalTrade={tradeToConfirm}
-            onAcceptChanges={handleAcceptChanges}
-            attemptingTxn={attemptingTxn}
-            txHash={txHash}
-            recipient={recipient}
-            allowedSlippage={allowedSlippage}
-            onConfirm={handleSwap}
-            swapErrorMessage={swapErrorMessage}
-            onDismiss={handleConfirmDismiss}
-          />
+
           <PageHeader
             title={TranslateString(8, 'Deposit')}
             description={TranslateString(1192, 'Deposit tokens in an instant')}
@@ -332,6 +294,7 @@ const Deposit = () => {
                     : TranslateString(76, 'Amount')
                 }
                 value={formattedAmounts[Field.INPUT]}
+                isDeposit
                 showMaxButton={!atMaxAmountInput}
                 currency={currencies[Field.INPUT]}
                 onUserInput={handleTypeInput}
@@ -368,9 +331,9 @@ const Deposit = () => {
                 <select onChange={(e) => setIsClaimable(e.currentTarget.value === 'true')} className="form-control">
                   <option className="select-option" selected value="true">
                     {' '}
-                    True
+                    Claimable
                   </option>
-                  <option value="false">False</option>
+                  <option value="false">Non-Claimable</option>
                 </select>
               </div>
 
@@ -430,7 +393,7 @@ const Deposit = () => {
                       `Approve ${currencies[Field.INPUT]?.symbol}`
                     )}
                   </Button>
-                  <Button
+                  {/* <Button
                     onClick={() => {
                       if (isExpertMode) {
                         handleSwap()
@@ -455,7 +418,7 @@ const Deposit = () => {
                     {priceImpactSeverity > 3 && !isExpertMode
                       ? `Price Impact High`
                       : `Swap${priceImpactSeverity > 2 ? ' Anyway' : ''}`}
-                  </Button>
+                  </Button> */}
                 </RowBetween>
               ) : (
                 <Button
@@ -465,7 +428,7 @@ const Deposit = () => {
                   variant={!isValid ? 'danger' : 'primary'}
                   width="100%"
                 >
-                  {swapInputError || 'Deposit'}
+                  {inputError || 'Deposit'}
                 </Button>
               )}
               {/* {showApproveFlow && <ProgressSteps steps={[approval === ApprovalState.APPROVED]} />}

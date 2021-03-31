@@ -77,6 +77,7 @@ interface CurrencyInputPanelProps {
   currency?: Currency | null
   disableCurrencySelect?: boolean
   hideBalance?: boolean
+  isDeposit?:boolean
   pair?: Pair | null
   hideInput?: boolean
   otherCurrency?: Currency | null
@@ -95,6 +96,7 @@ export default function CurrencyInputPanel({
   hideBalance = false,
   pair = null, // used for double token logo
   hideInput = false,
+  isDeposit=true,
   otherCurrency,
   id,
   showCommonBases,
@@ -142,7 +144,7 @@ export default function CurrencyInputPanel({
             </>
           )}
          
-          <CurrencySelect
+          {isDeposit?<CurrencySelect
             selected={!!currency}
             className="open-currency-select-button"
             onClick={() => {
@@ -173,7 +175,7 @@ export default function CurrencyInputPanel({
               )}
               {!disableCurrencySelect && <ChevronDownIcon />}
             </Aligner>
-          </CurrencySelect>
+          </CurrencySelect>:null}
         </InputRow>
       </Container>
       {!disableCurrencySelect && onCurrencySelect && (

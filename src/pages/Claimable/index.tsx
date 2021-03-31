@@ -82,7 +82,7 @@ const Claimable = () => {
 
   // swap state
   const { independentField, typedValue, recipient } = useSwapState()
-  const { v2Trade, currencyBalances, parsedAmount, currencies, inputError: swapInputError } = useDerivedSwapInfo()
+  const { v2Trade, currencyBalances, parsedAmount, currencies, inputError } = useDerivedSwapInfo()
   const { wrapType, execute: onWrap, inputError: wrapInputError } = useWrapCallback(
     currencies[Field.INPUT],
     currencies[Field.OUTPUT],
@@ -102,7 +102,7 @@ const Claimable = () => {
       }
 
   const { onSwitchTokens, onCurrencySelection, onUserInput, onChangeRecipient } = useSwapActionHandlers()
-  const isValid = !swapInputError
+  const isValid = !inputError
   const dependentField: Field = independentField === Field.INPUT ? Field.OUTPUT : Field.INPUT
 
   const handleTypeInput = useCallback(
@@ -208,7 +208,7 @@ const Claimable = () => {
   // show approve flow when: no error on inputs, not approved or pending, or approved in current session
   // never show if price impact is above threshold in non expert mode
   const showApproveFlow =
-    !swapInputError &&
+    !inputError &&
     (approval === ApprovalState.NOT_APPROVED ||
       approval === ApprovalState.PENDING ||
       (approvalSubmitted && approval === ApprovalState.APPROVED)) &&
@@ -340,6 +340,7 @@ const Claimable = () => {
                 }
                 value={formattedAmounts[Field.INPUT]}
                 showMaxButton={!atMaxAmountInput}
+                isDeposit={false}
                 currency={currencies[Field.INPUT]}
                 onUserInput={handleTypeInput}
                 onMax={handleMaxInput}
@@ -463,7 +464,7 @@ const Claimable = () => {
                   variant={!isValid ? 'danger' : 'primary'}
                   width="100%"
                 >
-                  {swapInputError || 'Withdraw'}
+                  {inputError || 'Withdraw'}
                 </Button>
               )}
               <div className="button-div">
