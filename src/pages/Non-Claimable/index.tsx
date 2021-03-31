@@ -1,25 +1,18 @@
 import { CurrencyAmount, JSBI, Token, Trade } from '@pancakeswap-libs/sdk'
-import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react'
-import { ArrowDown } from 'react-feather'
-import { CardBody, ArrowDownIcon, Button, IconButton, Text } from '@pancakeswap-libs/uikit'
-import { ThemeContext } from 'styled-components'
-import AddressInputPanel from 'components/AddressInputPanel'
-import Card, { GreyCard } from 'components/Card'
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
+import { CardBody, Button, Text } from '@pancakeswap-libs/uikit'
+import { GreyCard } from 'components/Card'
 import { AutoColumn } from 'components/Column'
 import ConfirmSwapModal from 'components/swap/ConfirmSwapModal'
 import CurrencyInputPanel from 'components/CurrencyInputPanel'
-import CardNav from 'components/CardNav'
 import { AutoRow, RowBetween } from 'components/Row'
 import AdvancedSwapDetailsDropdown from 'components/swap/AdvancedSwapDetailsDropdown'
 import confirmPriceImpactWithoutFee from 'components/swap/confirmPriceImpactWithoutFee'
-import { ArrowWrapper, BottomGrouping, SwapCallbackError, Wrapper } from 'components/swap/styleds'
-import TradePrice from 'components/swap/TradePrice'
+import { BottomGrouping, SwapCallbackError, Wrapper } from 'components/swap/styleds'
 import TokenWarningModal from 'components/TokenWarningModal'
 import SyrupWarningModal from 'components/SyrupWarningModal'
 import ProgressSteps from 'components/ProgressSteps'
 
-
-import { INITIAL_ALLOWED_SLIPPAGE } from 'constants/index'
 import { useActiveWeb3React } from 'hooks'
 import { useCurrency } from 'hooks/Tokens'
 import { ApprovalState, useApproveCallbackFromTrade } from 'hooks/useApproveCallback'
@@ -28,12 +21,10 @@ import useWrapCallback, { WrapType } from 'hooks/useWrapCallback'
 import { Field } from 'state/swap/actions'
 import { useDefaultsFromURLSearch, useDerivedSwapInfo, useSwapActionHandlers, useSwapState } from 'state/swap/hooks'
 import { useExpertModeManager, useUserDeadline, useUserSlippageTolerance } from 'state/user/hooks'
-import { LinkStyledButton } from 'components/Shared'
 import { maxAmountSpend } from 'utils/maxAmountSpend'
 import { computeTradePriceBreakdown, warningSeverity } from 'utils/prices'
 import Loader from 'components/Loader'
 import useI18n from 'hooks/useI18n'
-import PageHeader from 'components/PageHeader'
 import ConnectWalletButton from 'components/ConnectWalletButton'
 import { parseEther } from 'ethers/lib/utils'
 import { useWithdrawNonClaiamableContract } from 'hooks/useContract'
@@ -71,8 +62,6 @@ const Claimable = () => {
   }, [])
 
   const { account } = useActiveWeb3React()
-  const theme = useContext(ThemeContext)
-
   const [isExpertMode] = useExpertModeManager()
 
   // get custom setting values for user
@@ -100,7 +89,7 @@ const Claimable = () => {
         [Field.OUTPUT]: independentField === Field.OUTPUT ? parsedAmount : trade?.outputAmount,
       }
 
-  const { onSwitchTokens, onCurrencySelection, onUserInput, onChangeRecipient } = useSwapActionHandlers()
+  const { onCurrencySelection, onUserInput } = useSwapActionHandlers()
   const isValid = !inputError
   const dependentField: Field = independentField === Field.INPUT ? Field.OUTPUT : Field.INPUT
 
@@ -110,12 +99,7 @@ const Claimable = () => {
     },
     [onUserInput]
   )
-  const handleTypeOutput = useCallback(
-    (value: string) => {
-      onUserInput(Field.OUTPUT, value)
-    },
-    [onUserInput]
-  )
+
 
   // modal and loading
   const [{ showConfirm, tradeToConfirm, swapErrorMessage, attemptingTxn, txHash }, setSwapState] = useState<{
@@ -162,7 +146,7 @@ const Claimable = () => {
   const atMaxAmountInput = Boolean(maxAmountInput && parsedAmounts[Field.INPUT]?.equalTo(maxAmountInput))
 
   // the callback to execute the swap
-  const { callback: swapCallback, error: swapCallbackError } = useSwapCallback(
+  const { callback: swapCallback } = useSwapCallback(
     trade,
     allowedSlippage,
     deadline,
@@ -197,9 +181,6 @@ const Claimable = () => {
         }))
       })
   }, [priceImpactWithoutFee, swapCallback, setSwapState])
-
-  // errors
-  const [showInverted, setShowInverted] = useState<boolean>(false)
 
   // warnings on slippage
   const priceImpactSeverity = warningSeverity(priceImpactWithoutFee)
@@ -255,37 +236,13 @@ const Claimable = () => {
     }
   }, [maxAmountInput, onUserInput])
 
-  const handleOutputSelect = useCallback(
-    (outputCurrency) => {
-      onCurrencySelection(Field.OUTPUT, outputCurrency)
-      if (outputCurrency.symbol.toLowerCase() === 'syrup') {
-        checkForSyrup(outputCurrency.symbol.toLowerCase(), 'Buying')
-      }
-    },
-    [onCurrencySelection, checkForSyrup]
-  )
 
   const handleNonClaimableWithdraw = async () => {
-    
-  
-    console.log(contract);
-
-    //   contract.methods.withdraw(isClaimable).send({
-    //     from: props.store.accounts["0"],
-    //     value: props.store.web3.utils.toWei(userInput),
-    //   });
-    // } else {
-    //   alert("Please connect to web3");
-    // }
 
     if (account) {
       if (contract != null) {
-        console.log('Hey')
-        console.log(contract)
         try{
-          console.log(formattedAmounts[Field.INPUT])
           const inputAmount=parseEther(formattedAmounts[Field.INPUT].toString())
-          console.log(inputAmount);
           const txReceipt = await contract.withdraw(inputAmount._hex);
           addTransaction(txReceipt)
         }

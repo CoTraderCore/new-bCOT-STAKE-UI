@@ -1,46 +1,34 @@
-import { CurrencyAmount, Router, JSBI, Token, Trade } from '@pancakeswap-libs/sdk'
-import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react'
-import { ArrowDown } from 'react-feather'
-import { CardBody, Button, IconButton, Text } from '@pancakeswap-libs/uikit'
-import { ThemeContext } from 'styled-components'
-import AddressInputPanel from 'components/AddressInputPanel'
-import Card, { GreyCard } from 'components/Card'
+import { CurrencyAmount, JSBI, Token } from '@pancakeswap-libs/sdk'
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
+import { CardBody, Button, Text } from '@pancakeswap-libs/uikit'
+import { GreyCard } from 'components/Card'
 import { AutoColumn } from 'components/Column'
-import ConfirmSwapModal from 'components/swap/ConfirmSwapModal'
 import CurrencyInputPanel from 'components/CurrencyInputPanel'
 import CardNav from 'components/CardNav'
-import Row, { AutoRow, RowBetween } from 'components/Row'
+import { AutoRow, RowBetween } from 'components/Row'
 import AdvancedSwapDetailsDropdown from 'components/swap/AdvancedSwapDetailsDropdown'
-import confirmPriceImpactWithoutFee from 'components/swap/confirmPriceImpactWithoutFee'
-import { ArrowWrapper, BottomGrouping, SwapCallbackError, Wrapper } from 'components/swap/styleds'
-import TradePrice from 'components/swap/TradePrice'
+import {  BottomGrouping, Wrapper } from 'components/swap/styleds'
 import TokenWarningModal from 'components/TokenWarningModal'
 import SyrupWarningModal from 'components/SyrupWarningModal'
-import ProgressSteps from 'components/ProgressSteps'
 import { parseEther } from '@ethersproject/units'
 
 import { useTransactionAdder } from 'state/transactions/hooks'
-import { INITIAL_ALLOWED_SLIPPAGE } from 'constants/index'
 import { useActiveWeb3React } from 'hooks'
 import { useCurrency } from 'hooks/Tokens'
 import { ApprovalState, useApproveCallbackFromTrade } from 'hooks/useApproveCallback'
-import { useSwapCallback } from 'hooks/useSwapCallback'
 import useWrapCallback, { WrapType } from 'hooks/useWrapCallback'
 import { Field } from 'state/swap/actions'
-import { tryParseAmount, useDefaultsFromURLSearch, useDerivedSwapInfo, useSwapActionHandlers, useSwapState } from 'state/swap/hooks'
-import { useExpertModeManager, useUserDeadline, useUserSlippageTolerance } from 'state/user/hooks'
-import { LinkStyledButton } from 'components/Shared'
+import {  useDefaultsFromURLSearch, useDerivedSwapInfo, useSwapActionHandlers, useSwapState } from 'state/swap/hooks'
+import { useExpertModeManager, useUserSlippageTolerance } from 'state/user/hooks' 
 import { maxAmountSpend } from 'utils/maxAmountSpend'
 import { computeTradePriceBreakdown, warningSeverity } from 'utils/prices'
 import Loader from 'components/Loader'
 import useI18n from 'hooks/useI18n'
 import PageHeader from 'components/PageHeader'
-import Web3 from 'web3'
-import Web3Modal from "web3modal";
+
 import ConnectWalletButton from 'components/ConnectWalletButton'
 import AppBody from '../AppBody'
 import { useDepositerContract } from '../../hooks/useContract'
-import ABIDepositor from '../../constants/abis/ABIDepositor'
 import { AddressDepositor } from '../../constants/address/address'
 
 import '../../App.css'
@@ -74,16 +62,13 @@ const Deposit = () => {
   }, [])
 
   const { account } = useActiveWeb3React()
-  const theme = useContext(ThemeContext)
 
   const [isExpertMode] = useExpertModeManager()
 
-  // get custom setting values for user
-  const [deadline] = useUserDeadline()
   const [allowedSlippage] = useUserSlippageTolerance()
 
   // swap state
-  const { independentField, typedValue, recipient } = useSwapState()
+  const { independentField, typedValue } = useSwapState()
   const { v2Trade, currencyBalances, parsedAmount, currencies, inputError } = useDerivedSwapInfo()
   const { wrapType, execute: onWrap, inputError: wrapInputError } = useWrapCallback(
     currencies[Field.INPUT],
@@ -103,7 +88,7 @@ const Deposit = () => {
         [Field.OUTPUT]: independentField === Field.OUTPUT ? parsedAmount : trade?.outputAmount,
       }
 
-  const { onSwitchTokens, onCurrencySelection, onUserInput, onChangeRecipient } = useSwapActionHandlers()
+  const {  onCurrencySelection, onUserInput } = useSwapActionHandlers()
   const isValid = !inputError
   const dependentField: Field = independentField === Field.INPUT ? Field.OUTPUT : Field.INPUT
 
@@ -113,27 +98,7 @@ const Deposit = () => {
     },
     [onUserInput]
   )
-  const handleTypeOutput = useCallback(
-    (value: string) => {
-      onUserInput(Field.OUTPUT, value)
-    },
-    [onUserInput]
-  )
 
-  // modal and loading
-  const [{ showConfirm, tradeToConfirm, swapErrorMessage, attemptingTxn, txHash }, setSwapState] = useState<{
-    showConfirm: boolean
-    tradeToConfirm: Trade | undefined
-    attemptingTxn: boolean
-    swapErrorMessage: string | undefined
-    txHash: string | undefined
-  }>({
-    showConfirm: false,
-    tradeToConfirm: undefined,
-    attemptingTxn: false,
-    swapErrorMessage: undefined,
-    txHash: undefined,
-  })
 
   const formattedAmounts = {
     [independentField]: typedValue,
@@ -164,19 +129,8 @@ const Deposit = () => {
   const maxAmountInput: CurrencyAmount | undefined = maxAmountSpend(currencyBalances[Field.INPUT])
   const atMaxAmountInput = Boolean(maxAmountInput && parsedAmounts[Field.INPUT]?.equalTo(maxAmountInput))
 
-  // the callback to execute the swap
-  const { callback: swapCallback, error: swapCallbackError } = useSwapCallback(
-    trade,
-    allowedSlippage,
-    deadline,
-    recipient
-  )
-
   const { priceImpactWithoutFee } = computeTradePriceBreakdown(trade)
 
-
-  // errors
-  const [showInverted, setShowInverted] = useState<boolean>(false)
 
   // warnings on slippage
   const priceImpactSeverity = warningSeverity(priceImpactWithoutFee)
@@ -189,19 +143,6 @@ const Deposit = () => {
       approval === ApprovalState.PENDING ||
       (approvalSubmitted && approval === ApprovalState.APPROVED)) &&
     !(priceImpactSeverity > 3 && !isExpertMode)
-
-  const handleConfirmDismiss = useCallback(() => {
-    setSwapState((prevState) => ({ ...prevState, showConfirm: false }))
-
-    // if there was a tx hash, we want to clear the input
-    if (txHash) {
-      onUserInput(Field.INPUT, '')
-    }
-  }, [onUserInput, txHash, setSwapState])
-
-  const handleAcceptChanges = useCallback(() => {
-    setSwapState((prevState) => ({ ...prevState, tradeToConfirm: trade }))
-  }, [trade])
 
   // This will check to see if the user has selected Syrup to either buy or sell.
   // If so, they will be alerted with a warning message.
@@ -232,24 +173,13 @@ const Deposit = () => {
     }
   }, [maxAmountInput, onUserInput])
 
-  const handleOutputSelect = useCallback(
-    (outputCurrency) => {
-      onCurrencySelection(Field.OUTPUT, outputCurrency)
-      if (outputCurrency.symbol.toLowerCase() === 'syrup') {
-        checkForSyrup(outputCurrency.symbol.toLowerCase(), 'Buying')
-      }
-    },
-    [onCurrencySelection, checkForSyrup]
-  )
 
   const handleDeposit = async () => {
     
     if (account) {
       if (contract != null) {
-        console.log('run')
-        console.log(contract)
         try{
-          console.log(formattedAmounts[Field.INPUT])
+         
           const inputAmount=parseEther(formattedAmounts[Field.INPUT].toString())
           const txReceipt = await contract.deposit(isClaimable, {value: inputAmount._hex});
           addTransaction(txReceipt)
