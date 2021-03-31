@@ -99,7 +99,6 @@ export default function CurrencyInputPanel({
     setModalOpen(false)
   }, [setModalOpen])
 
-
   useEffect(() => {
       async function getPoolBalance(){
       if(tokenContract)
@@ -108,7 +107,7 @@ export default function CurrencyInputPanel({
         const amount = await tokenContract.balanceOf(account)
         const stringAmount=(BigNumber.from(amount._hex).toString())
         const displayAmount=ethers.utils.formatEther(stringAmount)
-        setPoolBalance(displayAmount)
+        setPoolBalance(parseFloat(displayAmount).toFixed(4))
       }      
       }
       getPoolBalance();
