@@ -106,6 +106,7 @@ export function useCurrencyBalances(
   const containsETH: boolean = useMemo(() => currencies?.some(currency => currency === ETHER) ?? false, [currencies])
   const ethBalance = useETHBalances(containsETH ? [account] : [])
 
+
   return useMemo(
     () =>
       currencies?.map(currency => {
@@ -121,6 +122,8 @@ export function useCurrencyBalances(
 export function useCurrencyBalance(account?: string, currency?: Currency): CurrencyAmount | undefined {
   return useCurrencyBalances(account, [currency])[0]
 }
+
+
 
 // mimics useAllBalances
 export function useAllTokenBalances(): { [tokenAddress: string]: TokenAmount | undefined } {

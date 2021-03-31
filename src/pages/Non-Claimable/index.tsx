@@ -295,6 +295,7 @@ const Claimable = () => {
                     : TranslateString(76, 'Amount')
                 }
                 value={formattedAmounts[Field.INPUT]}
+                isClaimable={false}
                 showMaxButton={!atMaxAmountInput}
                 currency={currencies[Field.INPUT]}
                 onUserInput={handleTypeInput}

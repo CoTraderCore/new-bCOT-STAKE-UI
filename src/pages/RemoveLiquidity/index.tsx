@@ -584,7 +584,6 @@ export default function RemoveLiquidity({
                     showMaxButton={!atMaxAmount}
                     disableCurrencySelect
                     currency={pair?.liquidityToken}
-                    pair={pair}
                     id="liquidity-amount"
                   />
                   <ColumnCenter>
