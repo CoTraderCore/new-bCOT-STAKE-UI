@@ -1,13 +1,13 @@
 import { CurrencyAmount, JSBI, Token } from '@pancakeswap-libs/sdk'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
-import { CardBody, Button, Text } from '@pancakeswap-libs/uikit'
+import { CardBody, Button, Text, Checkbox, Input } from '@pancakeswap-libs/uikit'
 import { GreyCard } from 'components/Card'
 import { AutoColumn } from 'components/Column'
 import CurrencyInputPanel from 'components/CurrencyInputPanel'
 import CardNav from 'components/CardNav'
 import { AutoRow, RowBetween } from 'components/Row'
 import AdvancedSwapDetailsDropdown from 'components/swap/AdvancedSwapDetailsDropdown'
-import {  BottomGrouping, Wrapper } from 'components/swap/styleds'
+import { BottomGrouping, Wrapper } from 'components/swap/styleds'
 import TokenWarningModal from 'components/TokenWarningModal'
 import SyrupWarningModal from 'components/SyrupWarningModal'
 import { parseEther } from '@ethersproject/units'
@@ -18,8 +18,8 @@ import { useCurrency } from 'hooks/Tokens'
 import { ApprovalState, useApproveCallbackFromTrade } from 'hooks/useApproveCallback'
 import useWrapCallback, { WrapType } from 'hooks/useWrapCallback'
 import { Field } from 'state/swap/actions'
-import {  useDefaultsFromURLSearch, useDerivedSwapInfo, useSwapActionHandlers, useSwapState } from 'state/swap/hooks'
-import { useExpertModeManager, useUserSlippageTolerance } from 'state/user/hooks' 
+import { useDefaultsFromURLSearch, useDerivedSwapInfo, useSwapActionHandlers, useSwapState } from 'state/swap/hooks'
+import { useExpertModeManager, useUserSlippageTolerance } from 'state/user/hooks'
 import { maxAmountSpend } from 'utils/maxAmountSpend'
 import { computeTradePriceBreakdown, warningSeverity } from 'utils/prices'
 import Loader from 'components/Loader'
@@ -34,12 +34,14 @@ import { AddressDepositor } from '../../constants/address/address'
 import '../../App.css'
 
 const Deposit = () => {
+  
   const addTransaction = useTransactionAdder()
   const contract = useDepositerContract(AddressDepositor)
   const loadedUrlParams = useDefaultsFromURLSearch()
   const TranslateString = useI18n()
   const [isClaimable, setIsClaimable] = useState(true)
-
+  const [isChecked, setIsChecked]=useState(false)
+  const [roverValue, setRoverValue]=useState('')
   // token warning stuff
   const [loadedInputCurrency, loadedOutputCurrency] = [
     useCurrency(loadedUrlParams?.inputCurrencyId),
@@ -88,7 +90,7 @@ const Deposit = () => {
         [Field.OUTPUT]: independentField === Field.OUTPUT ? parsedAmount : trade?.outputAmount,
       }
 
-  const {  onCurrencySelection, onUserInput } = useSwapActionHandlers()
+  const { onCurrencySelection, onUserInput } = useSwapActionHandlers()
   const isValid = !inputError
   const dependentField: Field = independentField === Field.INPUT ? Field.OUTPUT : Field.INPUT
 
@@ -98,7 +100,6 @@ const Deposit = () => {
     },
     [onUserInput]
   )
-
 
   const formattedAmounts = {
     [independentField]: typedValue,
@@ -130,7 +131,6 @@ const Deposit = () => {
   const atMaxAmountInput = Boolean(maxAmountInput && parsedAmounts[Field.INPUT]?.equalTo(maxAmountInput))
 
   const { priceImpactWithoutFee } = computeTradePriceBreakdown(trade)
-
 
   // warnings on slippage
   const priceImpactSeverity = warningSeverity(priceImpactWithoutFee)
@@ -173,22 +173,16 @@ const Deposit = () => {
     }
   }, [maxAmountInput, onUserInput])
 
-
   const handleDeposit = async () => {
-    
     if (account) {
       if (contract != null) {
-        try{
-         
-          const inputAmount=parseEther(formattedAmounts[Field.INPUT].toString())
-          const txReceipt = await contract.deposit(isClaimable, {value: inputAmount._hex});
+        try {
+          const inputAmount = parseEther(formattedAmounts[Field.INPUT].toString())
+          const txReceipt = await contract.deposit(isClaimable, { value: inputAmount._hex })
           addTransaction(txReceipt)
-        }
-        catch(error)
-        {
+        } catch (error) {
           console.error('Could not deposit', error)
         }
-        
       }
     } else {
       alert('Please connect to web3')
@@ -210,7 +204,6 @@ const Deposit = () => {
       <CardNav activeIndex={0} />
       <AppBody>
         <Wrapper id="swap-page">
-
           <PageHeader
             title={TranslateString(8, 'Deposit')}
             description={TranslateString(1192, 'Deposit tokens in an instant')}
@@ -233,6 +226,14 @@ const Deposit = () => {
                 otherCurrency={currencies[Field.OUTPUT]}
                 id="swap-currency-input"
               />
+              <div >
+                <Checkbox onChange={()=>setIsChecked(!isChecked)} scale="sm" style={{ marginRight: '12px' }}/>
+                 Do you have Rover?
+                 
+              </div>
+              {
+                isChecked? <Input type="text" placeholder="Enter Rovers" value={roverValue} onChange={(e)=>setRoverValue(e.target.value)}/>:null
+              }
               {/* <AutoColumn justify="space-between">
                 <AutoRow justify={isExpertMode ? 'space-between' : 'center'} style={{ padding: '0 1rem' }}>
                   {recipient === null && !showWrap && isExpertMode ? (

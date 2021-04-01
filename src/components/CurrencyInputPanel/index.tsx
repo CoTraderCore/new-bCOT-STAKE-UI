@@ -101,7 +101,7 @@ export default function CurrencyInputPanel({
 
   useEffect(() => {
       async function getPoolBalance(){
-      if(tokenContract)
+      if(account && tokenContract)
       {
         console.log(tokenContract)
         const amount = await tokenContract.balanceOf(account)
@@ -123,11 +123,11 @@ export default function CurrencyInputPanel({
                 isDeposit?
                 <Text onClick={onMax} fontSize="14px" style={{ display: 'inline', cursor: 'pointer' }}>
                   {!hideBalance && !!currency && selectedCurrencyBalance
-                    ? `Deposit Balance: ${selectedCurrencyBalance?.toSignificant(6)}`
+                    ? `Deposit Balance: ${selectedCurrencyBalance?.toSignificant(4)}`
                     : ' -'}
                 </Text>
                 : <Text onClick={onMax} fontSize="14px" style={{ display: 'inline', cursor: 'pointer' }}>
-                {!hideBalance
+                {!hideBalance && poolBalance
                   ? `Pool Balance: ${poolBalance}`
                   : ' -'}
               </Text>
