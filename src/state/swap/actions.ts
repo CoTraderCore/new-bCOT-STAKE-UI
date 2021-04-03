@@ -2,7 +2,8 @@ import { createAction } from '@reduxjs/toolkit'
 
 export enum Field {
   INPUT = 'INPUT',
-  OUTPUT = 'OUTPUT'
+  OUTPUT='OUTPUT',
+  INPUT2 = 'INPUT2',
 }
 
 export const selectCurrency = createAction<{ field: Field; currencyId: string }>('swap/selectCurrency')

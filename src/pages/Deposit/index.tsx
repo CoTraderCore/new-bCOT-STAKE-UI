@@ -1,9 +1,12 @@
 import { CurrencyAmount, JSBI, Token } from '@pancakeswap-libs/sdk'
+import { ethers } from 'ethers'
+import { BigNumber } from '@ethersproject/bignumber'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { CardBody, Button, Text, Checkbox, Input } from '@pancakeswap-libs/uikit'
 import { GreyCard } from 'components/Card'
 import { AutoColumn } from 'components/Column'
 import CurrencyInputPanel from 'components/CurrencyInputPanel'
+import RoverInputPanel from 'components/RoverInputPanel'
 import CardNav from 'components/CardNav'
 import { AutoRow, RowBetween } from 'components/Row'
 import AdvancedSwapDetailsDropdown from 'components/swap/AdvancedSwapDetailsDropdown'
@@ -28,20 +31,34 @@ import PageHeader from 'components/PageHeader'
 
 import ConnectWalletButton from 'components/ConnectWalletButton'
 import AppBody from '../AppBody'
-import { useDepositerContract } from '../../hooks/useContract'
-import { AddressDepositor } from '../../constants/address/address'
+import { useDepositerContract, useTokenContract } from '../../hooks/useContract'
+import { AddressDepositor, RoverAddress } from '../../constants/address/address'
+import RoverTabs from '../RoverTabs'
 
 import '../../App.css'
 
 const Deposit = () => {
-  
   const addTransaction = useTransactionAdder()
+  const { account } = useActiveWeb3React()
   const contract = useDepositerContract(AddressDepositor)
   const loadedUrlParams = useDefaultsFromURLSearch()
   const TranslateString = useI18n()
   const [isClaimable, setIsClaimable] = useState(true)
-  const [isChecked, setIsChecked]=useState(false)
-  const [roverValue, setRoverValue]=useState('')
+  const [isChecked, setIsChecked] = useState(false)
+  const [roverValue, setRoverValue] = useState('')
+  const [roverBalance, setRoverBalance] = useState('')
+  const tokenContract = useTokenContract(RoverAddress)
+  useEffect(() => {
+    async function getRoverBalance() {
+      if (account && tokenContract) {
+        const amount = await tokenContract.balanceOf(account)
+        const stringAmount = BigNumber.from(amount._hex).toString()
+        const displayAmount = ethers.utils.formatEther(stringAmount)
+        setRoverBalance(parseFloat(displayAmount).toFixed(4))
+      }
+    }
+    getRoverBalance()
+  }, [account, tokenContract])
   // token warning stuff
   const [loadedInputCurrency, loadedOutputCurrency] = [
     useCurrency(loadedUrlParams?.inputCurrencyId),
@@ -62,8 +79,6 @@ const Deposit = () => {
     setIsSyrup(false)
     setSyrupTransactionType('')
   }, [])
-
-  const { account } = useActiveWeb3React()
 
   const [isExpertMode] = useExpertModeManager()
 
@@ -101,6 +116,13 @@ const Deposit = () => {
     [onUserInput]
   )
 
+  const handleTypeInput2 = useCallback(
+    (value: string) => {
+      onUserInput(Field.INPUT2, value)
+    },
+    [onUserInput]
+  )
+
   const formattedAmounts = {
     [independentField]: typedValue,
     [dependentField]: showWrap
@@ -128,8 +150,9 @@ const Deposit = () => {
   }, [approval, approvalSubmitted])
 
   const maxAmountInput: CurrencyAmount | undefined = maxAmountSpend(currencyBalances[Field.INPUT])
+  const maxAmountInput2: CurrencyAmount | undefined = maxAmountSpend(currencyBalances[Field.INPUT2])
   const atMaxAmountInput = Boolean(maxAmountInput && parsedAmounts[Field.INPUT]?.equalTo(maxAmountInput))
-
+  const atMaxAmountInput2 = Boolean(maxAmountInput2 && parsedAmounts[Field.INPUT2]?.equalTo(maxAmountInput2))
   const { priceImpactWithoutFee } = computeTradePriceBreakdown(trade)
 
   // warnings on slippage
@@ -173,6 +196,12 @@ const Deposit = () => {
     }
   }, [maxAmountInput, onUserInput])
 
+  const handleMaxInput2 = useCallback(() => {
+    if (maxAmountInput2) {
+      onUserInput(Field.INPUT2, maxAmountInput2.toExact())
+    }
+  }, [maxAmountInput2, onUserInput])
+
   const handleDeposit = async () => {
     if (account) {
       if (contract != null) {
@@ -213,8 +242,8 @@ const Deposit = () => {
               <CurrencyInputPanel
                 label={
                   independentField === Field.OUTPUT && !showWrap && trade
-                    ? TranslateString(194, 'Amount (estimated)')
-                    : TranslateString(76, 'Amount')
+                    ? TranslateString(194, 'BNB Amount (estimated)')
+                    : TranslateString(76, 'BNB Amount')
                 }
                 value={formattedAmounts[Field.INPUT]}
                 isDeposit
@@ -226,14 +255,24 @@ const Deposit = () => {
                 otherCurrency={currencies[Field.OUTPUT]}
                 id="swap-currency-input"
               />
-              <div >
-                <Checkbox onChange={()=>setIsChecked(!isChecked)} scale="sm" style={{ marginRight: '12px' }}/>
-                 Do you have Rover?
-                 
-              </div>
-              {
-                isChecked? <Input type="text" placeholder="Enter Rovers" value={roverValue} onChange={(e)=>setRoverValue(e.target.value)}/>:null
-              }
+
+              {roverBalance !== '' && roverBalance !== '0' ? (
+                <RoverInputPanel
+                  label={
+                    independentField === Field.OUTPUT && !showWrap && trade
+                      ? TranslateString(194, 'Rover Amount (estimated)')
+                      : TranslateString(76, 'Rover Amount')
+                  }
+                  value={formattedAmounts[Field.INPUT2]}
+                  roverBalance={roverBalance}
+                  isDeposit
+                  showMaxButton={!atMaxAmountInput2}
+                  currency={currencies[Field.INPUT2]}
+                  onUserInput={handleTypeInput2}
+                  onMax={handleMaxInput2}
+                  id="swap-currency-input"
+                />
+              ) : null}
               {/* <AutoColumn justify="space-between">
                 <AutoRow justify={isExpertMode ? 'space-between' : 'center'} style={{ padding: '0 1rem' }}>
                   {recipient === null && !showWrap && isExpertMode ? (

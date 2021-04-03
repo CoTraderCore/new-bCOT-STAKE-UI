@@ -34,7 +34,7 @@ import '../../App.css'
 
 
 
-const Claimable = () => {
+const BNB_ROVER = () => {
   const loadedUrlParams = useDefaultsFromURLSearch()
   const addTransaction = useTransactionAdder()
   const TranslateString = useI18n()
@@ -51,7 +51,6 @@ const Claimable = () => {
     () => [loadedInputCurrency, loadedOutputCurrency]?.filter((c): c is Token => c instanceof Token) ?? [],
     [loadedInputCurrency, loadedOutputCurrency]
   )
-  
   const handleConfirmTokenWarning = useCallback(() => {
     setDismissTokenWarning(true)
   }, [])
@@ -225,7 +224,7 @@ const Claimable = () => {
                 isClaimable
                 value={formattedAmounts[Field.INPUT]}
                 showMaxButton={!atMaxAmountInput}
-                isDeposit={false}
+                isDeposit
                 currency={currencies[Field.INPUT]}
                 onUserInput={handleTypeInput}
                 onMax={handleMaxInput}
@@ -326,13 +325,13 @@ const Claimable = () => {
                   {inputError || 'Withdraw'}
                 </Button>
               )}
-              <div className="button-div">
+              {/* <div className="button-div">
       
               <Button className="button-claim-rewards">Claim Rewards</Button>
 
               <Button className="button-exit">Exit</Button>
          
-              </div>
+              </div> */}
               {showApproveFlow && <ProgressSteps steps={[approval === ApprovalState.APPROVED]} />}
             </BottomGrouping>
           </CardBody>
@@ -343,5 +342,5 @@ const Claimable = () => {
   )
 }
 
-export default Claimable
+export default BNB_ROVER
 

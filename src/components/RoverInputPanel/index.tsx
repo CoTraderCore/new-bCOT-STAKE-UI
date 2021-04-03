@@ -51,10 +51,10 @@ const Container = styled.div<{ hideInput: boolean }>`
   
 `
 
-
-interface CurrencyInputPanelProps {
+interface RoverInputPanelProps {
 
   value: string
+  roverBalance: string
   onUserInput: (value: string) => void
   onMax?: () => void
   showMaxButton: boolean
@@ -70,8 +70,9 @@ interface CurrencyInputPanelProps {
   id: string
   showCommonBases?: boolean
 }
-export default function CurrencyInputPanel({
+export default function RoverInputPanel({
   value,
+  roverBalance,
   onUserInput,
   onMax,
   showMaxButton,
@@ -86,7 +87,7 @@ export default function CurrencyInputPanel({
   otherCurrency,
   id,
   showCommonBases,
-}: CurrencyInputPanelProps) {
+}: RoverInputPanelProps) {
   const { account } = useActiveWeb3React()
   const stakePoolAddress=isClaimable?ClaimableAddress:NonClaimableAddress
   const tokenContract = useTokenContract(stakePoolAddress)
@@ -99,18 +100,6 @@ export default function CurrencyInputPanel({
     setModalOpen(false)
   }, [setModalOpen])
 
-  useEffect(() => {
-      async function getPoolBalance(){
-      if(account && tokenContract)
-      {
-        const amount = await tokenContract.balanceOf(account)
-        const stringAmount=(BigNumber.from(amount._hex).toString())
-        const displayAmount=ethers.utils.formatEther(stringAmount)
-        setPoolBalance(parseFloat(displayAmount).toFixed(4))
-      }      
-      }
-      getPoolBalance();
-}, [account,tokenContract]);
   return (
     <InputPanel id={id}>
       <Container hideInput={hideInput}>
@@ -119,15 +108,9 @@ export default function CurrencyInputPanel({
             <RowBetween>
               <Text fontSize="14px">{translatedLabel}</Text>
               {account && (
-                isDeposit?
-                <Text onClick={onMax} fontSize="14px" style={{ display: 'inline', cursor: 'pointer' }}>
-                  {!hideBalance && !!currency && selectedCurrencyBalance
-                    ? `Deposit Balance: ${selectedCurrencyBalance?.toSignificant(4)}`
-                    : ' -'}
-                </Text>
-                : <Text onClick={onMax} fontSize="14px" style={{ display: 'inline', cursor: 'pointer' }}>
+                 <Text onClick={onMax} fontSize="14px" style={{ display: 'inline', cursor: 'pointer' }}>
                 {!hideBalance 
-                  ? `Pool Balance: ${poolBalance}`
+                  ? `Rover Balance: ${roverBalance}`
                   : ' -'}
               </Text>
               )}
