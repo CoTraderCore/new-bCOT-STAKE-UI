@@ -147,7 +147,7 @@ const Deposit = () => {
 
   // mark when a user has submitted an approval, reset onTokenSelection for input field
   useEffect(() => {
-    console.log(currencies)
+  // console.log(currencies)
     if (approval === ApprovalState.PENDING) {
       setApprovalSubmitted(true)
     }

@@ -105,6 +105,7 @@ export default function CurrencyInputPanel({
       async function getPoolBalance(){
       if(account && tokenContract)
       {
+        console.log(selectedCurrencyBalance)
         const amount = await tokenContract.balanceOf(account)
         const stringAmount=(BigNumber.from(amount._hex).toString())
         const displayAmount=ethers.utils.formatEther(stringAmount)
@@ -112,7 +113,7 @@ export default function CurrencyInputPanel({
       }      
       }
       getPoolBalance();
-}, [account,tokenContract]);
+}, [account,tokenContract,selectedCurrencyBalance]);
   return (
     <InputPanel id={id}>
       <Container hideInput={hideInput}>
@@ -124,7 +125,7 @@ export default function CurrencyInputPanel({
                 isDeposit?
                 <Text onClick={onMax} fontSize="14px" style={{ display: 'inline', cursor: 'pointer' }}>
                   {!hideBalance && !!currency && selectedCurrencyBalance
-                    ? `Deposit Balance: ${selectedCurrencyBalance}`
+                    ? `Deposit Balance: ${selectedCurrencyBalance?.toSignificant(6)}`
                     : ' -'}
                 </Text>
                 : <Text onClick={onMax} fontSize="14px" style={{ display: 'inline', cursor: 'pointer' }}>

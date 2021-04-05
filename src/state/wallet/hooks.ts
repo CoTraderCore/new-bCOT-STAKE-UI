@@ -112,8 +112,16 @@ export function useCurrencyBalances(
     () =>
       currencies?.map(currency => {
         if (!account || !currency) return undefined
-        if (currency instanceof Token) return tokenBalances[currency.address]
-        if (currency === ETHER) return ethBalance[account]
+        if (currency instanceof Token) 
+        {
+         // console.log(tokenBalances[currency.address])
+          return tokenBalances[currency.address]
+        }
+        if (currency === ETHER) 
+        {
+         // console.log(ethBalance[account])
+          return ethBalance[account]
+        }
         return undefined
       }) ?? [],
     [account, currencies, ethBalance, tokenBalances]

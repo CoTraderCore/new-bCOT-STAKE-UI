@@ -8,6 +8,9 @@ export interface SwapState {
   readonly [Field.INPUT]: {
     readonly currencyId: string | undefined
   }
+  readonly [Field.INPUT2]: {
+    readonly currencyId: string | undefined
+  }
   readonly [Field.OUTPUT]: {
     readonly currencyId: string | undefined
   }
@@ -20,6 +23,9 @@ const initialState: SwapState = {
   typedValue: '',
   typedValue2:'',
   [Field.INPUT]: {
+    currencyId: '',
+  },
+  [Field.INPUT2]: {
     currencyId: '',
   },
   [Field.OUTPUT]: {

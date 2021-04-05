@@ -267,6 +267,9 @@ export function queryParametersToSwapState(parsedQs: ParsedQs): SwapState {
     [Field.INPUT]: {
       currencyId: inputCurrency,
     },
+    [Field.INPUT2]: {
+      currencyId: inputCurrency,
+    },
     [Field.OUTPUT]: {
       currencyId: outputCurrency,
     },
