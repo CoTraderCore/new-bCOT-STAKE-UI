@@ -11,7 +11,7 @@ import useParsedQueryString from '../../hooks/useParsedQueryString'
 import { isAddress } from '../../utils'
 import { AppDispatch, AppState } from '../index'
 import { useCurrencyBalances } from '../wallet/hooks'
-import { Field, replaceSwapState, selectCurrency, setRecipient, switchCurrencies, typeInput } from './actions'
+import { Field, replaceSwapState, selectCurrency, setRecipient, switchCurrencies, typeInput,typeInput2 } from './actions'
 import { SwapState } from './reducer'
 
 import { useUserSlippageTolerance } from '../user/hooks'
@@ -25,6 +25,7 @@ export function useSwapActionHandlers(): {
   onCurrencySelection: (field: Field, currency: Currency) => void
   onSwitchTokens: () => void
   onUserInput: (field: Field, typedValue: string) => void
+  onUserInput2: (field: Field, typedValue2: string) => void
   onChangeRecipient: (recipient: string | null) => void
 } {
   const dispatch = useDispatch<AppDispatch>()
@@ -51,6 +52,13 @@ export function useSwapActionHandlers(): {
     [dispatch]
   )
 
+  const onUserInput2 = useCallback(
+    (field: Field, typedValue2: string) => {
+      dispatch(typeInput2({ field, typedValue2 }))
+    },
+    [dispatch]
+  )
+
   const onChangeRecipient = useCallback(
     (recipient: string | null) => {
       dispatch(setRecipient({ recipient }))
@@ -62,6 +70,7 @@ export function useSwapActionHandlers(): {
     onSwitchTokens,
     onCurrencySelection,
     onUserInput,
+    onUserInput2,
     onChangeRecipient,
   }
 }
@@ -248,6 +257,7 @@ export function queryParametersToSwapState(parsedQs: ParsedQs): SwapState {
       currencyId: outputCurrency,
     },
     typedValue: parseTokenAmountURLParameter(parsedQs.exactAmount),
+    typedValue2: parseTokenAmountURLParameter(parsedQs.exactAmount),
     independentField: parseIndependentFieldURLParameter(parsedQs.exactField),
     recipient,
   }

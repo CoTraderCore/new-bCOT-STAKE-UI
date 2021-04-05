@@ -85,7 +85,7 @@ const Deposit = () => {
   const [allowedSlippage] = useUserSlippageTolerance()
 
   // swap state
-  const { independentField, typedValue } = useSwapState()
+  const { independentField, typedValue,typedValue2 } = useSwapState()
   const { v2Trade, currencyBalances, parsedAmount, currencies, inputError } = useDerivedSwapInfo()
   const { wrapType, execute: onWrap, inputError: wrapInputError } = useWrapCallback(
     currencies[Field.INPUT],
@@ -105,7 +105,7 @@ const Deposit = () => {
         [Field.OUTPUT]: independentField === Field.OUTPUT ? parsedAmount : trade?.outputAmount,
       }
 
-  const { onCurrencySelection, onUserInput } = useSwapActionHandlers()
+  const { onCurrencySelection, onUserInput,onUserInput2 } = useSwapActionHandlers()
   const isValid = !inputError
   const dependentField: Field = independentField === Field.INPUT ? Field.OUTPUT : Field.INPUT
 
@@ -122,9 +122,9 @@ const Deposit = () => {
     (value: string) => {
       console.log(value)
       console.log(Field.INPUT2)
-      onUserInput(Field.INPUT2, value)
+      onUserInput2(Field.INPUT2, value)
     },
-    [onUserInput]
+    [onUserInput2]
   )
 
   const formattedAmounts = {
@@ -202,9 +202,9 @@ const Deposit = () => {
 
   const handleMaxInput2 = useCallback(() => {
     if (maxAmountInput2) {
-      onUserInput(Field.INPUT2, maxAmountInput2.toExact())
+      onUserInput2(Field.INPUT2, maxAmountInput2.toExact())
     }
-  }, [maxAmountInput2, onUserInput])
+  }, [maxAmountInput2, onUserInput2])
 
   const handleDeposit = async () => {
     if (account) {
@@ -265,7 +265,7 @@ const Deposit = () => {
                   label={
                     TranslateString(76, 'Rover Amount')
                   }
-                  value={typedValue}
+                  value={typedValue2}
                   roverBalance={roverBalance}
                   isDeposit
                   showMaxButton={!atMaxAmountInput2}
