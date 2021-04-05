@@ -111,6 +111,8 @@ const Deposit = () => {
 
   const handleTypeInput = useCallback(
     (value: string) => {
+      console.log(value)
+      console.log(Field.INPUT)
       onUserInput(Field.INPUT, value)
     },
     [onUserInput]
@@ -118,6 +120,8 @@ const Deposit = () => {
 
   const handleTypeInput2 = useCallback(
     (value: string) => {
+      console.log(value)
+      console.log(Field.INPUT2)
       onUserInput(Field.INPUT2, value)
     },
     [onUserInput]
@@ -245,7 +249,7 @@ const Deposit = () => {
                     ? TranslateString(194, 'BNB Amount (estimated)')
                     : TranslateString(76, 'BNB Amount')
                 }
-                value={formattedAmounts[Field.INPUT]}
+                value={typedValue}
                 isDeposit
                 showMaxButton={!atMaxAmountInput}
                 currency={currencies[Field.INPUT]}
@@ -261,7 +265,7 @@ const Deposit = () => {
                   label={
                     TranslateString(76, 'Rover Amount')
                   }
-                  value={formattedAmounts[Field.INPUT2]}
+                  value={typedValue}
                   roverBalance={roverBalance}
                   isDeposit
                   showMaxButton={!atMaxAmountInput2}

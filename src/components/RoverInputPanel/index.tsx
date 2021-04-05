@@ -124,6 +124,7 @@ export default function RoverInputPanel({
                 className="token-amount-input"
                 value={value}
                 onUserInput={(val) => {
+                  console.log('input2')
                   onUserInput(val)
                 }}
               />
