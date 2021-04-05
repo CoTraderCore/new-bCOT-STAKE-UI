@@ -222,6 +222,7 @@ const Claimable = () => {
                     ? TranslateString(194, 'Amount')
                     : TranslateString(76, 'Amount')
                 }
+                bnbBalance=''
                 isClaimable
                 value={formattedAmounts[Field.INPUT]}
                 showMaxButton={!atMaxAmountInput}

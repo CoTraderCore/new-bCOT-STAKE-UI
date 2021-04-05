@@ -123,15 +123,28 @@ export function useDerivedSwapInfo(): {
 } {
   const { account } = useActiveWeb3React()
 
+  // const {
+  //   independentField,
+  //   typedValue,
+  //   [Field.INPUT]: { currencyId: inputCurrencyId },
+  //   [Field.OUTPUT]: { currencyId: outputCurrencyId },
+  //   recipient,
+  // } = useSwapState()
+
   const {
     independentField,
     typedValue,
-    [Field.INPUT]: { currencyId: inputCurrencyId },
     [Field.OUTPUT]: { currencyId: outputCurrencyId },
     recipient,
   } = useSwapState()
 
+  let {
+    [Field.INPUT]: { currencyId: inputCurrencyId },
+  } = useSwapState()
+
+  inputCurrencyId='BNB'
   const inputCurrency = useCurrency(inputCurrencyId)
+ 
   const outputCurrency = useCurrency(outputCurrencyId)
   const recipientLookup = useENS(recipient ?? undefined)
   const to: string | null = (recipient === null ? account : recipientLookup.address) ?? null
@@ -157,6 +170,7 @@ export function useDerivedSwapInfo(): {
   const currencies: { [field in Field]?: Currency } = {
     [Field.INPUT]: inputCurrency ?? undefined,
     [Field.OUTPUT]: outputCurrency ?? undefined,
+    [Field.INPUT2]: inputCurrency ?? undefined,
   }
 
   let inputError: string | undefined

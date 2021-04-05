@@ -329,7 +329,7 @@ export default function AddLiquidity({
                   </Pane>
                 </ColumnCenter>
               )}
-              <CurrencyInputPanel
+              {/* <CurrencyInputPanel
                 value={formattedAmounts[Field.CURRENCY_A]}
                 onUserInput={onFieldAInput}
                 onMax={() => {
@@ -340,11 +340,11 @@ export default function AddLiquidity({
                 currency={currencies[Field.CURRENCY_A]}
                 id="add-liquidity-input-tokena"
                 showCommonBases={false}
-              />
+              /> */}
               <ColumnCenter>
                 <AddIcon color="textSubtle" />
               </ColumnCenter>
-              <CurrencyInputPanel
+              {/* <CurrencyInputPanel
                 value={formattedAmounts[Field.CURRENCY_B]}
                 onUserInput={onFieldBInput}
                 onCurrencySelect={handleCurrencyBSelect}
@@ -355,7 +355,7 @@ export default function AddLiquidity({
                 currency={currencies[Field.CURRENCY_B]}
                 id="add-liquidity-input-tokenb"
                 showCommonBases={false}
-              />
+              /> */}
               {currencies[Field.CURRENCY_A] && currencies[Field.CURRENCY_B] && pairState !== PairState.INVALID && (
                 <div>
                   <UIKitText

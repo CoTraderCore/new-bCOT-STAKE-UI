@@ -215,7 +215,7 @@ const BNB_ROVER = () => {
         <Wrapper id="swap-page">
           <CardBody>
             <AutoColumn gap="md">
-              <CurrencyInputPanel
+              {/* <CurrencyInputPanel
                 label={
                   independentField === Field.OUTPUT && !showWrap && trade
                     ? TranslateString(194, 'Amount')
@@ -231,7 +231,7 @@ const BNB_ROVER = () => {
                 onCurrencySelect={handleInputSelect}
                 otherCurrency={currencies[Field.OUTPUT]}
                 id="swap-currency-input"
-              />
+              /> */}
 
               {/* <AutoColumn justify="space-between">
                 <AutoRow justify={isExpertMode ? 'space-between' : 'center'} style={{ padding: '0 1rem' }}>

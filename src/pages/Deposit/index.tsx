@@ -47,19 +47,22 @@ const Deposit = () => {
   const [isChecked, setIsChecked] = useState(false)
   const [roverValue, setRoverValue] = useState('')
   const [roverBalance, setRoverBalance] = useState('')
-  const tokenContract = useTokenContract(RoverAddress)
+  const [bnbBalance, setBNBBalance] = useState('')
+  const roverTokenContract = useTokenContract(RoverAddress)
   useEffect(() => {
     async function getRoverBalance() {
-      if (account && tokenContract) {
-        const amount = await tokenContract.balanceOf(account)
+      if (account && roverTokenContract) {
+        const amount = await roverTokenContract.balanceOf(account)
         const stringAmount = BigNumber.from(amount._hex).toString()
         const displayAmount = ethers.utils.formatEther(stringAmount)
         setRoverBalance(parseFloat(displayAmount).toFixed(4))
       }
     }
+
     getRoverBalance()
-  }, [account, tokenContract])
-  // token warning stuff
+  }, [account, roverTokenContract])
+
+
   const [loadedInputCurrency, loadedOutputCurrency] = [
     useCurrency(loadedUrlParams?.inputCurrencyId),
     useCurrency(loadedUrlParams?.outputCurrencyId),
@@ -111,8 +114,6 @@ const Deposit = () => {
 
   const handleTypeInput = useCallback(
     (value: string) => {
-      console.log(value)
-      console.log(Field.INPUT)
       onUserInput(Field.INPUT, value)
     },
     [onUserInput]
@@ -120,8 +121,6 @@ const Deposit = () => {
 
   const handleTypeInput2 = useCallback(
     (value: string) => {
-      console.log(value)
-      console.log(Field.INPUT2)
       onUserInput2(Field.INPUT2, value)
     },
     [onUserInput2]
@@ -148,10 +147,11 @@ const Deposit = () => {
 
   // mark when a user has submitted an approval, reset onTokenSelection for input field
   useEffect(() => {
+    console.log(currencies)
     if (approval === ApprovalState.PENDING) {
       setApprovalSubmitted(true)
     }
-  }, [approval, approvalSubmitted])
+  }, [approval, approvalSubmitted, currencies])
 
   const maxAmountInput: CurrencyAmount | undefined = maxAmountSpend(currencyBalances[Field.INPUT])
   const maxAmountInput2: CurrencyAmount | undefined = maxAmountSpend(currencyBalances[Field.INPUT2])
@@ -251,6 +251,7 @@ const Deposit = () => {
                 }
                 value={typedValue}
                 isDeposit
+                bnbBalance={bnbBalance}
                 showMaxButton={!atMaxAmountInput}
                 currency={currencies[Field.INPUT]}
                 onUserInput={handleTypeInput}

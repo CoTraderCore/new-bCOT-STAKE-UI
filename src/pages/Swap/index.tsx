@@ -296,6 +296,7 @@ const Swap = () => {
                     ? TranslateString(194, 'From (estimated)')
                     : TranslateString(76, 'From')
                 }
+                bnbBalance=''
                 value={formattedAmounts[Field.INPUT]}
                 showMaxButton={!atMaxAmountInput}
                 currency={currencies[Field.INPUT]}
@@ -328,6 +329,7 @@ const Swap = () => {
                 </AutoRow>
               </AutoColumn>
               <CurrencyInputPanel
+              bnbBalance=''
                 value={formattedAmounts[Field.OUTPUT]}
                 onUserInput={handleTypeOutput}
                 label={

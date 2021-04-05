@@ -55,6 +55,7 @@ const Container = styled.div<{ hideInput: boolean }>`
 interface CurrencyInputPanelProps {
 
   value: string
+  bnbBalance: string
   onUserInput: (value: string) => void
   onMax?: () => void
   showMaxButton: boolean
@@ -72,6 +73,7 @@ interface CurrencyInputPanelProps {
 }
 export default function CurrencyInputPanel({
   value,
+  bnbBalance,
   onUserInput,
   onMax,
   showMaxButton,
@@ -122,7 +124,7 @@ export default function CurrencyInputPanel({
                 isDeposit?
                 <Text onClick={onMax} fontSize="14px" style={{ display: 'inline', cursor: 'pointer' }}>
                   {!hideBalance && !!currency && selectedCurrencyBalance
-                    ? `Deposit Balance: ${selectedCurrencyBalance?.toSignificant(4)}`
+                    ? `Deposit Balance: ${selectedCurrencyBalance}`
                     : ' -'}
                 </Text>
                 : <Text onClick={onMax} fontSize="14px" style={{ display: 'inline', cursor: 'pointer' }}>
