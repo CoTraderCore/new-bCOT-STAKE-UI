@@ -259,9 +259,7 @@ const Deposit = () => {
               {roverBalance !== '' && roverBalance !== '0' ? (
                 <RoverInputPanel
                   label={
-                    independentField === Field.OUTPUT && !showWrap && trade
-                      ? TranslateString(194, 'Rover Amount (estimated)')
-                      : TranslateString(76, 'Rover Amount')
+                    TranslateString(76, 'Rover Amount')
                   }
                   value={formattedAmounts[Field.INPUT2]}
                   roverBalance={roverBalance}

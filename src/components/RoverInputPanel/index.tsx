@@ -127,6 +127,7 @@ export default function RoverInputPanel({
                   onUserInput(val)
                 }}
               />
+
               {account && currency && showMaxButton && label !== 'To' && (
                 <Button onClick={onMax} scale="sm" variant="text">
                   MAX
