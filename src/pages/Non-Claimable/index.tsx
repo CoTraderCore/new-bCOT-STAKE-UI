@@ -69,19 +69,19 @@ const Claimable = () => {
   const [allowedSlippage] = useUserSlippageTolerance()
 
   // swap state
-  const { independentField, typedValue, recipient } = useSwapState()
+  const { independentField, typedValueNonClaimable, recipient } = useSwapState()
   const { v2Trade, currencyBalances, parsedAmount, currencies, inputError } = useDerivedSwapInfo()
   const { wrapType, execute: onWrap, inputError: wrapInputError } = useWrapCallback(
-    currencies[Field.INPUT],
+    currencies[Field.INPUT_NONCLAIMABLE],
     currencies[Field.OUTPUT],
-    typedValue
+    typedValueNonClaimable
   )
   const showWrap: boolean = wrapType !== WrapType.NOT_APPLICABLE
   const trade = showWrap ? undefined : v2Trade
 
   const parsedAmounts = showWrap
     ? {
-        [Field.INPUT]: parsedAmount,
+        [Field.INPUT_NONCLAIMABLE]: parsedAmount,
         [Field.OUTPUT]: parsedAmount,
       }
     : {
@@ -89,15 +89,15 @@ const Claimable = () => {
         [Field.OUTPUT]: independentField === Field.OUTPUT ? parsedAmount : trade?.outputAmount,
       }
 
-  const { onCurrencySelection, onUserInput } = useSwapActionHandlers()
+  const { onCurrencySelection, onUserInput ,onUserInputNonClaimable} = useSwapActionHandlers()
   const isValid = !inputError
   const dependentField: Field = independentField === Field.INPUT ? Field.OUTPUT : Field.INPUT
 
-  const handleTypeInput = useCallback(
+  const handleTypeInputNonClaimable = useCallback(
     (value: string) => {
-      onUserInput(Field.INPUT, value)
+      onUserInputNonClaimable(Field.INPUT_NONCLAIMABLE, value)
     },
-    [onUserInput]
+    [onUserInputNonClaimable]
   )
 
 
@@ -117,7 +117,7 @@ const Claimable = () => {
   })
 
   const formattedAmounts = {
-    [independentField]: typedValue,
+    [independentField]: typedValueNonClaimable,
     [dependentField]: showWrap
       ? parsedAmounts[independentField]?.toExact() ?? ''
       : parsedAmounts[dependentField]?.toSignificant(6) ?? '',
@@ -125,7 +125,7 @@ const Claimable = () => {
 
   const route = trade?.route
   const userHasSpecifiedInputOutput = Boolean(
-    currencies[Field.INPUT] && currencies[Field.OUTPUT] && parsedAmounts[independentField]?.greaterThan(JSBI.BigInt(0))
+    currencies[Field.INPUT_NONCLAIMABLE] && currencies[Field.OUTPUT] && parsedAmounts[independentField]?.greaterThan(JSBI.BigInt(0))
   )
   const noRoute = !route
 
@@ -142,8 +142,8 @@ const Claimable = () => {
     }
   }, [approval, approvalSubmitted])
 
-  const maxAmountInput: CurrencyAmount | undefined = maxAmountSpend(currencyBalances[Field.INPUT])
-  const atMaxAmountInput = Boolean(maxAmountInput && parsedAmounts[Field.INPUT]?.equalTo(maxAmountInput))
+  const maxAmountInput: CurrencyAmount | undefined = maxAmountSpend(currencyBalances[Field.INPUT_NONCLAIMABLE])
+  const atMaxAmountInput = Boolean(maxAmountInput && parsedAmounts[Field.INPUT_NONCLAIMABLE]?.equalTo(maxAmountInput))
 
   // the callback to execute the swap
   const { callback: swapCallback } = useSwapCallback(
@@ -199,7 +199,7 @@ const Claimable = () => {
 
     // if there was a tx hash, we want to clear the input
     if (txHash) {
-      onUserInput(Field.INPUT, '')
+      onUserInput(Field.INPUT_NONCLAIMABLE, '')
     }
   }, [onUserInput, txHash, setSwapState])
 
@@ -222,7 +222,7 @@ const Claimable = () => {
   const handleInputSelect = useCallback(
     (inputCurrency) => {
       setApprovalSubmitted(false) // reset 2 step UI for approvals
-      onCurrencySelection(Field.INPUT, inputCurrency)
+      onCurrencySelection(Field.INPUT_NONCLAIMABLE, inputCurrency)
       if (inputCurrency.symbol.toLowerCase() === 'syrup') {
         checkForSyrup(inputCurrency.symbol.toLowerCase(), 'Selling')
       }
@@ -232,7 +232,7 @@ const Claimable = () => {
 
   const handleMaxInput = useCallback(() => {
     if (maxAmountInput) {
-      onUserInput(Field.INPUT, maxAmountInput.toExact())
+      onUserInput(Field.INPUT_NONCLAIMABLE, maxAmountInput.toExact())
     }
   }, [maxAmountInput, onUserInput])
 
@@ -242,7 +242,7 @@ const Claimable = () => {
     if (account) {
       if (contract != null) {
         try{
-          const inputAmount=parseEther(formattedAmounts[Field.INPUT].toString())
+          const inputAmount=parseEther(formattedAmounts[Field.INPUT_NONCLAIMABLE].toString())
           const txReceipt = await contract.withdraw(inputAmount._hex);
           addTransaction(txReceipt)
         }
@@ -295,11 +295,11 @@ const Claimable = () => {
                     : TranslateString(76, 'Amount')
                 }
                 bnbBalance=''
-                value={formattedAmounts[Field.INPUT]}
+                value={typedValueNonClaimable}
                 isClaimable={false}
                 showMaxButton={!atMaxAmountInput}
-                currency={currencies[Field.INPUT]}
-                onUserInput={handleTypeInput}
+                currency={currencies[Field.INPUT_NONCLAIMABLE]}
+                onUserInput={handleTypeInputNonClaimable}
                 isDeposit={false}
                 onMax={handleMaxInput}
                 onCurrencySelect={handleInputSelect}
@@ -384,7 +384,7 @@ const Claimable = () => {
                     ) : approvalSubmitted && approval === ApprovalState.APPROVED ? (
                       'Approved'
                     ) : (
-                      `Approve ${currencies[Field.INPUT]?.symbol}`
+                      `Approve ${currencies[Field.INPUT_NONCLAIMABLE]?.symbol}`
                     )}
                   </Button>
                   <Button

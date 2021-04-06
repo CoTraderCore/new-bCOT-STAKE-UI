@@ -69,40 +69,39 @@ const Claimable = () => {
   const [allowedSlippage] = useUserSlippageTolerance()
 
   // swap state
-  const { independentField, typedValue } = useSwapState()
+  const { independentField, typedValueClaimable } = useSwapState()
   const { v2Trade, currencyBalances, parsedAmount, currencies, inputError } = useDerivedSwapInfo()
   const { wrapType, execute: onWrap, inputError: wrapInputError } = useWrapCallback(
-    currencies[Field.INPUT],
+    currencies[Field.INPUT_CLAIMABLE],
     currencies[Field.OUTPUT],
-    typedValue
+    typedValueClaimable
   )
   const showWrap: boolean = wrapType !== WrapType.NOT_APPLICABLE
   const trade = showWrap ? undefined : v2Trade
 
   const parsedAmounts = showWrap
     ? {
-        [Field.INPUT]: parsedAmount,
+        [Field.INPUT_CLAIMABLE]: parsedAmount,
         [Field.OUTPUT]: parsedAmount,
       }
     : {
         [Field.INPUT]: independentField === Field.INPUT ? parsedAmount : trade?.inputAmount,
         [Field.OUTPUT]: independentField === Field.OUTPUT ? parsedAmount : trade?.outputAmount,
       }
-
-  const { onCurrencySelection, onUserInput } = useSwapActionHandlers()
+  const { onCurrencySelection,onUserInput, onUserInputClaimable } = useSwapActionHandlers()
   const isValid = !inputError
   const dependentField: Field = independentField === Field.INPUT ? Field.OUTPUT : Field.INPUT
 
   const handleTypeInput = useCallback(
     (value: string) => {
-      onUserInput(Field.INPUT, value)
+      onUserInputClaimable(Field.INPUT_CLAIMABLE, value)
     },
-    [onUserInput]
+    [onUserInputClaimable]
   )
 
 
   const formattedAmounts = {
-    [independentField]: typedValue,
+    [independentField]: typedValueClaimable,
     [dependentField]: showWrap
       ? parsedAmounts[independentField]?.toExact() ?? ''
       : parsedAmounts[dependentField]?.toSignificant(6) ?? '',
@@ -122,13 +121,15 @@ const Claimable = () => {
 
   // mark when a user has submitted an approval, reset onTokenSelection for input field
   useEffect(() => {
+    console.log('hello')
+    console.log(typedValueClaimable)
     if (approval === ApprovalState.PENDING) {
       setApprovalSubmitted(true)
     }
-  }, [approval, approvalSubmitted])
+  }, [approval, approvalSubmitted,typedValueClaimable])
 
-  const maxAmountInput: CurrencyAmount | undefined = maxAmountSpend(currencyBalances[Field.INPUT])
-  const atMaxAmountInput = Boolean(maxAmountInput && parsedAmounts[Field.INPUT]?.equalTo(maxAmountInput))
+  const maxAmountInput: CurrencyAmount | undefined = maxAmountSpend(currencyBalances[Field.INPUT_CLAIMABLE])
+  const atMaxAmountInput = Boolean(maxAmountInput && parsedAmounts[Field.INPUT_CLAIMABLE]?.equalTo(maxAmountInput))
 
 
   const { priceImpactWithoutFee } = computeTradePriceBreakdown(trade)
@@ -173,7 +174,7 @@ const Claimable = () => {
 
   const handleMaxInput = useCallback(() => {
     if (maxAmountInput) {
-      onUserInput(Field.INPUT, maxAmountInput.toExact())
+      onUserInput(Field.INPUT_CLAIMABLE, maxAmountInput.toExact())
     }
   }, [maxAmountInput, onUserInput])
 
@@ -184,7 +185,7 @@ const Claimable = () => {
     if (account) {
       if (contract != null) {
         try{
-          const inputAmount=parseEther(formattedAmounts[Field.INPUT].toString())
+          const inputAmount=parseEther(formattedAmounts[Field.INPUT_CLAIMABLE].toString())
           const txReceipt = await contract.withdraw(inputAmount._hex);
           addTransaction(txReceipt)
         }
@@ -222,12 +223,13 @@ const Claimable = () => {
                     ? TranslateString(194, 'Amount')
                     : TranslateString(76, 'Amount')
                 }
+                
                 bnbBalance=''
                 isClaimable
-                value={formattedAmounts[Field.INPUT]}
+                value={typedValueClaimable}
                 showMaxButton={!atMaxAmountInput}
                 isDeposit={false}
-                currency={currencies[Field.INPUT]}
+                currency={currencies[Field.INPUT_CLAIMABLE]}
                 onUserInput={handleTypeInput}
                 onMax={handleMaxInput}
                 onCurrencySelect={handleInputSelect}

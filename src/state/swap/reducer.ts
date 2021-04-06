@@ -1,14 +1,22 @@
 import { createReducer } from '@reduxjs/toolkit'
-import { Field, replaceSwapState, selectCurrency, setRecipient, switchCurrencies, typeInput ,typeInput2} from './actions'
+import { Field, replaceSwapState, selectCurrency, setRecipient, switchCurrencies, typeInput ,typeInput2, typeInputClaimable,typeInputNonClaimable} from './actions'
 
 export interface SwapState {
   readonly independentField: Field
   readonly typedValue: string
   readonly typedValue2: string
+  readonly typedValueClaimable: string
+  readonly typedValueNonClaimable: string
   readonly [Field.INPUT]: {
     readonly currencyId: string | undefined
   }
   readonly [Field.INPUT2]: {
+    readonly currencyId: string | undefined
+  }
+  readonly [Field.INPUT_CLAIMABLE]: {
+    readonly currencyId: string | undefined
+  }
+  readonly [Field.INPUT_NONCLAIMABLE]: {
     readonly currencyId: string | undefined
   }
   readonly [Field.OUTPUT]: {
@@ -22,10 +30,18 @@ const initialState: SwapState = {
   independentField: Field.INPUT,
   typedValue: '',
   typedValue2:'',
+  typedValueClaimable:'',
+  typedValueNonClaimable:'',
   [Field.INPUT]: {
     currencyId: '',
   },
   [Field.INPUT2]: {
+    currencyId: '',
+  },
+  [Field.INPUT_CLAIMABLE]: {
+    currencyId: '',
+  },
+  [Field.INPUT_NONCLAIMABLE]: {
     currencyId: '',
   },
   [Field.OUTPUT]: {
@@ -73,6 +89,20 @@ export default createReducer<SwapState>(initialState, (builder) =>
         ...state,
         independentField: field,
         typedValue2,
+      }
+    })
+    .addCase(typeInputClaimable, (state, { payload: { field, typedValueClaimable } }) => {
+      return {
+        ...state,
+        independentField: field,
+        typedValueClaimable,
+      }
+    })
+    .addCase(typeInputNonClaimable, (state, { payload: { field, typedValueNonClaimable } }) => {
+      return {
+        ...state,
+        independentField: field,
+        typedValueNonClaimable,
       }
     })
     .addCase(setRecipient, (state, { payload: { recipient } }) => {

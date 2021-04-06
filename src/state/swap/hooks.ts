@@ -11,7 +11,7 @@ import useParsedQueryString from '../../hooks/useParsedQueryString'
 import { isAddress } from '../../utils'
 import { AppDispatch, AppState } from '../index'
 import { useCurrencyBalances } from '../wallet/hooks'
-import { Field, replaceSwapState, selectCurrency, setRecipient, switchCurrencies, typeInput,typeInput2 } from './actions'
+import { Field, replaceSwapState, selectCurrency, setRecipient, switchCurrencies, typeInput,typeInput2, typeInputClaimable, typeInputNonClaimable } from './actions'
 import { SwapState } from './reducer'
 
 import { useUserSlippageTolerance } from '../user/hooks'
@@ -26,6 +26,8 @@ export function useSwapActionHandlers(): {
   onSwitchTokens: () => void
   onUserInput: (field: Field, typedValue: string) => void
   onUserInput2: (field: Field, typedValue2: string) => void
+  onUserInputClaimable: (field: Field, typedValueClaimable: string) => void
+  onUserInputNonClaimable: (field: Field, typedValueNonClaimable: string) => void
   onChangeRecipient: (recipient: string | null) => void
 } {
   const dispatch = useDispatch<AppDispatch>()
@@ -59,6 +61,20 @@ export function useSwapActionHandlers(): {
     [dispatch]
   )
 
+  const onUserInputClaimable = useCallback(
+    (field: Field, typedValueClaimable: string) => {
+      dispatch(typeInputClaimable({ field, typedValueClaimable }))
+    },
+    [dispatch]
+  )
+
+  const onUserInputNonClaimable = useCallback(
+    (field: Field, typedValueNonClaimable: string) => {
+      dispatch(typeInputNonClaimable({ field, typedValueNonClaimable }))
+    },
+    [dispatch]
+  )
+
   const onChangeRecipient = useCallback(
     (recipient: string | null) => {
       dispatch(setRecipient({ recipient }))
@@ -71,6 +87,8 @@ export function useSwapActionHandlers(): {
     onCurrencySelection,
     onUserInput,
     onUserInput2,
+    onUserInputClaimable,
+    onUserInputNonClaimable,
     onChangeRecipient,
   }
 }
@@ -270,11 +288,19 @@ export function queryParametersToSwapState(parsedQs: ParsedQs): SwapState {
     [Field.INPUT2]: {
       currencyId: inputCurrency,
     },
+    [Field.INPUT_CLAIMABLE]: {
+      currencyId: inputCurrency,
+    },
+    [Field.INPUT_NONCLAIMABLE]: {
+      currencyId: inputCurrency,
+    },
     [Field.OUTPUT]: {
       currencyId: outputCurrency,
     },
     typedValue: parseTokenAmountURLParameter(parsedQs.exactAmount),
     typedValue2: parseTokenAmountURLParameter(parsedQs.exactAmount),
+    typedValueClaimable: parseTokenAmountURLParameter(parsedQs.exactAmount),
+    typedValueNonClaimable: parseTokenAmountURLParameter(parsedQs.exactAmount),
     independentField: parseIndependentFieldURLParameter(parsedQs.exactField),
     recipient,
   }

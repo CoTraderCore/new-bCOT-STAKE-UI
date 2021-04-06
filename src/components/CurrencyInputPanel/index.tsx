@@ -105,7 +105,6 @@ export default function CurrencyInputPanel({
       async function getPoolBalance(){
       if(account && tokenContract)
       {
-        console.log(selectedCurrencyBalance)
         const amount = await tokenContract.balanceOf(account)
         const stringAmount=(BigNumber.from(amount._hex).toString())
         const displayAmount=ethers.utils.formatEther(stringAmount)
