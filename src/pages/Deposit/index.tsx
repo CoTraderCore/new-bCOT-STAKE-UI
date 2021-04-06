@@ -20,7 +20,7 @@ import { useCurrency } from 'hooks/Tokens'
 import { ApprovalState, useApproveCallbackFromTrade } from 'hooks/useApproveCallback'
 import useWrapCallback, { WrapType } from 'hooks/useWrapCallback'
 import { Field } from 'state/swap/actions'
-import { useDefaultsFromURLSearch, useDerivedSwapInfo, useSwapActionHandlers, useSwapState } from 'state/swap/hooks'
+import { tryParseAmount, useDefaultsFromURLSearch, useDerivedSwapInfo, useSwapActionHandlers, useSwapState } from 'state/swap/hooks'
 import { useExpertModeManager, useUserSlippageTolerance } from 'state/user/hooks'
 import { maxAmountSpend } from 'utils/maxAmountSpend'
 import { computeTradePriceBreakdown, warningSeverity } from 'utils/prices'
@@ -50,7 +50,8 @@ const Deposit = () => {
     // set the provider you want from Web3.providers
     web3 = new Web3(new Web3.providers.HttpProvider('http://localhost:3000'))
   }
-  const UNDERLYING_TOKEN = RouterAddress
+  const inputCurrency=useCurrency('BNB')
+  const UNDERLYING_TOKEN = RoverAddress
   const addTransaction = useTransactionAdder()
   const { account } = useActiveWeb3React()
   const contract = useDepositerContract(AddressDepositor)
@@ -129,29 +130,62 @@ const Deposit = () => {
   const handleTypeInput = useCallback(
     async (value: string) => {
       if (DexFormula && Router) {
-        const display = web3.utils.toWei(value)
+        // const display = web3.utils.toWei(value)
+        // console.log(addressTemp)
+        // console.log(UNDERLYING_TOKEN)
+        // console.log(display)
         const addressTemp = await Router.WETH()
-        console.log(addressTemp)
-        console.log(UNDERLYING_TOKEN)
-        console.log(display)
         try {
-          const UnderlyingAmount = await DexFormula.routerRatio(addressTemp, UNDERLYING_TOKEN, web3.utils.toWei(value))
-          console.log(UnderlyingAmount)
+          if(tryParseAmount(value,inputCurrency??undefined))
+          {
+            console.log(value)
+            const UnderlyingAmount = await DexFormula.routerRatio(addressTemp, UNDERLYING_TOKEN, web3.utils.toWei(value))  
+            onUserInput2(Field.INPUT2, web3.utils.fromWei(UnderlyingAmount.toString()))             
+            onUserInput(Field.INPUT, value)
+          }
+          else{
+          
+          onUserInput2(Field.INPUT2,'0')
           onUserInput(Field.INPUT, value)
-          onUserInput2(Field.INPUT2, UnderlyingAmount)
+          }
         } catch (e) {
           console.log(e)
         }
       }
     },
-    [onUserInput, onUserInput2, DexFormula, Router, web3.utils, UNDERLYING_TOKEN]
+    [onUserInput, onUserInput2, DexFormula, Router, web3.utils, UNDERLYING_TOKEN,inputCurrency]
   )
 
   const handleTypeInput2 = useCallback(
-    (value: string) => {
-      onUserInput2(Field.INPUT2, value)
+    async (value: string) => {
+      if (DexFormula && Router) {
+        // const display = web3.utils.toWei(value)
+        // console.log(addressTemp)
+        // console.log(UNDERLYING_TOKEN)
+        // console.log(display)
+
+        const addressTemp = await Router.WETH()
+        try {
+          
+          if(tryParseAmount(value,inputCurrency??undefined))
+          {
+            const UnderlyingAmount = await DexFormula.routerRatio(UNDERLYING_TOKEN, addressTemp, web3.utils.toWei(value)) 
+            onUserInput(Field.INPUT, web3.utils.fromWei(UnderlyingAmount.toString()))
+            onUserInput2(Field.INPUT2, value)
+          }
+          else
+          {
+            onUserInput(Field.INPUT,'0')
+            onUserInput2(Field.INPUT2, value)
+          }
+         
+        } catch (e) {
+          console.log(e)
+        }
+      }
     },
-    [onUserInput2]
+    [onUserInput, onUserInput2, DexFormula, Router, web3.utils, UNDERLYING_TOKEN, inputCurrency]
+  
   )
 
   const formattedAmounts = {
@@ -173,13 +207,7 @@ const Deposit = () => {
   // check if user has gone through approval process, used to show two step buttons, reset on token change
   const [approvalSubmitted, setApprovalSubmitted] = useState<boolean>(false)
 
-  // mark when a user has submitted an approval, reset onTokenSelection for input field
-  useEffect(() => {
-    console.log(wrapInputError)
-    if (approval === ApprovalState.PENDING) {
-      setApprovalSubmitted(true)
-    }
-  }, [approval, approvalSubmitted, wrapInputError])
+
 
   const maxAmountInput: CurrencyAmount | undefined = maxAmountSpend(currencyBalances[Field.INPUT])
   const maxAmountInput2: string = roverBalance
@@ -199,6 +227,13 @@ const Deposit = () => {
       (approvalSubmitted && approval === ApprovalState.APPROVED)) &&
     !(priceImpactSeverity > 3 && !isExpertMode)
 
+      // mark when a user has submitted an approval, reset onTokenSelection for input field
+  useEffect(() => {
+    console.log(showApproveFlow)
+    if (approval === ApprovalState.PENDING) {
+      setApprovalSubmitted(true)
+    }
+  }, [approval, approvalSubmitted, showApproveFlow])
   // This will check to see if the user has selected Syrup to either buy or sell.
   // If so, they will be alerted with a warning message.
   const checkForSyrup = useCallback(
@@ -212,11 +247,11 @@ const Deposit = () => {
   )
 
   const handleInputSelect = useCallback(
-    (inputCurrency) => {
+    (inputCurrencySelect) => {
       setApprovalSubmitted(false) // reset 2 step UI for approvals
-      onCurrencySelection(Field.INPUT, inputCurrency)
-      if (inputCurrency.symbol.toLowerCase() === 'syrup') {
-        checkForSyrup(inputCurrency.symbol.toLowerCase(), 'Selling')
+      onCurrencySelection(Field.INPUT, inputCurrencySelect)
+      if (inputCurrencySelect.symbol.toLowerCase() === 'syrup') {
+        checkForSyrup(inputCurrencySelect.symbol.toLowerCase(), 'Selling')
       }
     },
     [onCurrencySelection, setApprovalSubmitted, checkForSyrup]
@@ -224,15 +259,17 @@ const Deposit = () => {
 
   const handleMaxInput = useCallback(() => {
     if (maxAmountInput) {
-      onUserInput(Field.INPUT, maxAmountInput.toExact())
+      handleTypeInput(maxAmountInput.toExact())
+      // onUserInput(Field.INPUT, maxAmountInput.toExact())
     }
-  }, [maxAmountInput, onUserInput])
+  }, [maxAmountInput, handleTypeInput])
 
   const handleMaxInput2 = useCallback(() => {
     if (maxAmountInput2) {
-      onUserInput2(Field.INPUT2, maxAmountInput2)
+      handleTypeInput2(maxAmountInput2)
+     // onUserInput2(Field.INPUT2, maxAmountInput2)
     }
-  }, [maxAmountInput2, onUserInput2])
+  }, [maxAmountInput2, handleTypeInput2])
 
   const handleDeposit = async () => {
     if (account) {
@@ -391,20 +428,20 @@ const Deposit = () => {
                       `Approve ${currencies[Field.INPUT]?.symbol}`
                     )}
                   </Button>
-                  {/* <Button
-                    onClick={() => {
-                      if (isExpertMode) {
-                        handleSwap()
-                      } else {
-                        setSwapState({
-                          tradeToConfirm: trade,
-                          attemptingTxn: false,
-                          swapErrorMessage: undefined,
-                          showConfirm: true,
-                          txHash: undefined,
-                        })
-                      }
-                    }}
+                  <Button
+                    // onClick={() => {
+                    //   if (isExpertMode) {
+                    //     handleSwap()
+                    //   } else {
+                    //     setSwapState({
+                    //       tradeToConfirm: trade,
+                    //       attemptingTxn: false,
+                    //       swapErrorMessage: undefined,
+                    //       showConfirm: true,
+                    //       txHash: undefined,
+                    //     })
+                    //   }
+                    // }}
                     style={{ width: '48%' }}
                     id="swap-button"
                     disabled={
@@ -416,7 +453,7 @@ const Deposit = () => {
                     {priceImpactSeverity > 3 && !isExpertMode
                       ? `Price Impact High`
                       : `Swap${priceImpactSeverity > 2 ? ' Anyway' : ''}`}
-                  </Button> */}
+                  </Button>
                 </RowBetween>
               ) : (
                 <Button
