@@ -2,6 +2,8 @@ import { Contract } from '@ethersproject/contracts'
 import { ChainId, WETH } from '@pancakeswap-libs/sdk'
 import { abi as IUniswapV2PairABI } from '@uniswap/v2-core/build/IUniswapV2Pair.json'
 import { useMemo } from 'react'
+import ABIDex from 'constants/abis/ABIDex'
+import ABIRouter from 'constants/abis/ABIRouter'
 import ABIDepositor from 'constants/abis/ABIDepositor'
 import ABIWithdraw from 'constants/abis/ABIWithdraw'
 import ENS_ABI from '../constants/abis/ens-registrar.json'
@@ -48,8 +50,15 @@ export function useWithdrawNonClaiamableContract(NonClaimableAddress?: string, w
     NonClaimableAddress, ABIWithdraw, withSignerIfPossible)
 }
 
+export function useDexFormulaContract(DexFormulaAddress?: string, withSignerIfPossible?: boolean): Contract | null {
+  return useContract(
+    DexFormulaAddress, ABIDex, withSignerIfPossible)
+}
 
-
+export function useRouterContract(RouterAddress?: string, withSignerIfPossible?: boolean): Contract | null {
+  return useContract(
+    RouterAddress, ABIRouter, withSignerIfPossible)
+}
 
 export function useWETHContract(withSignerIfPossible?: boolean): Contract | null {
   const { chainId } = useActiveWeb3React()

@@ -14,7 +14,6 @@ import { BottomGrouping, Wrapper } from 'components/swap/styleds'
 import TokenWarningModal from 'components/TokenWarningModal'
 import SyrupWarningModal from 'components/SyrupWarningModal'
 import { parseEther } from '@ethersproject/units'
-
 import { useTransactionAdder } from 'state/transactions/hooks'
 import { useActiveWeb3React } from 'hooks'
 import { useCurrency } from 'hooks/Tokens'
@@ -29,18 +28,34 @@ import Loader from 'components/Loader'
 import useI18n from 'hooks/useI18n'
 import PageHeader from 'components/PageHeader'
 
+import Web3 from 'web3'
 import ConnectWalletButton from 'components/ConnectWalletButton'
 import AppBody from '../AppBody'
-import { useDepositerContract, useTokenContract } from '../../hooks/useContract'
-import { AddressDepositor, RoverAddress } from '../../constants/address/address'
+import {
+  useDepositerContract,
+  useDexFormulaContract,
+  useRouterContract,
+  useTokenContract,
+} from '../../hooks/useContract'
+import { AddressDepositor, DEXFormulaAddress, RouterAddress, RoverAddress } from '../../constants/address/address'
 import RoverTabs from '../RoverTabs'
 
 import '../../App.css'
 
 const Deposit = () => {
+  let web3 = new Web3()
+  if (typeof web3 !== 'undefined') {
+    web3 = new Web3(web3.currentProvider)
+  } else {
+    // set the provider you want from Web3.providers
+    web3 = new Web3(new Web3.providers.HttpProvider('http://localhost:3000'))
+  }
+  const UNDERLYING_TOKEN = RouterAddress
   const addTransaction = useTransactionAdder()
   const { account } = useActiveWeb3React()
   const contract = useDepositerContract(AddressDepositor)
+  const DexFormula = useDexFormulaContract(DEXFormulaAddress)
+  const Router = useRouterContract(RouterAddress)
   const loadedUrlParams = useDefaultsFromURLSearch()
   const TranslateString = useI18n()
   const [isClaimable, setIsClaimable] = useState(true)
@@ -61,7 +76,6 @@ const Deposit = () => {
 
     getRoverBalance()
   }, [account, roverTokenContract])
-
 
   const [loadedInputCurrency, loadedOutputCurrency] = [
     useCurrency(loadedUrlParams?.inputCurrencyId),
@@ -88,8 +102,8 @@ const Deposit = () => {
   const [allowedSlippage] = useUserSlippageTolerance()
 
   // swap state
-  const { independentField, typedValue,typedValue2 } = useSwapState()
-  const { v2Trade, currencyBalances, parsedAmount, currencies, inputError,inputErrorDeposit } = useDerivedSwapInfo()
+  const { independentField, typedValue, typedValue2 } = useSwapState()
+  const { v2Trade, currencyBalances, parsedAmount, currencies, inputError, inputErrorDeposit } = useDerivedSwapInfo()
   const { wrapType, execute: onWrap, inputError: wrapInputError } = useWrapCallback(
     currencies[Field.INPUT],
     currencies[Field.OUTPUT],
@@ -108,15 +122,29 @@ const Deposit = () => {
         [Field.OUTPUT]: independentField === Field.OUTPUT ? parsedAmount : trade?.outputAmount,
       }
 
-  const { onCurrencySelection, onUserInput,onUserInput2 } = useSwapActionHandlers()
+  const { onCurrencySelection, onUserInput, onUserInput2 } = useSwapActionHandlers()
   const isValid = !inputError && !inputErrorDeposit
   const dependentField: Field = independentField === Field.INPUT ? Field.OUTPUT : Field.INPUT
 
   const handleTypeInput = useCallback(
-    (value: string) => {
-      onUserInput(Field.INPUT, value)
+    async (value: string) => {
+      if (DexFormula && Router) {
+        const display = web3.utils.toWei(value)
+        const addressTemp = await Router.WETH()
+        console.log(addressTemp)
+        console.log(UNDERLYING_TOKEN)
+        console.log(display)
+        try {
+          const UnderlyingAmount = await DexFormula.routerRatio(addressTemp, UNDERLYING_TOKEN, web3.utils.toWei(value))
+          console.log(UnderlyingAmount)
+          onUserInput(Field.INPUT, value)
+          onUserInput2(Field.INPUT2, UnderlyingAmount)
+        } catch (e) {
+          console.log(e)
+        }
+      }
     },
-    [onUserInput]
+    [onUserInput, onUserInput2, DexFormula, Router, web3.utils, UNDERLYING_TOKEN]
   )
 
   const handleTypeInput2 = useCallback(
@@ -147,7 +175,7 @@ const Deposit = () => {
 
   // mark when a user has submitted an approval, reset onTokenSelection for input field
   useEffect(() => {
-   console.log(wrapInputError)
+    console.log(wrapInputError)
     if (approval === ApprovalState.PENDING) {
       setApprovalSubmitted(true)
     }
@@ -263,9 +291,7 @@ const Deposit = () => {
 
               {roverBalance !== '' && roverBalance !== '0' ? (
                 <RoverInputPanel
-                  label={
-                    TranslateString(76, 'Rover Amount')
-                  }
+                  label={TranslateString(76, 'Rover Amount')}
                   value={typedValue2}
                   roverBalance={roverBalance}
                   isDeposit
@@ -337,7 +363,7 @@ const Deposit = () => {
               {!account ? (
                 <ConnectWalletButton width="100%" />
               ) : // <Button disabled={Boolean(wrapInputError)}>Hello</Button>
-              showWrap ? ( 
+              showWrap ? (
                 <Button disabled={Boolean(wrapInputError)} onClick={onWrap} width="100%">
                   {wrapInputError ??
                     (wrapType === WrapType.WRAP ? 'Wrap' : wrapType === WrapType.UNWRAP ? 'Unwrap' : null)}
