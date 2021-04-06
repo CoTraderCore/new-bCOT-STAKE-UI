@@ -2,7 +2,7 @@ import { CurrencyAmount, JSBI, Token } from '@pancakeswap-libs/sdk'
 import { ethers } from 'ethers'
 import { BigNumber } from '@ethersproject/bignumber'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
-import { CardBody, Button, Text, Checkbox, Input } from '@pancakeswap-libs/uikit'
+import { CardBody, Button, Text} from '@pancakeswap-libs/uikit'
 import { GreyCard } from 'components/Card'
 import { AutoColumn } from 'components/Column'
 import CurrencyInputPanel from 'components/CurrencyInputPanel'
@@ -38,7 +38,7 @@ import {
   useTokenContract,
 } from '../../hooks/useContract'
 import { AddressDepositor, DEXFormulaAddress, RouterAddress, RoverAddress } from '../../constants/address/address'
-import RoverTabs from '../RoverTabs'
+
 
 import '../../App.css'
 
@@ -60,10 +60,7 @@ const Deposit = () => {
   const loadedUrlParams = useDefaultsFromURLSearch()
   const TranslateString = useI18n()
   const [isClaimable, setIsClaimable] = useState(true)
-  const [isChecked, setIsChecked] = useState(false)
-  const [roverValue, setRoverValue] = useState('')
   const [roverBalance, setRoverBalance] = useState('')
-  const [bnbBalance, setBNBBalance] = useState('')
   const roverTokenContract = useTokenContract(RoverAddress)
   useEffect(() => {
     async function getRoverBalance() {
@@ -135,12 +132,12 @@ const Deposit = () => {
         // console.log(UNDERLYING_TOKEN)
         // console.log(display)
         const addressTemp = await Router.WETH()
-        try {
+  
           if(tryParseAmount(value,inputCurrency??undefined))
           {
-            console.log(value)
+            
             const UnderlyingAmount = await DexFormula.routerRatio(addressTemp, UNDERLYING_TOKEN, web3.utils.toWei(value))  
-            onUserInput2(Field.INPUT2, web3.utils.fromWei(UnderlyingAmount.toString()))             
+            onUserInput2(Field.INPUT2, parseFloat(web3.utils.fromWei(UnderlyingAmount.toString())).toFixed(6))             
             onUserInput(Field.INPUT, value)
           }
           else{
@@ -148,9 +145,7 @@ const Deposit = () => {
           onUserInput2(Field.INPUT2,'0')
           onUserInput(Field.INPUT, value)
           }
-        } catch (e) {
-          console.log(e)
-        }
+       
       }
     },
     [onUserInput, onUserInput2, DexFormula, Router, web3.utils, UNDERLYING_TOKEN,inputCurrency]
@@ -165,12 +160,10 @@ const Deposit = () => {
         // console.log(display)
 
         const addressTemp = await Router.WETH()
-        try {
-          
           if(tryParseAmount(value,inputCurrency??undefined))
           {
             const UnderlyingAmount = await DexFormula.routerRatio(UNDERLYING_TOKEN, addressTemp, web3.utils.toWei(value)) 
-            onUserInput(Field.INPUT, web3.utils.fromWei(UnderlyingAmount.toString()))
+            onUserInput(Field.INPUT, parseFloat(web3.utils.fromWei(UnderlyingAmount.toString())).toFixed(6))
             onUserInput2(Field.INPUT2, value)
           }
           else
@@ -178,10 +171,7 @@ const Deposit = () => {
             onUserInput(Field.INPUT,'0')
             onUserInput2(Field.INPUT2, value)
           }
-         
-        } catch (e) {
-          console.log(e)
-        }
+        
       }
     },
     [onUserInput, onUserInput2, DexFormula, Router, web3.utils, UNDERLYING_TOKEN, inputCurrency]
@@ -211,8 +201,8 @@ const Deposit = () => {
 
   const maxAmountInput: CurrencyAmount | undefined = maxAmountSpend(currencyBalances[Field.INPUT])
   const maxAmountInput2: string = roverBalance
-  const atMaxAmountInput = Boolean(maxAmountInput && parsedAmounts[Field.INPUT]?.equalTo(maxAmountInput))
-  const atMaxAmountInput2 = Boolean(maxAmountInput2 && parsedAmounts[Field.INPUT2]?.equalTo(maxAmountInput2))
+  // const atMaxAmountInput = Boolean(maxAmountInput && parsedAmounts[Field.INPUT]?.equalTo(maxAmountInput))
+  // const atMaxAmountInput2 = Boolean(maxAmountInput2 && parsedAmounts[Field.INPUT2]?.equalTo(maxAmountInput2))
   const { priceImpactWithoutFee } = computeTradePriceBreakdown(trade)
 
   // warnings on slippage
@@ -229,7 +219,6 @@ const Deposit = () => {
 
       // mark when a user has submitted an approval, reset onTokenSelection for input field
   useEffect(() => {
-    console.log(showApproveFlow)
     if (approval === ApprovalState.PENDING) {
       setApprovalSubmitted(true)
     }
@@ -316,7 +305,6 @@ const Deposit = () => {
                 }
                 value={typedValue}
                 isDeposit
-                bnbBalance={bnbBalance}
                 showMaxButton
                 currency={currencies[Field.INPUT]}
                 onUserInput={handleTypeInput}
@@ -331,7 +319,6 @@ const Deposit = () => {
                   label={TranslateString(76, 'Rover Amount')}
                   value={typedValue2}
                   roverBalance={roverBalance}
-                  isDeposit
                   showMaxButton
                   currency={currencies[Field.INPUT2]}
                   onUserInput={handleTypeInput2}

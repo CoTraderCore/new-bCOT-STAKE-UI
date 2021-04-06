@@ -218,7 +218,6 @@ const Deposit = () => {
           <CardBody>
             <AutoColumn gap="md">
               <CurrencyInputPanel
-              bnbBalance=''
                 label={
                   independentField === Field.OUTPUT && !showWrap && trade
                     ? TranslateString(194, 'Amount (estimated)')

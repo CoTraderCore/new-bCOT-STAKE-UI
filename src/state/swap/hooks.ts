@@ -3,7 +3,6 @@ import { Currency, CurrencyAmount, ETHER, JSBI, Token, TokenAmount, Trade } from
 import { ParsedQs } from 'qs'
 import { useCallback, useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import useENS from '../../hooks/useENS'
 import { useActiveWeb3React } from '../../hooks'
 import { useCurrency } from '../../hooks/Tokens'
 import { useTradeExactIn, useTradeExactOut } from '../../hooks/Trades'
@@ -113,23 +112,23 @@ export function tryParseAmount(value?: string, currency?: Currency): CurrencyAmo
   return undefined
 }
 
-const BAD_RECIPIENT_ADDRESSES: string[] = [
-  '0xBCfCcbde45cE874adCB698cC183deBcF17952812', // v2 factory
-  '0xf164fC0Ec4E93095b804a4795bBe1e041497b92a', // v2 router 01
-  '0x05fF2B0DB69458A0750badebc4f9e13aDd608C7F', // v2 router 02
-]
+// const BAD_RECIPIENT_ADDRESSES: string[] = [
+//   '0xBCfCcbde45cE874adCB698cC183deBcF17952812', // v2 factory
+//   '0xf164fC0Ec4E93095b804a4795bBe1e041497b92a', // v2 router 01
+//   '0x05fF2B0DB69458A0750badebc4f9e13aDd608C7F', // v2 router 02
+// ]
 
 /**
  * Returns true if any of the pairs or tokens in a trade have the given checksummed address
  * @param trade to check for the given address
  * @param checksummedAddress address to check in the pairs and tokens
  */
-function involvesAddress(trade: Trade, checksummedAddress: string): boolean {
-  return (
-    trade.route.path.some((token) => token.address === checksummedAddress) ||
-    trade.route.pairs.some((pair) => pair.liquidityToken.address === checksummedAddress)
-  )
-}
+// function involvesAddress(trade: Trade, checksummedAddress: string): boolean {
+//   return (
+//     trade.route.path.some((token) => token.address === checksummedAddress) ||
+//     trade.route.pairs.some((pair) => pair.liquidityToken.address === checksummedAddress)
+//   )
+// }
 
 // from the current swap inputs, compute the best trade and return it.
 export function useDerivedSwapInfo(): {
@@ -159,7 +158,6 @@ export function useDerivedSwapInfo(): {
     typedValueClaimable,
     typedValueNonClaimable,
     [Field.OUTPUT]: { currencyId: outputCurrencyId },
-    recipient,
   } = useSwapState()
 
   let {
@@ -170,8 +168,8 @@ export function useDerivedSwapInfo(): {
   const inputCurrency = useCurrency(inputCurrencyId)
   // console.log(inputCurrency)
   const outputCurrency = useCurrency(outputCurrencyId)
-  const recipientLookup = useENS(recipient ?? undefined)
-  const to: string | null = (recipient === null ? account : recipientLookup.address) ?? null
+  // const recipientLookup = useENS(recipient ?? undefined)
+  // const to: string | null = (recipient === null ? account : recipientLookup.address) ?? null
 
   const relevantTokenBalances = useCurrencyBalances(account ?? undefined, [
     inputCurrency ?? undefined,

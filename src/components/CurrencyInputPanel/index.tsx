@@ -55,7 +55,6 @@ const Container = styled.div<{ hideInput: boolean }>`
 interface CurrencyInputPanelProps {
 
   value: string
-  bnbBalance?: string
   onUserInput: (value: string) => void
   onMax?: () => void
   onMaxPool?:(balance: string)=> void
@@ -74,7 +73,6 @@ interface CurrencyInputPanelProps {
 }
 export default function CurrencyInputPanel({
   value,
-  bnbBalance,
   onUserInput,
   onMax,
   onMaxPool,

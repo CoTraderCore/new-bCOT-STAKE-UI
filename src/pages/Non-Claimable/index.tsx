@@ -1,4 +1,4 @@
-import { CurrencyAmount, JSBI, Token, Trade } from '@pancakeswap-libs/sdk'
+import { JSBI, Token, Trade } from '@pancakeswap-libs/sdk'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { CardBody, Button, Text } from '@pancakeswap-libs/uikit'
 import { GreyCard } from 'components/Card'
@@ -21,7 +21,6 @@ import useWrapCallback, { WrapType } from 'hooks/useWrapCallback'
 import { Field } from 'state/swap/actions'
 import { useDefaultsFromURLSearch, useDerivedSwapInfo, useSwapActionHandlers, useSwapState } from 'state/swap/hooks'
 import { useExpertModeManager, useUserDeadline, useUserSlippageTolerance } from 'state/user/hooks'
-import { maxAmountSpend } from 'utils/maxAmountSpend'
 import { computeTradePriceBreakdown, warningSeverity } from 'utils/prices'
 import Loader from 'components/Loader'
 import useI18n from 'hooks/useI18n'
@@ -70,7 +69,7 @@ const Claimable = () => {
 
   // swap state
   const { independentField, typedValueNonClaimable, recipient } = useSwapState()
-  const { v2Trade, currencyBalances, parsedAmount, currencies, inputError, inputErrorNonClaimable } = useDerivedSwapInfo()
+  const { v2Trade, parsedAmount, currencies, inputError, inputErrorNonClaimable } = useDerivedSwapInfo()
   const { wrapType, execute: onWrap, inputError: wrapInputError } = useWrapCallback(
     currencies[Field.INPUT_NONCLAIMABLE],
     currencies[Field.OUTPUT],
@@ -137,7 +136,6 @@ const Claimable = () => {
 
   // mark when a user has submitted an approval, reset onTokenSelection for input field
   useEffect(() => {
-    console.log(typedValueNonClaimable)
     if (approval === ApprovalState.PENDING) {
       setApprovalSubmitted(true)
     }
@@ -295,7 +293,6 @@ const Claimable = () => {
                     ? TranslateString(194, 'Amount')
                     : TranslateString(76, 'Amount')
                 }
-                bnbBalance=''
                 value={typedValueNonClaimable}
                 isClaimable={false}
                 showMaxButton

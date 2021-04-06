@@ -1,19 +1,13 @@
-import React, { useState, useCallback,useEffect } from 'react'
-import { ethers } from "ethers";
-import { BigNumber } from '@ethersproject/bignumber'
-import { useTokenContract } from 'hooks/useContract'
+import React, { useState, useCallback } from 'react'
 import { Currency } from '@pancakeswap-libs/sdk'
 import { Button, Text } from '@pancakeswap-libs/uikit'
 import styled from 'styled-components'
 import { darken } from 'polished'
 import useI18n from 'hooks/useI18n'
-import { useCurrencyBalance } from '../../state/wallet/hooks'
 import CurrencySearchModal from '../SearchModal/CurrencySearchModal'
 import { RowBetween } from '../Row'
 import { Input as NumericalInput } from '../NumericalInput'
-
 import { useActiveWeb3React } from '../../hooks'
-import { ClaimableAddress,NonClaimableAddress } from '../../constants/address/address';
 
 const InputRow = styled.div<{ selected: boolean }>`
   display: flex;
@@ -64,8 +58,6 @@ interface RoverInputPanelProps {
   disableCurrencySelect?: boolean
   hideBalance?: boolean
   hideInput?: boolean
-  isDeposit?:boolean
-  isClaimable?:boolean
   otherCurrency?: Currency | null
   id: string
   showCommonBases?: boolean
@@ -80,8 +72,6 @@ export default function RoverInputPanel({
   onCurrencySelect,
   currency,
   disableCurrencySelect = false,
-  isDeposit=true,
-  isClaimable=true,
   hideBalance = false,
   hideInput = false,
   otherCurrency,
@@ -89,11 +79,7 @@ export default function RoverInputPanel({
   showCommonBases,
 }: RoverInputPanelProps) {
   const { account } = useActiveWeb3React()
-  const stakePoolAddress=isClaimable?ClaimableAddress:NonClaimableAddress
-  const tokenContract = useTokenContract(stakePoolAddress)
   const [modalOpen, setModalOpen] = useState(false)
-  const [poolBalance,setPoolBalance]=useState('')
-  const selectedCurrencyBalance = useCurrencyBalance(account ?? undefined, currency ?? undefined)
   const TranslateString = useI18n()
   const translatedLabel = label || TranslateString(132, 'Input')
   const handleDismissSearch = useCallback(() => {
@@ -124,7 +110,6 @@ export default function RoverInputPanel({
                 className="token-amount-input"
                 value={value}
                 onUserInput={(val) => {
-                  console.log('input2')
                   onUserInput(val)
                 }}
               />

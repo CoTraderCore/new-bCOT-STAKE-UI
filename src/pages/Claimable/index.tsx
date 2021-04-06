@@ -1,4 +1,4 @@
-import { CurrencyAmount, JSBI, Token } from '@pancakeswap-libs/sdk'
+import { JSBI, Token } from '@pancakeswap-libs/sdk'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { CardBody, Button, Text } from '@pancakeswap-libs/uikit'
 import { GreyCard } from 'components/Card'
@@ -19,7 +19,6 @@ import useWrapCallback, { WrapType } from 'hooks/useWrapCallback'
 import { Field } from 'state/swap/actions'
 import { useDefaultsFromURLSearch, useDerivedSwapInfo, useSwapActionHandlers, useSwapState } from 'state/swap/hooks'
 import { useExpertModeManager, useUserSlippageTolerance } from 'state/user/hooks'
-import { maxAmountSpend } from 'utils/maxAmountSpend'
 import { computeTradePriceBreakdown, warningSeverity } from 'utils/prices'
 import Loader from 'components/Loader'
 import useI18n from 'hooks/useI18n'
@@ -70,7 +69,7 @@ const Claimable = () => {
 
   // swap state
   const { independentField, typedValueClaimable } = useSwapState()
-  const { v2Trade, currencyBalances, parsedAmount, currencies, inputError,inputErrorClaimable } = useDerivedSwapInfo()
+  const { v2Trade, parsedAmount, currencies, inputError,inputErrorClaimable } = useDerivedSwapInfo()
   const { wrapType, execute: onWrap, inputError: wrapInputError } = useWrapCallback(
     currencies[Field.INPUT_CLAIMABLE],
     currencies[Field.OUTPUT],
@@ -88,7 +87,7 @@ const Claimable = () => {
         [Field.INPUT]: independentField === Field.INPUT ? parsedAmount : trade?.inputAmount,
         [Field.OUTPUT]: independentField === Field.OUTPUT ? parsedAmount : trade?.outputAmount,
       }
-  const { onCurrencySelection,onUserInput, onUserInputClaimable } = useSwapActionHandlers()
+  const { onCurrencySelection, onUserInputClaimable } = useSwapActionHandlers()
   const isValid = !inputError && !inputErrorClaimable
   const dependentField: Field = independentField === Field.INPUT ? Field.OUTPUT : Field.INPUT
 
@@ -121,7 +120,6 @@ const Claimable = () => {
 
   // mark when a user has submitted an approval, reset onTokenSelection for input field
   useEffect(() => {
-    console.log(typedValueClaimable)
     if (approval === ApprovalState.PENDING) {
       setApprovalSubmitted(true)
     }
@@ -222,8 +220,6 @@ const Claimable = () => {
                     ? TranslateString(194, 'Amount')
                     : TranslateString(76, 'Amount')
                 }
-                
-                bnbBalance=''
                 isClaimable
                 value={typedValueClaimable}
                 showMaxButton
