@@ -152,6 +152,7 @@ export function useDerivedSwapInfo(): {
   const {
     independentField,
     typedValue,
+    typedValue2,
     [Field.OUTPUT]: { currencyId: outputCurrencyId },
     recipient,
   } = useSwapState()
@@ -173,7 +174,8 @@ export function useDerivedSwapInfo(): {
   ])
 
   const isExactIn: boolean = independentField === Field.INPUT
-  const parsedAmount = tryParseAmount(typedValue, (isExactIn ? inputCurrency : outputCurrency) ?? undefined)
+  const parsedAmount = tryParseAmount(typedValue,inputCurrency  ?? undefined)
+  const parsedAmount2 = tryParseAmount(typedValue2,inputCurrency  ?? undefined)
 
   const bestTradeExactIn = useTradeExactIn(isExactIn ? parsedAmount : undefined, outputCurrency ?? undefined)
   const bestTradeExactOut = useTradeExactOut(inputCurrency ?? undefined, !isExactIn ? parsedAmount : undefined)
@@ -196,7 +198,7 @@ export function useDerivedSwapInfo(): {
     inputError = 'Connect Wallet'
   }
 
-  if (!parsedAmount) {
+  if (!parsedAmount && !parsedAmount2) {
     inputError = inputError ?? 'Enter an amount'
   }
 

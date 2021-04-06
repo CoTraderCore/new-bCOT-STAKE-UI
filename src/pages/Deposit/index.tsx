@@ -147,14 +147,14 @@ const Deposit = () => {
 
   // mark when a user has submitted an approval, reset onTokenSelection for input field
   useEffect(() => {
-  // console.log(currencies)
+   console.log(wrapInputError)
     if (approval === ApprovalState.PENDING) {
       setApprovalSubmitted(true)
     }
-  }, [approval, approvalSubmitted, currencies])
+  }, [approval, approvalSubmitted, wrapInputError])
 
   const maxAmountInput: CurrencyAmount | undefined = maxAmountSpend(currencyBalances[Field.INPUT])
-  const maxAmountInput2: CurrencyAmount | undefined = maxAmountSpend(currencyBalances[Field.INPUT2])
+  const maxAmountInput2: string = roverBalance
   const atMaxAmountInput = Boolean(maxAmountInput && parsedAmounts[Field.INPUT]?.equalTo(maxAmountInput))
   const atMaxAmountInput2 = Boolean(maxAmountInput2 && parsedAmounts[Field.INPUT2]?.equalTo(maxAmountInput2))
   const { priceImpactWithoutFee } = computeTradePriceBreakdown(trade)
@@ -202,7 +202,7 @@ const Deposit = () => {
 
   const handleMaxInput2 = useCallback(() => {
     if (maxAmountInput2) {
-      onUserInput2(Field.INPUT2, maxAmountInput2.toExact())
+      onUserInput2(Field.INPUT2, maxAmountInput2)
     }
   }, [maxAmountInput2, onUserInput2])
 
@@ -252,7 +252,7 @@ const Deposit = () => {
                 value={typedValue}
                 isDeposit
                 bnbBalance={bnbBalance}
-                showMaxButton={!atMaxAmountInput}
+                showMaxButton
                 currency={currencies[Field.INPUT]}
                 onUserInput={handleTypeInput}
                 onMax={handleMaxInput}
@@ -269,7 +269,7 @@ const Deposit = () => {
                   value={typedValue2}
                   roverBalance={roverBalance}
                   isDeposit
-                  showMaxButton={!atMaxAmountInput2}
+                  showMaxButton
                   currency={currencies[Field.INPUT2]}
                   onUserInput={handleTypeInput2}
                   onMax={handleMaxInput2}
@@ -337,9 +337,8 @@ const Deposit = () => {
               {!account ? (
                 <ConnectWalletButton width="100%" />
               ) : // <Button disabled={Boolean(wrapInputError)}>Hello</Button>
-              showWrap ? (
+              showWrap ? ( 
                 <Button disabled={Boolean(wrapInputError)} onClick={onWrap} width="100%">
-                  1
                   {wrapInputError ??
                     (wrapType === WrapType.WRAP ? 'Wrap' : wrapType === WrapType.UNWRAP ? 'Unwrap' : null)}
                 </Button>
