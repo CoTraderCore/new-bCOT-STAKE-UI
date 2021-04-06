@@ -138,6 +138,9 @@ export function useDerivedSwapInfo(): {
   parsedAmount: CurrencyAmount | undefined
   v2Trade: Trade | undefined
   inputError?: string
+  inputErrorDeposit?: string
+  inputErrorClaimable?: string
+  inputErrorNonClaimable?: string
 } {
   const { account } = useActiveWeb3React()
 
@@ -153,6 +156,8 @@ export function useDerivedSwapInfo(): {
     independentField,
     typedValue,
     typedValue2,
+    typedValueClaimable,
+    typedValueNonClaimable,
     [Field.OUTPUT]: { currencyId: outputCurrencyId },
     recipient,
   } = useSwapState()
@@ -176,6 +181,8 @@ export function useDerivedSwapInfo(): {
   const isExactIn: boolean = independentField === Field.INPUT
   const parsedAmount = tryParseAmount(typedValue,inputCurrency  ?? undefined)
   const parsedAmount2 = tryParseAmount(typedValue2,inputCurrency  ?? undefined)
+  const parsedAmountClaimable = tryParseAmount(typedValueClaimable,inputCurrency  ?? undefined)
+  const parsedAmountNonClaimable = tryParseAmount(typedValueNonClaimable,inputCurrency  ?? undefined)
 
   const bestTradeExactIn = useTradeExactIn(isExactIn ? parsedAmount : undefined, outputCurrency ?? undefined)
   const bestTradeExactOut = useTradeExactOut(inputCurrency ?? undefined, !isExactIn ? parsedAmount : undefined)
@@ -194,28 +201,35 @@ export function useDerivedSwapInfo(): {
   }
 
   let inputError: string | undefined
+  let inputErrorDeposit:string | undefined
+  let inputErrorClaimable:string | undefined
+  let inputErrorNonClaimable:string | undefined
   if (!account) {
     inputError = 'Connect Wallet'
   }
 
   if (!parsedAmount && !parsedAmount2) {
-    inputError = inputError ?? 'Enter an amount'
+    inputErrorDeposit = inputErrorDeposit ?? 'Enter an amount'
   }
 
-  if (!currencies[Field.INPUT] ) {
-    inputError = inputError ?? 'Select a token'
+  if (!parsedAmountClaimable) {
+    inputErrorClaimable = inputErrorClaimable ?? 'Enter an amount'
   }
 
-  const formattedTo = isAddress(to)
-  if (!to || !formattedTo) {
-    inputError = inputError ?? 'Enter a recipient'
-  } else if (
-    BAD_RECIPIENT_ADDRESSES.indexOf(formattedTo) !== -1 ||
-    (bestTradeExactIn && involvesAddress(bestTradeExactIn, formattedTo)) ||
-    (bestTradeExactOut && involvesAddress(bestTradeExactOut, formattedTo))
-  ) {
-    inputError = inputError ?? 'Invalid recipient'
+  if (!parsedAmountNonClaimable) {
+    inputErrorNonClaimable = inputErrorNonClaimable ?? 'Enter an amount'
   }
+
+  // const formattedTo = isAddress(to)
+  // if (!to || !formattedTo) {
+  //   inputError = inputError ?? 'Enter a recipient'
+  // } else if (
+  //   BAD_RECIPIENT_ADDRESSES.indexOf(formattedTo) !== -1 ||
+  //   (bestTradeExactIn && involvesAddress(bestTradeExactIn, formattedTo)) ||
+  //   (bestTradeExactOut && involvesAddress(bestTradeExactOut, formattedTo))
+  // ) {
+  //   inputError = inputError ?? 'Invalid recipient'
+  // }
 
   const [allowedSlippage] = useUserSlippageTolerance()
 
@@ -237,6 +251,9 @@ export function useDerivedSwapInfo(): {
     parsedAmount,
     v2Trade: v2Trade ?? undefined,
     inputError,
+    inputErrorDeposit,
+    inputErrorClaimable,
+    inputErrorNonClaimable
   }
 }
 

@@ -70,7 +70,7 @@ const Claimable = () => {
 
   // swap state
   const { independentField, typedValueNonClaimable, recipient } = useSwapState()
-  const { v2Trade, currencyBalances, parsedAmount, currencies, inputError } = useDerivedSwapInfo()
+  const { v2Trade, currencyBalances, parsedAmount, currencies, inputError, inputErrorNonClaimable } = useDerivedSwapInfo()
   const { wrapType, execute: onWrap, inputError: wrapInputError } = useWrapCallback(
     currencies[Field.INPUT_NONCLAIMABLE],
     currencies[Field.OUTPUT],
@@ -90,7 +90,7 @@ const Claimable = () => {
       }
 
   const { onCurrencySelection, onUserInput ,onUserInputNonClaimable} = useSwapActionHandlers()
-  const isValid = !inputError
+  const isValid = !inputError && !inputErrorNonClaimable
   const dependentField: Field = independentField === Field.INPUT ? Field.OUTPUT : Field.INPUT
 
   const handleTypeInputNonClaimable = useCallback(
@@ -137,13 +137,14 @@ const Claimable = () => {
 
   // mark when a user has submitted an approval, reset onTokenSelection for input field
   useEffect(() => {
+    console.log(typedValueNonClaimable)
     if (approval === ApprovalState.PENDING) {
       setApprovalSubmitted(true)
     }
-  }, [approval, approvalSubmitted])
+  }, [approval, approvalSubmitted,typedValueNonClaimable])
 
-  const maxAmountInput: CurrencyAmount | undefined = maxAmountSpend(currencyBalances[Field.INPUT_NONCLAIMABLE])
-  const atMaxAmountInput = Boolean(maxAmountInput && parsedAmounts[Field.INPUT_NONCLAIMABLE]?.equalTo(maxAmountInput))
+  // const maxAmountInput: CurrencyAmount | undefined = maxAmountSpend(currencyBalances[Field.INPUT_NONCLAIMABLE])
+  // const atMaxAmountInput = Boolean(maxAmountInput && parsedAmounts[Field.INPUT_NONCLAIMABLE]?.equalTo(maxAmountInput))
 
   // the callback to execute the swap
   const { callback: swapCallback } = useSwapCallback(
@@ -230,11 +231,11 @@ const Claimable = () => {
     [onCurrencySelection, setApprovalSubmitted, checkForSyrup]
   )
 
-  const handleMaxInput = useCallback(() => {
+  const handleMaxInputNonClaimable = useCallback((maxAmountInput) => {
     if (maxAmountInput) {
-      onUserInput(Field.INPUT_NONCLAIMABLE, maxAmountInput.toExact())
+      onUserInputNonClaimable(Field.INPUT_NONCLAIMABLE, maxAmountInput)
     }
-  }, [maxAmountInput, onUserInput])
+  }, [onUserInputNonClaimable])
 
 
   const handleNonClaimableWithdraw = async () => {
@@ -297,11 +298,11 @@ const Claimable = () => {
                 bnbBalance=''
                 value={typedValueNonClaimable}
                 isClaimable={false}
-                showMaxButton={!atMaxAmountInput}
+                showMaxButton
                 currency={currencies[Field.INPUT_NONCLAIMABLE]}
                 onUserInput={handleTypeInputNonClaimable}
                 isDeposit={false}
-                onMax={handleMaxInput}
+                onMaxPool={handleMaxInputNonClaimable}
                 onCurrencySelect={handleInputSelect}
                 otherCurrency={currencies[Field.OUTPUT]}
                 id="swap-currency-input"
@@ -422,7 +423,7 @@ const Claimable = () => {
                   variant={!isValid ? 'danger' : 'primary'}
                   width="100%"
                 >
-                  {inputError || 'Withdraw'}
+                  {inputError || inputErrorNonClaimable || 'Withdraw'}
                 </Button>
               )}
               <div className="button-div">

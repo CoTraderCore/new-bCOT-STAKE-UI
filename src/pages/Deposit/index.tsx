@@ -89,7 +89,7 @@ const Deposit = () => {
 
   // swap state
   const { independentField, typedValue,typedValue2 } = useSwapState()
-  const { v2Trade, currencyBalances, parsedAmount, currencies, inputError } = useDerivedSwapInfo()
+  const { v2Trade, currencyBalances, parsedAmount, currencies, inputError,inputErrorDeposit } = useDerivedSwapInfo()
   const { wrapType, execute: onWrap, inputError: wrapInputError } = useWrapCallback(
     currencies[Field.INPUT],
     currencies[Field.OUTPUT],
@@ -109,7 +109,7 @@ const Deposit = () => {
       }
 
   const { onCurrencySelection, onUserInput,onUserInput2 } = useSwapActionHandlers()
-  const isValid = !inputError
+  const isValid = !inputError && !inputErrorDeposit
   const dependentField: Field = independentField === Field.INPUT ? Field.OUTPUT : Field.INPUT
 
   const handleTypeInput = useCallback(
@@ -400,7 +400,7 @@ const Deposit = () => {
                   variant={!isValid ? 'danger' : 'primary'}
                   width="100%"
                 >
-                  {inputError || 'Deposit'}
+                  {inputError || inputErrorDeposit || 'Deposit'}
                 </Button>
               )}
               {/* {showApproveFlow && <ProgressSteps steps={[approval === ApprovalState.APPROVED]} />}

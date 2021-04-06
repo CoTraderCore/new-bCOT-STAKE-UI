@@ -58,6 +58,7 @@ interface CurrencyInputPanelProps {
   bnbBalance: string
   onUserInput: (value: string) => void
   onMax?: () => void
+  onMaxPool?:(balance: string)=> void
   showMaxButton: boolean
   label?: string
   onCurrencySelect?: (currency: Currency) => void
@@ -76,6 +77,7 @@ export default function CurrencyInputPanel({
   bnbBalance,
   onUserInput,
   onMax,
+  onMaxPool,
   showMaxButton,
   label,
   onCurrencySelect,
@@ -147,11 +149,14 @@ export default function CurrencyInputPanel({
                   onUserInput(val)
                 }}
               />
-              {account && currency && showMaxButton && label !== 'To' && (
+              {account && showMaxButton && isDeposit?(
                 <Button onClick={onMax} scale="sm" variant="text">
                   MAX
                 </Button>
-              )}
+              ):
+              onMaxPool?<Button onClick={()=>onMaxPool(poolBalance)} scale="sm" variant="text">
+              MAX
+            </Button>:null}
             </>
           )}
          
