@@ -17,7 +17,7 @@ import { parseEther } from '@ethersproject/units'
 import { useTransactionAdder } from 'state/transactions/hooks'
 import { useActiveWeb3React } from 'hooks'
 import { useCurrency } from 'hooks/Tokens'
-import { ApprovalState, useApproveCallbackFromTrade } from 'hooks/useApproveCallback'
+import { ApprovalState, useApproveCallbackFromTrade,useApproveCallback } from 'hooks/useApproveCallback'
 import useWrapCallback, { WrapType } from 'hooks/useWrapCallback'
 import { Field } from 'state/swap/actions'
 import { tryParseAmount, useDefaultsFromURLSearch, useDerivedSwapInfo, useSwapActionHandlers, useSwapState } from 'state/swap/hooks'
@@ -162,8 +162,8 @@ const Deposit = () => {
         const addressTemp = await Router.WETH()
           if(tryParseAmount(value,inputCurrency??undefined))
           {
-            const UnderlyingAmount = await DexFormula.routerRatio(UNDERLYING_TOKEN, addressTemp, web3.utils.toWei(value)) 
-            onUserInput(Field.INPUT, parseFloat(web3.utils.fromWei(UnderlyingAmount.toString())).toFixed(6))
+            const bnbAmount = await DexFormula.routerRatio(UNDERLYING_TOKEN, addressTemp, web3.utils.toWei(value)) 
+            onUserInput(Field.INPUT, parseFloat(web3.utils.fromWei(bnbAmount.toString())).toFixed(6))
             onUserInput2(Field.INPUT2, value)
           }
           else
@@ -178,12 +178,12 @@ const Deposit = () => {
   
   )
 
-  const formattedAmounts = {
-    [independentField]: typedValue,
-    [dependentField]: showWrap
-      ? parsedAmounts[independentField]?.toExact() ?? ''
-      : parsedAmounts[dependentField]?.toSignificant(6) ?? '',
-  }
+  // const formattedAmounts = {
+  //   [independentField]: typedValue,
+  //   [dependentField]: showWrap
+  //     ? parsedAmounts[independentField]?.toExact() ?? ''
+  //     : parsedAmounts[dependentField]?.toSignificant(6) ?? '',
+  // }
 
   const route = trade?.route
   const userHasSpecifiedInputOutput = Boolean(
@@ -192,7 +192,7 @@ const Deposit = () => {
   const noRoute = !route
 
   // check whether the user has approved the router on the input token
-  const [approval, approveCallback] = useApproveCallbackFromTrade(trade, allowedSlippage)
+  const [approval, approveCallback] = useApproveCallback(typedValue2 as unknown as CurrencyAmount, RouterAddress)
 
   // check if user has gone through approval process, used to show two step buttons, reset on token change
   const [approvalSubmitted, setApprovalSubmitted] = useState<boolean>(false)
@@ -211,18 +211,24 @@ const Deposit = () => {
   // show approve flow when: no error on inputs, not approved or pending, or approved in current session
   // never show if price impact is above threshold in non expert mode
   const showApproveFlow =
-    !inputError &&
+    !inputError && !inputErrorDeposit && 
     (approval === ApprovalState.NOT_APPROVED ||
       approval === ApprovalState.PENDING ||
-      (approvalSubmitted && approval === ApprovalState.APPROVED)) &&
-    !(priceImpactSeverity > 3 && !isExpertMode)
+      (approvalSubmitted && approval === ApprovalState.APPROVED))
+
 
       // mark when a user has submitted an approval, reset onTokenSelection for input field
   useEffect(() => {
+    console.log(approval)
+    console.log(ApprovalState.PENDING)
+    console.log(ApprovalState.NOT_APPROVED)
     if (approval === ApprovalState.PENDING) {
       setApprovalSubmitted(true)
+      console.log('hello')
+      console.log(inputError)
+
     }
-  }, [approval, approvalSubmitted, showApproveFlow])
+  }, [approval, approvalSubmitted, showApproveFlow,inputError])
   // This will check to see if the user has selected Syrup to either buy or sell.
   // If so, they will be alerted with a warning message.
   const checkForSyrup = useCallback(
@@ -264,8 +270,29 @@ const Deposit = () => {
     if (account) {
       if (contract != null) {
         try {
-          const inputAmount = parseEther(formattedAmounts[Field.INPUT].toString())
+          const inputAmount = parseEther(typedValue)
           const txReceipt = await contract.deposit(isClaimable, { value: inputAmount._hex })
+          addTransaction(txReceipt)
+        } catch (error) {
+          console.error('Could not deposit', error)
+        }
+      }
+    } else {
+      alert('Please connect to web3')
+    }
+  }
+
+  const handleDepositWithRover=async()=>{
+    if (account) {
+      if (contract != null) {
+        try {
+          const amount=parseEther(typedValue2)
+          console.log(typedValue)
+          console.log(typedValue2)
+          // const finalAmount= web3.utils.toBN(amount._hex) 
+          // console.log(finalAmount)
+          // console.log(typeof finalAmount)
+          const txReceipt = await contract.depositETHAndERC20(isClaimable, {value: amount._hex })
           addTransaction(txReceipt)
         } catch (error) {
           console.error('Could not deposit', error)
@@ -444,7 +471,8 @@ const Deposit = () => {
                 </RowBetween>
               ) : (
                 <Button
-                  onClick={() => handleDeposit()}
+                  onClick={() => (roverBalance !== '' && roverBalance !== '0')?handleDepositWithRover():handleDeposit()}
+                  // onClick={() => handleDeposit()}
                   id="deposit-button"
                   disabled={!isValid}
                   variant={!isValid ? 'danger' : 'primary'}
