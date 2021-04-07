@@ -1,4 +1,4 @@
-import { CurrencyAmount, JSBI, Token } from '@pancakeswap-libs/sdk'
+import { ChainId, CurrencyAmount, JSBI, Token, TokenAmount } from '@pancakeswap-libs/sdk'
 import { ethers } from 'ethers'
 import { BigNumber } from '@ethersproject/bignumber'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
@@ -50,6 +50,7 @@ const Deposit = () => {
     // set the provider you want from Web3.providers
     web3 = new Web3(new Web3.providers.HttpProvider('http://localhost:3000'))
   }
+
   const inputCurrency=useCurrency('BNB')
   const UNDERLYING_TOKEN = RoverAddress
   const addTransaction = useTransactionAdder()
@@ -192,8 +193,8 @@ const Deposit = () => {
   const noRoute = !route
 
   // check whether the user has approved the router on the input token
-  const [approval, approveCallback] = useApproveCallback(typedValue2 as unknown as CurrencyAmount, RouterAddress)
-
+  const [approval, approveCallback] = useApproveCallback(new TokenAmount(new Token(ChainId.BSCTESTNET, UNDERLYING_TOKEN, 0), web3.utils.toWei(typedValue2===''?'0':typedValue2)), RouterAddress)
+  const hey=useApproveCallback(typedValue2 as unknown as CurrencyAmount, RouterAddress)
   // check if user has gone through approval process, used to show two step buttons, reset on token change
   const [approvalSubmitted, setApprovalSubmitted] = useState<boolean>(false)
 
@@ -219,16 +220,16 @@ const Deposit = () => {
 
       // mark when a user has submitted an approval, reset onTokenSelection for input field
   useEffect(() => {
+    // console.log(Token)
     console.log(approval)
     console.log(ApprovalState.PENDING)
     console.log(ApprovalState.NOT_APPROVED)
     if (approval === ApprovalState.PENDING) {
       setApprovalSubmitted(true)
       console.log('hello')
-      console.log(inputError)
 
     }
-  }, [approval, approvalSubmitted, showApproveFlow,inputError])
+  }, [approval, approvalSubmitted, showApproveFlow,inputError,hey])
   // This will check to see if the user has selected Syrup to either buy or sell.
   // If so, they will be alerted with a warning message.
   const checkForSyrup = useCallback(
@@ -431,7 +432,7 @@ const Deposit = () => {
                     style={{ width: '48%' }}
                     variant={approval === ApprovalState.APPROVED ? 'success' : 'primary'}
                   >
-                    2
+                
                     {approval === ApprovalState.PENDING ? (
                       <AutoRow gap="6px" justify="center">
                         Approving <Loader stroke="white" />
@@ -439,10 +440,10 @@ const Deposit = () => {
                     ) : approvalSubmitted && approval === ApprovalState.APPROVED ? (
                       'Approved'
                     ) : (
-                      `Approve ${currencies[Field.INPUT]?.symbol}`
+                      `Approve Rover}`
                     )}
                   </Button>
-                  <Button
+                  {/* <Button
                     // onClick={() => {
                     //   if (isExpertMode) {
                     //     handleSwap()
@@ -467,12 +468,12 @@ const Deposit = () => {
                     {priceImpactSeverity > 3 && !isExpertMode
                       ? `Price Impact High`
                       : `Swap${priceImpactSeverity > 2 ? ' Anyway' : ''}`}
-                  </Button>
+                  </Button> */}
                 </RowBetween>
               ) : (
                 <Button
-                  onClick={() => (roverBalance !== '' && roverBalance !== '0')?handleDepositWithRover():handleDeposit()}
-                  // onClick={() => handleDeposit()}
+                  // onClick={() => (roverBalance !== '' && roverBalance !== '0')?handleDepositWithRover():handleDeposit()}
+                  onClick={() => handleDeposit()}
                   id="deposit-button"
                   disabled={!isValid}
                   variant={!isValid ? 'danger' : 'primary'}
