@@ -8,7 +8,7 @@ import { AutoColumn } from 'components/Column'
 import CurrencyInputPanel from 'components/CurrencyInputPanel'
 import RoverInputPanel from 'components/RoverInputPanel'
 import CardNav from 'components/CardNav'
-import { AutoRow, RowBetween } from 'components/Row'
+import { AutoRow } from 'components/Row'
 import AdvancedSwapDetailsDropdown from 'components/swap/AdvancedSwapDetailsDropdown'
 import { BottomGrouping, Wrapper } from 'components/swap/styleds'
 import TokenWarningModal from 'components/TokenWarningModal'
@@ -187,7 +187,7 @@ const Deposit = () => {
   //     : parsedAmounts[dependentField]?.toSignificant(6) ?? '',
   // }
 
-  const route = trade?.route
+  const route = trade?.route 
   const userHasSpecifiedInputOutput = Boolean(
     currencies[Field.INPUT] && currencies[Field.OUTPUT] && parsedAmounts[independentField]?.greaterThan(JSBI.BigInt(0))
   )
@@ -425,11 +425,11 @@ const Deposit = () => {
                   <Text mb="4px">{TranslateString(1194, 'Insufficient liquidity for this trade.')}</Text>
                 </GreyCard>
               ) : showApproveFlow ? (
-                <RowBetween>
+                
                   <Button
                     onClick={approveCallback}
                     disabled={approval !== ApprovalState.NOT_APPROVED || approvalSubmitted}
-                    style={{ width: '48%' }}
+                    style={{ width: '100%' }}
                     variant={approval === ApprovalState.APPROVED ? 'success' : 'primary'}
                   >
                 
@@ -443,33 +443,7 @@ const Deposit = () => {
                       `Approve ${UNDERLYING_NAME}` 
                     )}
                   </Button>
-                  {/* <Button
-                    // onClick={() => {
-                    //   if (isExpertMode) {
-                    //     handleSwap()
-                    //   } else {
-                    //     setSwapState({
-                    //       tradeToConfirm: trade,
-                    //       attemptingTxn: false,
-                    //       swapErrorMessage: undefined,
-                    //       showConfirm: true,
-                    //       txHash: undefined,
-                    //     })
-                    //   }
-                    // }}
-                    style={{ width: '48%' }}
-                    id="swap-button"
-                    disabled={
-                      !isValid || approval !== ApprovalState.APPROVED || (priceImpactSeverity > 3 && !isExpertMode)
-                    }
-                    variant={isValid && priceImpactSeverity > 2 ? 'danger' : 'primary'}
-                  >
-                    3
-                    {priceImpactSeverity > 3 && !isExpertMode
-                      ? `Price Impact High`
-                      : `Swap${priceImpactSeverity > 2 ? ' Anyway' : ''}`}
-                  </Button> */}
-                </RowBetween>
+              
               ) : (
                 <Button
                   onClick={() => (roverBalance !== '' && roverBalance !== '0')?handleDepositWithRover():handleDeposit()}
