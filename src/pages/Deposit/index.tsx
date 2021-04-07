@@ -17,13 +17,13 @@ import { parseEther } from '@ethersproject/units'
 import { useTransactionAdder } from 'state/transactions/hooks'
 import { useActiveWeb3React } from 'hooks'
 import { useCurrency } from 'hooks/Tokens'
-import { ApprovalState, useApproveCallbackFromTrade,useApproveCallback } from 'hooks/useApproveCallback'
+import { ApprovalState,useApproveCallback } from 'hooks/useApproveCallback'
 import useWrapCallback, { WrapType } from 'hooks/useWrapCallback'
 import { Field } from 'state/swap/actions'
+ 
+import ProgressSteps from 'components/ProgressSteps'
 import { tryParseAmount, useDefaultsFromURLSearch, useDerivedSwapInfo, useSwapActionHandlers, useSwapState } from 'state/swap/hooks'
-import { useExpertModeManager, useUserSlippageTolerance } from 'state/user/hooks'
 import { maxAmountSpend } from 'utils/maxAmountSpend'
-import { computeTradePriceBreakdown, warningSeverity } from 'utils/prices'
 import Loader from 'components/Loader'
 import useI18n from 'hooks/useI18n'
 import PageHeader from 'components/PageHeader'
@@ -41,6 +41,7 @@ import { AddressDepositor, DEXFormulaAddress, RouterAddress, RoverAddress } from
 
 
 import '../../App.css'
+import { UNDERLYING_NAME } from '../../constants'
 
 const Deposit = () => {
   let web3 = new Web3()
@@ -96,9 +97,9 @@ const Deposit = () => {
     setSyrupTransactionType('')
   }, [])
 
-  const [isExpertMode] = useExpertModeManager()
+  // const [isExpertMode] = useExpertModeManager()
 
-  const [allowedSlippage] = useUserSlippageTolerance()
+  // const [allowedSlippage] = useUserSlippageTolerance()
 
   // swap state
   const { independentField, typedValue, typedValue2 } = useSwapState()
@@ -123,7 +124,7 @@ const Deposit = () => {
 
   const { onCurrencySelection, onUserInput, onUserInput2 } = useSwapActionHandlers()
   const isValid = !inputError && !inputErrorDeposit
-  const dependentField: Field = independentField === Field.INPUT ? Field.OUTPUT : Field.INPUT
+  // const dependentField: Field = independentField === Field.INPUT ? Field.OUTPUT : Field.INPUT
 
   const handleTypeInput = useCallback(
     async (value: string) => {
@@ -193,7 +194,7 @@ const Deposit = () => {
   const noRoute = !route
 
   // check whether the user has approved the router on the input token
-  const [approval, approveCallback] = useApproveCallback(new TokenAmount(new Token(ChainId.BSCTESTNET, UNDERLYING_TOKEN, 0), web3.utils.toWei(typedValue2===''?'0':typedValue2)), RouterAddress)
+  const [approval, approveCallback] = useApproveCallback(new TokenAmount(new Token(ChainId.BSCTESTNET, UNDERLYING_TOKEN, 0), web3.utils.toWei(typedValue2===''?'0':typedValue2)), AddressDepositor)
   const hey=useApproveCallback(typedValue2 as unknown as CurrencyAmount, RouterAddress)
   // check if user has gone through approval process, used to show two step buttons, reset on token change
   const [approvalSubmitted, setApprovalSubmitted] = useState<boolean>(false)
@@ -204,10 +205,10 @@ const Deposit = () => {
   const maxAmountInput2: string = roverBalance
   // const atMaxAmountInput = Boolean(maxAmountInput && parsedAmounts[Field.INPUT]?.equalTo(maxAmountInput))
   // const atMaxAmountInput2 = Boolean(maxAmountInput2 && parsedAmounts[Field.INPUT2]?.equalTo(maxAmountInput2))
-  const { priceImpactWithoutFee } = computeTradePriceBreakdown(trade)
+  // const { priceImpactWithoutFee } = computeTradePriceBreakdown(trade)
 
-  // warnings on slippage
-  const priceImpactSeverity = warningSeverity(priceImpactWithoutFee)
+  // // warnings on slippage
+  // const priceImpactSeverity = warningSeverity(priceImpactWithoutFee)
 
   // show approve flow when: no error on inputs, not approved or pending, or approved in current session
   // never show if price impact is above threshold in non expert mode
@@ -221,12 +222,11 @@ const Deposit = () => {
       // mark when a user has submitted an approval, reset onTokenSelection for input field
   useEffect(() => {
     // console.log(Token)
-    console.log(approval)
-    console.log(ApprovalState.PENDING)
-    console.log(ApprovalState.NOT_APPROVED)
+    // console.log(approval)
+    // console.log(ApprovalState.PENDING)
+    // console.log(ApprovalState.NOT_APPROVED)
     if (approval === ApprovalState.PENDING) {
       setApprovalSubmitted(true)
-      console.log('hello')
 
     }
   }, [approval, approvalSubmitted, showApproveFlow,inputError,hey])
@@ -287,13 +287,13 @@ const Deposit = () => {
     if (account) {
       if (contract != null) {
         try {
-          const amount=parseEther(typedValue2)
-          console.log(typedValue)
-          console.log(typedValue2)
+          const bnbAmount=parseEther(typedValue)
+          const roverAmount=parseEther(typedValue2)
+          // console.log(contract) 
           // const finalAmount= web3.utils.toBN(amount._hex) 
           // console.log(finalAmount)
-          // console.log(typeof finalAmount)
-          const txReceipt = await contract.depositETHAndERC20(isClaimable, {value: amount._hex })
+          // console.log(typeof finalAmount)   
+          const txReceipt = await contract.depositETHAndERC20(isClaimable,roverAmount._hex,{value:bnbAmount._hex})  
           addTransaction(txReceipt)
         } catch (error) {
           console.error('Could not deposit', error)
@@ -440,7 +440,7 @@ const Deposit = () => {
                     ) : approvalSubmitted && approval === ApprovalState.APPROVED ? (
                       'Approved'
                     ) : (
-                      `Approve Rover}`
+                      `Approve ${UNDERLYING_NAME}` 
                     )}
                   </Button>
                   {/* <Button
@@ -472,8 +472,8 @@ const Deposit = () => {
                 </RowBetween>
               ) : (
                 <Button
-                  // onClick={() => (roverBalance !== '' && roverBalance !== '0')?handleDepositWithRover():handleDeposit()}
-                  onClick={() => handleDeposit()}
+                  onClick={() => (roverBalance !== '' && roverBalance !== '0')?handleDepositWithRover():handleDeposit()}
+                  // onClick={() => handleDeposit()}
                   id="deposit-button"
                   disabled={!isValid}
                   variant={!isValid ? 'danger' : 'primary'}
@@ -482,8 +482,8 @@ const Deposit = () => {
                   {inputError || inputErrorDeposit || 'Deposit'}
                 </Button>
               )}
-              {/* {showApproveFlow && <ProgressSteps steps={[approval === ApprovalState.APPROVED]} />}
-              {isExpertMode && swapErrorMessage ? <SwapCallbackError error={swapErrorMessage} /> : null} */}
+               {showApproveFlow && <ProgressSteps steps={[approval === ApprovalState.APPROVED]} />}
+              {/* {isExpertMode && swapErrorMessage ? <SwapCallbackError error={swapErrorMessage} /> : null}  */}
             </BottomGrouping>
           </CardBody>
         </Wrapper>
