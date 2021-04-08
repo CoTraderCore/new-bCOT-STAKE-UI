@@ -137,15 +137,15 @@ const Deposit = () => {
   
           if(tryParseAmount(value,inputCurrency??undefined))
           {
-            
+            onUserInput(Field.INPUT, value)
             const UnderlyingAmount = await DexFormula.routerRatio(addressTemp, UNDERLYING_TOKEN, web3.utils.toWei(value))  
             onUserInput2(Field.INPUT2, parseFloat(web3.utils.fromWei(UnderlyingAmount.toString())).toFixed(6))             
-            onUserInput(Field.INPUT, value)
+            
           }
           else{
-          
-          onUserInput2(Field.INPUT2,'0')
           onUserInput(Field.INPUT, value)
+          onUserInput2(Field.INPUT2,'0')
+          
           }
        
       }
@@ -164,14 +164,16 @@ const Deposit = () => {
         const addressTemp = await Router.WETH()
           if(tryParseAmount(value,inputCurrency??undefined))
           {
+            onUserInput2(Field.INPUT2, value)
             const bnbAmount = await DexFormula.routerRatio(UNDERLYING_TOKEN, addressTemp, web3.utils.toWei(value)) 
             onUserInput(Field.INPUT, parseFloat(web3.utils.fromWei(bnbAmount.toString())).toFixed(6))
-            onUserInput2(Field.INPUT2, value)
+            
           }
           else
           {
-            onUserInput(Field.INPUT,'0')
             onUserInput2(Field.INPUT2, value)
+            onUserInput(Field.INPUT,'0')
+            
           }
         
       }
