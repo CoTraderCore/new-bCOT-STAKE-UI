@@ -197,7 +197,7 @@ const Deposit = () => {
 
   // check whether the user has approved the router on the input token
   const [approval, approveCallback] = useApproveCallback(new TokenAmount(new Token(ChainId.BSCTESTNET, UNDERLYING_TOKEN, 0), web3.utils.toWei(typedValue2===''?'0':typedValue2)), AddressDepositor)
-  const hey=useApproveCallback(typedValue2 as unknown as CurrencyAmount, RouterAddress)
+  // const hey=useApproveCallback(typedValue2 as unknown as CurrencyAmount, RouterAddress)
   // check if user has gone through approval process, used to show two step buttons, reset on token change
   const [approvalSubmitted, setApprovalSubmitted] = useState<boolean>(false)
 
@@ -224,6 +224,8 @@ const Deposit = () => {
       // mark when a user has submitted an approval, reset onTokenSelection for input field
   useEffect(() => {
     // console.log(Token)
+    // console.log(inputError)
+    // console.log(inputError)
     // console.log(approval)
     // console.log(ApprovalState.PENDING)
     // console.log(ApprovalState.NOT_APPROVED)
@@ -231,7 +233,7 @@ const Deposit = () => {
       setApprovalSubmitted(true)
 
     }
-  }, [approval, approvalSubmitted, showApproveFlow,inputError,hey])
+  }, [approval, approvalSubmitted, showApproveFlow,inputError,inputErrorDeposit])
   // This will check to see if the user has selected Syrup to either buy or sell.
   // If so, they will be alerted with a warning message.
   const checkForSyrup = useCallback(
