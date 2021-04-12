@@ -1,5 +1,5 @@
 import { createReducer } from '@reduxjs/toolkit'
-import { Field, selectCurrency, setRecipient, switchCurrencies, typeInput ,typeInput2, typeInputClaimable,typeInputNonClaimable} from './actions'
+import { Field, selectCurrency, setEarnedRewards, setIsClaimable, setPoolAmount, setRecipient, switchCurrencies, typeInput ,typeInput2, typeInputClaimable,typeInputNonClaimable} from './actions'
 
 export interface SwapState {
   readonly independentField: Field
@@ -24,6 +24,9 @@ export interface SwapState {
   }
   // the typed recipient address or ENS name, or null if swap should go to sender
   readonly recipient: string | null
+  readonly earnedRewards: string | null
+  readonly poolAmount: string | null
+  readonly isClaimable: string | null
 }
 
 const initialState: SwapState = {
@@ -48,6 +51,9 @@ const initialState: SwapState = {
     currencyId: '',
   },
   recipient: null,
+  earnedRewards:null,
+  poolAmount:null,
+  isClaimable:'true'
 }
 
 export default createReducer<SwapState>(initialState, (builder) =>
@@ -108,4 +114,15 @@ export default createReducer<SwapState>(initialState, (builder) =>
     .addCase(setRecipient, (state, { payload: { recipient } }) => {
       state.recipient = recipient
     })
+    .addCase(setEarnedRewards, (state, { payload: { earnedRewards } }) => {
+      state.earnedRewards = earnedRewards
+    })
+
+    .addCase(setPoolAmount, (state, { payload: { poolAmount } }) => {
+      state.poolAmount = poolAmount
+    })
+
+    .addCase(setIsClaimable, (state, { payload: { isClaimable } }) => {
+      state.isClaimable = isClaimable
+    }) 
 )

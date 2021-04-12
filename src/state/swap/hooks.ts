@@ -10,7 +10,7 @@ import useParsedQueryString from '../../hooks/useParsedQueryString'
 import { isAddress } from '../../utils'
 import { AppDispatch, AppState } from '../index'
 import { useCurrencyBalances } from '../wallet/hooks'
-import { Field, replaceSwapState, selectCurrency, setRecipient, switchCurrencies, typeInput,typeInput2, typeInputClaimable, typeInputNonClaimable } from './actions'
+import { Field, replaceSwapState, selectCurrency, setRecipient, switchCurrencies, typeInput,typeInput2, typeInputClaimable, typeInputNonClaimable,setEarnedRewards, setPoolAmount, setIsClaimable } from './actions'
 import { SwapState } from './reducer'
 
 import { useUserSlippageTolerance } from '../user/hooks'
@@ -28,6 +28,9 @@ export function useSwapActionHandlers(): {
   onUserInputClaimable: (field: Field, typedValueClaimable: string) => void
   onUserInputNonClaimable: (field: Field, typedValueNonClaimable: string) => void
   onChangeRecipient: (recipient: string | null) => void
+  onChangeEarnedRewards: (recipient: string | null) => void
+  onChangePoolAmount: (recipient: string | null) => void
+  onChangeIsClaimable: (isClaimable: string | null) => void
 } {
   const dispatch = useDispatch<AppDispatch>()
   const onCurrencySelection = useCallback(
@@ -81,6 +84,27 @@ export function useSwapActionHandlers(): {
     [dispatch]
   )
 
+  const onChangeEarnedRewards = useCallback(
+    (earnedRewards: string | null) => {
+      dispatch(setEarnedRewards({ earnedRewards }))
+    },
+    [dispatch]
+  )
+  
+  const onChangePoolAmount = useCallback(
+    (poolAmount: string | null) => {
+      dispatch(setPoolAmount({ poolAmount }))
+    },
+    [dispatch]
+  )
+
+  const onChangeIsClaimable = useCallback(
+    (isClaimable: string | null) => {
+      dispatch(setIsClaimable({ isClaimable }))
+    },
+    [dispatch]
+  )
+
   return {
     onSwitchTokens,
     onCurrencySelection,
@@ -89,6 +113,9 @@ export function useSwapActionHandlers(): {
     onUserInputClaimable,
     onUserInputNonClaimable,
     onChangeRecipient,
+    onChangeEarnedRewards,
+    onChangePoolAmount,
+    onChangeIsClaimable 
   }
 }
 
@@ -297,7 +324,9 @@ export function queryParametersToSwapState(parsedQs: ParsedQs): SwapState {
   }
 
   const recipient = validatedRecipient(parsedQs.recipient)
-
+  const earnedRewards=parsedQs.earnedRewards as string
+  const poolAmount=parsedQs.poolAmount as string
+  const isClaimable=parsedQs.isClaimable as string
   return {
     [Field.INPUT]: {
       currencyId: inputCurrency,
@@ -310,7 +339,7 @@ export function queryParametersToSwapState(parsedQs: ParsedQs): SwapState {
     },
     [Field.INPUT_NONCLAIMABLE]: {
       currencyId: inputCurrency,
-    },
+    }, 
     [Field.OUTPUT]: {
       currencyId: outputCurrency,
     },
@@ -320,6 +349,9 @@ export function queryParametersToSwapState(parsedQs: ParsedQs): SwapState {
     typedValueNonClaimable: parseTokenAmountURLParameter(parsedQs.exactAmount),
     independentField: parseIndependentFieldURLParameter(parsedQs.exactField),
     recipient,
+    earnedRewards,
+    poolAmount,
+    isClaimable
   }
 }
 
@@ -345,6 +377,8 @@ export function useDefaultsFromURLSearch():
         inputCurrencyId: parsed[Field.INPUT].currencyId,
         outputCurrencyId: parsed[Field.OUTPUT].currencyId,
         recipient: parsed.recipient,
+        earnedRewards:parsed.earnedRewards,
+        poolAmount:parsed.poolAmount
       })
     )
 

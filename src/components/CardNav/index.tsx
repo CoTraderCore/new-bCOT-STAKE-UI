@@ -14,6 +14,7 @@ function Nav({ activeIndex = 0 }: { activeIndex?: number }) {
     setIndex(newIndex)
   }
   const TranslateString = useI18n()
+
   return (
     <StyledNav>
       <ButtonMenu activeIndex={index} onItemClick={(i) => handleClick(i)} scale="sm" variant="subtle">

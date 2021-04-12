@@ -53,9 +53,9 @@ import {
   RoverAddress,
 } from '../../constants/address/address'
 
-import '../../App.css' 
+import '../../App.css'
 import { UNDERLYING_NAME } from '../../constants'
-import pair from '../../config/config' 
+import pair from '../../config/config'
 
 const Deposit = () => {
   let web3 = new Web3()
@@ -76,26 +76,10 @@ const Deposit = () => {
   const loadedUrlParams = useDefaultsFromURLSearch()
   const TranslateString = useI18n()
   const [isClaimable, setIsClaimable] = useState(true)
-  const [bnbInputPanelValue, setBnbInputPanelValue] = useState('0')
-  const [underlyingTokenInputValue, setUnderlyingTokenInputValue] = useState('0')
   const [roverBalance, setRoverBalance] = useState('')
-  const [earnedDisplayValue, setEarned] = useState('0')
-  const [calculatedPoolAmount,setCalculatedPoolAmount]=useState('0')
   const roverTokenContract = useTokenContract(RoverAddress)
-  const ClaimableStakeContract=useStakeContract(ClaimableAddress) 
-  const NonClaimableStakeContract=useStakeContract(NonClaimableAddress)
-  useEffect(() => { 
-    async function getRoverBalance() {
-      if (account && roverTokenContract) {
-        const amount = await roverTokenContract.balanceOf(account)
-        const stringAmount = BigNumber.from(amount._hex).toString()
-        const displayAmount = ethers.utils.formatEther(stringAmount)
-        setRoverBalance(parseFloat(displayAmount).toFixed(4))
-      }
-    }
-
-    getRoverBalance()
-  }, [earnedDisplayValue,account, roverTokenContract])
+  const ClaimableStakeContract = useStakeContract(ClaimableAddress)
+  const NonClaimableStakeContract = useStakeContract(NonClaimableAddress)
 
   const [loadedInputCurrency, loadedOutputCurrency] = [
     useCurrency(loadedUrlParams?.inputCurrencyId),
@@ -122,7 +106,7 @@ const Deposit = () => {
   // const [allowedSlippage] = useUserSlippageTolerance()
 
   // swap state
-  const { independentField, typedValue, typedValue2 } = useSwapState()
+  const { independentField, typedValue, typedValue2, earnedRewards, poolAmount: calculatedPoolAmount } = useSwapState()
   const { v2Trade, currencyBalances, parsedAmount, currencies, inputError, inputErrorDeposit } = useDerivedSwapInfo()
   const { wrapType, execute: onWrap, inputError: wrapInputError } = useWrapCallback(
     currencies[Field.INPUT],
@@ -142,51 +126,102 @@ const Deposit = () => {
         [Field.OUTPUT]: independentField === Field.OUTPUT ? parsedAmount : trade?.outputAmount,
       }
 
-  const { onCurrencySelection, onUserInput, onUserInput2 } = useSwapActionHandlers()
+  const {
+    onCurrencySelection,
+    onUserInput,
+    onUserInput2,
+    onChangeEarnedRewards,
+    onChangePoolAmount,
+  } = useSwapActionHandlers()
   const isValid = !inputError && !inputErrorDeposit
   // const dependentField: Field = independentField === Field.INPUT ? Field.OUTPUT : Field.INPUT
+
+  //   const changedIsClaimable = e.currentTarget.value === 'true'
+  // const earned = await (changedIsClaimable
+  //   ? ClaimableStakeContract
+  //   : NonClaimableStakeContract
+  // )?.earnedByShare(calculatedPoolAmount)
+
+  // onChangeEarnedRewards(parseFloat(web3.utils.fromWei(earned.toString())).toFixed(6))
+
+  useEffect(() => {
+    async function getRoverBalance() {
+      if (account && roverTokenContract) {
+        const amount = await roverTokenContract.balanceOf(account)
+        const stringAmount = BigNumber.from(amount._hex).toString()
+        const displayAmount = ethers.utils.formatEther(stringAmount)
+        setRoverBalance(parseFloat(displayAmount).toFixed(4))
+      }
+    }
+
+    async function getEarnedRewards() {
+      if (account && calculatedPoolAmount) {
+        const earned =  await (isClaimable ? ClaimableStakeContract : NonClaimableStakeContract) ?.earnedByShare(
+          calculatedPoolAmount
+        )
+        onChangeEarnedRewards(parseFloat(web3.utils.fromWei(earned.toString())).toFixed(6))
+      }
+    }
+
+ 
+    getRoverBalance()
+    getEarnedRewards()
+   
+  }, [account, roverTokenContract,ClaimableStakeContract,NonClaimableStakeContract,calculatedPoolAmount,isClaimable,onChangeEarnedRewards,web3.utils])
+
 
   const handleTypeInput = useCallback(
     async (value: string) => {
       if (DexFormula && Router) {
-        // const display = web3.utils.toWei(value)
-        // console.log(addressTemp)
-        // console.log(UNDERLYING_TOKEN)
-        // console.log(display)
-      
         const addressTemp = await Router.WETH()
         if (tryParseAmount(value, inputCurrency ?? undefined)) {
           onUserInput(Field.INPUT, value)
-          const BNBAmountHalf = (BigNumber.from(web3.utils.toWei(value)).div(2).toString())
+          const BNBAmountHalf = BigNumber.from(web3.utils.toWei(value)).div(2).toString()
           const UnderlyingAmount = await DexFormula.routerRatio(addressTemp, UNDERLYING_TOKEN, web3.utils.toWei(value))
           const UnderlyingAmountForRewards = await DexFormula.routerRatio(addressTemp, UNDERLYING_TOKEN, BNBAmountHalf)
           if (roverBalance !== '' && roverBalance !== '0') {
             onUserInput2(Field.INPUT2, parseFloat(web3.utils.fromWei(UnderlyingAmount.toString())).toFixed(6))
-            const poolAmount =await DexFormula.calculatePoolToMint(
+            const poolAmount = await DexFormula.calculatePoolToMint(
               web3.utils.toWei(value),
               web3.utils.toWei(UnderlyingAmount.toString()),
               pair
             )
-            const earned =await (isClaimable?ClaimableStakeContract:NonClaimableStakeContract)?.earnedByShare(poolAmount)
-            setCalculatedPoolAmount(poolAmount)
-            setEarned(parseFloat(web3.utils.fromWei(earned.toString())).toFixed(6))
-          } else { 
+            const earned = await (isClaimable ? ClaimableStakeContract : NonClaimableStakeContract)?.earnedByShare(
+              poolAmount
+            )
+            onChangePoolAmount(poolAmount)
+
+            onChangeEarnedRewards(parseFloat(web3.utils.fromWei(earned.toString())).toFixed(6))
+          } else {
             // we don't have rover
-            const poolAmount =await DexFormula.calculatePoolToMint(BNBAmountHalf, UnderlyingAmountForRewards, pair)
-            const earned =await (isClaimable?ClaimableStakeContract:NonClaimableStakeContract)?.earnedByShare(poolAmount)
-            setEarned(parseFloat(web3.utils.fromWei(earned.toString())).toFixed(6))
+            const poolAmount = await DexFormula.calculatePoolToMint(BNBAmountHalf, UnderlyingAmountForRewards, pair)
+            const earned = await (isClaimable ? ClaimableStakeContract : NonClaimableStakeContract)?.earnedByShare(
+              poolAmount
+            )
+
+            onChangeEarnedRewards(parseFloat(web3.utils.fromWei(earned.toString())).toFixed(6))
           }
-          setBnbInputPanelValue(value)
-          setUnderlyingTokenInputValue(parseFloat(web3.utils.fromWei(UnderlyingAmount.toString())).toFixed(6))
         } else {
           onUserInput(Field.INPUT, value)
           onUserInput2(Field.INPUT2, '0')
-          setBnbInputPanelValue(value)
-          setUnderlyingTokenInputValue('0')
         }
-      } 
+      }
     },
-    [onUserInput, onUserInput2, DexFormula, Router, web3.utils, UNDERLYING_TOKEN, inputCurrency, ClaimableStakeContract, NonClaimableStakeContract,isClaimable,roverBalance]
+    [
+      onChangePoolAmount,
+      onChangeEarnedRewards,
+      onUserInput,
+      onUserInput2,
+      DexFormula,
+      Router,
+      web3.utils,
+      UNDERLYING_TOKEN,
+      inputCurrency,
+      ClaimableStakeContract,
+      NonClaimableStakeContract,
+      isClaimable,
+      roverBalance,
+    ]
   )
 
   const handleTypeInput2 = useCallback(
@@ -201,25 +236,37 @@ const Deposit = () => {
           onUserInput2(Field.INPUT2, value)
           const bnbAmount = await DexFormula.routerRatio(UNDERLYING_TOKEN, addressTemp, web3.utils.toWei(value))
           onUserInput(Field.INPUT, parseFloat(web3.utils.fromWei(bnbAmount.toString())).toFixed(6))
-          const poolAmount =await DexFormula.calculatePoolToMint(
+          const poolAmount = await DexFormula.calculatePoolToMint(
             web3.utils.toWei(bnbAmount.toString()),
             web3.utils.toWei(value),
             pair
           )
-          const earned =await (isClaimable?ClaimableStakeContract:NonClaimableStakeContract)?.earnedByShare(poolAmount)
-          setEarned(parseFloat(web3.utils.fromWei(earned.toString())).toFixed(6)) 
-          setCalculatedPoolAmount(poolAmount)
-          setUnderlyingTokenInputValue(value)
-          setBnbInputPanelValue(parseFloat(web3.utils.fromWei(bnbAmount.toString())).toFixed(6))
+          const earned = await (isClaimable ? ClaimableStakeContract : NonClaimableStakeContract)?.earnedByShare(
+            poolAmount
+          )
+
+          onChangePoolAmount(poolAmount)
+          onChangeEarnedRewards(parseFloat(web3.utils.fromWei(earned.toString())).toFixed(6))
         } else {
           onUserInput2(Field.INPUT2, value)
           onUserInput(Field.INPUT, '0')
-          setUnderlyingTokenInputValue(value)
-          setBnbInputPanelValue('0')
         }
       }
     },
-    [onUserInput, onUserInput2, DexFormula, Router, web3.utils, UNDERLYING_TOKEN, inputCurrency,ClaimableStakeContract,NonClaimableStakeContract,isClaimable]
+    [
+      onChangePoolAmount,
+      onChangeEarnedRewards,
+      onUserInput,
+      onUserInput2,
+      DexFormula,
+      Router,
+      web3.utils,
+      UNDERLYING_TOKEN,
+      inputCurrency,
+      ClaimableStakeContract,
+      NonClaimableStakeContract,
+      isClaimable,
+    ]
   )
 
   // const formattedAmounts = {
@@ -273,10 +320,17 @@ const Deposit = () => {
     // console.log(approval)
     // console.log(ApprovalState.PENDING)
     // console.log(ApprovalState.NOT_APPROVED)
+
     if (approval === ApprovalState.PENDING) {
       setApprovalSubmitted(true)
     }
   }, [approval, approvalSubmitted, showApproveFlow, inputError, inputErrorDeposit])
+
+  //   useLayoutEffect(() => {
+  //     return () => {
+  //        typedValue2='0'
+  //     }
+  // }, [])
   // This will check to see if the user has selected Syrup to either buy or sell.
   // If so, they will be alerted with a warning message.
   const checkForSyrup = useCallback(
@@ -429,9 +483,13 @@ const Deposit = () => {
                 <select
                   onChange={async (e) => {
                     setIsClaimable(e.currentTarget.value === 'true')
-                    const changedIsClaimable=e.currentTarget.value === 'true'
-                    const earned =await (changedIsClaimable?ClaimableStakeContract:NonClaimableStakeContract)?.earnedByShare(calculatedPoolAmount)
-                    setEarned(parseFloat(web3.utils.fromWei(earned.toString())).toFixed(6))
+                    const changedIsClaimable = e.currentTarget.value === 'true'
+                    const earned = await (changedIsClaimable
+                      ? ClaimableStakeContract
+                      : NonClaimableStakeContract
+                    )?.earnedByShare(calculatedPoolAmount)
+
+                    onChangeEarnedRewards(parseFloat(web3.utils.fromWei(earned.toString())).toFixed(6))
                   }}
                   className="form-control"
                 >
@@ -441,8 +499,8 @@ const Deposit = () => {
                   </option>
                   <option value="false">Non-Claimable</option>
                 </select>
-              </div>   
-              <div>{isValid ?`Earned Rewards: ${earnedDisplayValue} `:null}</div>
+              </div>
+              <div>{isValid && earnedRewards ? `Earned Rewards: ${earnedRewards} ` : null}</div>
 
               {/* {showWrap ? null : (
                 <Card padding=".25rem .75rem 0 .75rem" borderRadius="20px">

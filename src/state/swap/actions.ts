@@ -20,5 +20,10 @@ export const replaceSwapState = createAction<{
   inputCurrencyId?: string
   outputCurrencyId?: string
   recipient: string | null
+  earnedRewards: string | null  
+  poolAmount: string | null 
 }>('swap/replaceSwapState')
 export const setRecipient = createAction<{ recipient: string | null }>('swap/setRecipient')
+export const setEarnedRewards = createAction<{ earnedRewards: string | null }>('swap/setEarnedRewards')
+export const setPoolAmount = createAction<{ poolAmount: string | null }>('swap/setPoolAmount')
+export const setIsClaimable = createAction<{ isClaimable: string | null }>('swap/setIsClaimable')
