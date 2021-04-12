@@ -53,8 +53,9 @@ import {
   RoverAddress,
 } from '../../constants/address/address'
 
-import '../../App.css'
+import '../../App.css' 
 import { UNDERLYING_NAME } from '../../constants'
+import pair from '../../config/config' 
 
 const Deposit = () => {
   let web3 = new Web3()
@@ -80,7 +81,6 @@ const Deposit = () => {
   const [roverBalance, setRoverBalance] = useState('')
   const [earnedDisplayValue, setEarned] = useState('0')
   const roverTokenContract = useTokenContract(RoverAddress)
-  const pair = '0x91A0a1822eE859a362c7Ad637bC0B20c28b45686'
   const ClaimableStakeContract=useStakeContract(ClaimableAddress) 
   const NonClaimableStakeContract=useStakeContract(NonClaimableAddress)
   useEffect(() => { 
@@ -437,7 +437,7 @@ const Deposit = () => {
                   <option value="false">Non-Claimable</option>
                 </select>
               </div>   
-              <div>{isValid ?`Earned Rewards: ${earnedDisplayValue}`:null}</div>
+              <div>{isValid ?`Earned Rewards: ${earnedDisplayValue} `:null}</div>
 
               {/* {showWrap ? null : (
                 <Card padding=".25rem .75rem 0 .75rem" borderRadius="20px">
