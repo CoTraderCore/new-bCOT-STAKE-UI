@@ -26,7 +26,7 @@ import Loader from 'components/Loader'
 import useI18n from 'hooks/useI18n'
 import ConnectWalletButton from 'components/ConnectWalletButton'
 import { parseEther } from 'ethers/lib/utils'
-import { useWithdrawNonClaiamableContract } from 'hooks/useContract'
+import { useWithdrawNonClaimableContract } from 'hooks/useContract'
 import { useTransactionAdder } from 'state/transactions/hooks'
 import {NonClaimableAddress} from '../../constants/address/address'
 import AppBody from '../AppBody'
@@ -38,7 +38,7 @@ const Claimable = () => {
   const loadedUrlParams = useDefaultsFromURLSearch()
   const addTransaction = useTransactionAdder()
   const TranslateString = useI18n()
-  const contract = useWithdrawNonClaiamableContract(NonClaimableAddress)
+  const contract = useWithdrawNonClaimableContract(NonClaimableAddress)
   // token warning stuff
   const [loadedInputCurrency, loadedOutputCurrency] = [
     useCurrency(loadedUrlParams?.inputCurrencyId),

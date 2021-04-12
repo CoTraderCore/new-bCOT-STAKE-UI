@@ -2,7 +2,7 @@ import { ChainId, CurrencyAmount, JSBI, Token, TokenAmount } from '@pancakeswap-
 import { ethers } from 'ethers'
 import { BigNumber } from '@ethersproject/bignumber'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
-import { CardBody, Button, Text} from '@pancakeswap-libs/uikit'
+import { CardBody, Button, Text } from '@pancakeswap-libs/uikit'
 import { GreyCard } from 'components/Card'
 import { AutoColumn } from 'components/Column'
 import CurrencyInputPanel from 'components/CurrencyInputPanel'
@@ -17,12 +17,18 @@ import { parseEther } from '@ethersproject/units'
 import { useTransactionAdder } from 'state/transactions/hooks'
 import { useActiveWeb3React } from 'hooks'
 import { useCurrency } from 'hooks/Tokens'
-import { ApprovalState,useApproveCallback } from 'hooks/useApproveCallback'
+import { ApprovalState, useApproveCallback } from 'hooks/useApproveCallback'
 import useWrapCallback, { WrapType } from 'hooks/useWrapCallback'
 import { Field } from 'state/swap/actions'
- 
+
 import ProgressSteps from 'components/ProgressSteps'
-import { tryParseAmount, useDefaultsFromURLSearch, useDerivedSwapInfo, useSwapActionHandlers, useSwapState } from 'state/swap/hooks'
+import {
+  tryParseAmount,
+  useDefaultsFromURLSearch,
+  useDerivedSwapInfo,
+  useSwapActionHandlers,
+  useSwapState,
+} from 'state/swap/hooks'
 import { maxAmountSpend } from 'utils/maxAmountSpend'
 import Loader from 'components/Loader'
 import useI18n from 'hooks/useI18n'
@@ -35,10 +41,17 @@ import {
   useDepositerContract,
   useDexFormulaContract,
   useRouterContract,
+  useStakeContract,
   useTokenContract,
 } from '../../hooks/useContract'
-import { AddressDepositor, DEXFormulaAddress, RouterAddress, RoverAddress } from '../../constants/address/address'
-
+import {
+  ClaimableAddress,
+  NonClaimableAddress,
+  AddressDepositor,
+  DEXFormulaAddress,
+  RouterAddress,
+  RoverAddress,
+} from '../../constants/address/address'
 
 import '../../App.css'
 import { UNDERLYING_NAME } from '../../constants'
@@ -52,7 +65,7 @@ const Deposit = () => {
     web3 = new Web3(new Web3.providers.HttpProvider('http://localhost:3000'))
   }
 
-  const inputCurrency=useCurrency('BNB')
+  const inputCurrency = useCurrency('BNB')
   const UNDERLYING_TOKEN = RoverAddress
   const addTransaction = useTransactionAdder()
   const { account } = useActiveWeb3React()
@@ -62,9 +75,15 @@ const Deposit = () => {
   const loadedUrlParams = useDefaultsFromURLSearch()
   const TranslateString = useI18n()
   const [isClaimable, setIsClaimable] = useState(true)
+  const [bnbInputPanelValue, setBnbInputPanelValue] = useState('0')
+  const [underlyingTokenInputValue, setUnderlyingTokenInputValue] = useState('0')
   const [roverBalance, setRoverBalance] = useState('')
+  const [earnedDisplayValue, setEarned] = useState('0')
   const roverTokenContract = useTokenContract(RoverAddress)
-  useEffect(() => {
+  const pair = '0x91A0a1822eE859a362c7Ad637bC0B20c28b45686'
+  const ClaimableStakeContract=useStakeContract(ClaimableAddress) 
+  const NonClaimableStakeContract=useStakeContract(NonClaimableAddress)
+  useEffect(() => { 
     async function getRoverBalance() {
       if (account && roverTokenContract) {
         const amount = await roverTokenContract.balanceOf(account)
@@ -75,7 +94,7 @@ const Deposit = () => {
     }
 
     getRoverBalance()
-  }, [account, roverTokenContract])
+  }, [earnedDisplayValue,account, roverTokenContract])
 
   const [loadedInputCurrency, loadedOutputCurrency] = [
     useCurrency(loadedUrlParams?.inputCurrencyId),
@@ -133,53 +152,71 @@ const Deposit = () => {
         // console.log(addressTemp)
         // console.log(UNDERLYING_TOKEN)
         // console.log(display)
+      
         const addressTemp = await Router.WETH()
-  
-          if(tryParseAmount(value,inputCurrency??undefined))
-          {
-            onUserInput(Field.INPUT, value)
-            const UnderlyingAmount = await DexFormula.routerRatio(addressTemp, UNDERLYING_TOKEN, web3.utils.toWei(value))  
-            onUserInput2(Field.INPUT2, parseFloat(web3.utils.fromWei(UnderlyingAmount.toString())).toFixed(6))             
-            
-          }
-          else{
+        if (tryParseAmount(value, inputCurrency ?? undefined)) {
           onUserInput(Field.INPUT, value)
-          onUserInput2(Field.INPUT2,'0')
-          
+          const BNBAmountHalf = (BigNumber.from(web3.utils.toWei(value)).div(2).toString())
+          const UnderlyingAmount = await DexFormula.routerRatio(addressTemp, UNDERLYING_TOKEN, web3.utils.toWei(value))
+          const UnderlyingAmountForRewards = await DexFormula.routerRatio(addressTemp, UNDERLYING_TOKEN, BNBAmountHalf)
+          if (roverBalance !== '' && roverBalance !== '0') {
+            onUserInput2(Field.INPUT2, parseFloat(web3.utils.fromWei(UnderlyingAmount.toString())).toFixed(6))
+            const poolAmount =await DexFormula.calculatePoolToMint(
+              web3.utils.toWei(value),
+              web3.utils.toWei(UnderlyingAmount.toString()),
+              pair
+            )
+            const earned =await (isClaimable?ClaimableStakeContract:NonClaimableStakeContract)?.earnedByShare(poolAmount)
+            setEarned(parseFloat(web3.utils.fromWei(earned.toString())).toFixed(6))
+          } else { 
+            // we don't have rover
+            const poolAmount =await DexFormula.calculatePoolToMint(BNBAmountHalf, UnderlyingAmountForRewards, pair)
+            const earned =await (isClaimable?ClaimableStakeContract:NonClaimableStakeContract)?.earnedByShare(poolAmount)
+            setEarned(parseFloat(web3.utils.fromWei(earned.toString())).toFixed(6))
           }
-       
-      }
+          setBnbInputPanelValue(value)
+          setUnderlyingTokenInputValue(parseFloat(web3.utils.fromWei(UnderlyingAmount.toString())).toFixed(6))
+        } else {
+          onUserInput(Field.INPUT, value)
+          onUserInput2(Field.INPUT2, '0')
+          setBnbInputPanelValue(value)
+          setUnderlyingTokenInputValue('0')
+        }
+      } 
     },
-    [onUserInput, onUserInput2, DexFormula, Router, web3.utils, UNDERLYING_TOKEN,inputCurrency]
+    [onUserInput, onUserInput2, DexFormula, Router, web3.utils, UNDERLYING_TOKEN, inputCurrency, ClaimableStakeContract, NonClaimableStakeContract,isClaimable,roverBalance]
   )
 
   const handleTypeInput2 = useCallback(
     async (value: string) => {
       if (DexFormula && Router) {
         // const display = web3.utils.toWei(value)
-        // console.log(addressTemp)
-        // console.log(UNDERLYING_TOKEN)
-        // console.log(display)
-
         const addressTemp = await Router.WETH()
-          if(tryParseAmount(value,inputCurrency??undefined))
-          {
-            onUserInput2(Field.INPUT2, value)
-            const bnbAmount = await DexFormula.routerRatio(UNDERLYING_TOKEN, addressTemp, web3.utils.toWei(value)) 
-            onUserInput(Field.INPUT, parseFloat(web3.utils.fromWei(bnbAmount.toString())).toFixed(6))
-            
-          }
-          else
-          {
-            onUserInput2(Field.INPUT2, value)
-            onUserInput(Field.INPUT,'0')
-            
-          }
-        
+        if (tryParseAmount(value, inputCurrency ?? undefined)) {
+          // const BNBAmountHalf = web3.utils.toWei(BigNumber.from(value).div(2).toString())
+          // const UnderlyingAmountForRewards = await DexFormula.routerRatio(addressTemp, UNDERLYING_TOKEN, BNBAmountHalf)
+
+          onUserInput2(Field.INPUT2, value)
+          const bnbAmount = await DexFormula.routerRatio(UNDERLYING_TOKEN, addressTemp, web3.utils.toWei(value))
+          onUserInput(Field.INPUT, parseFloat(web3.utils.fromWei(bnbAmount.toString())).toFixed(6))
+          const poolAmount =await DexFormula.calculatePoolToMint(
+            web3.utils.toWei(bnbAmount.toString()),
+            web3.utils.toWei(value),
+            pair
+          )
+          const earned =await (isClaimable?ClaimableStakeContract:NonClaimableStakeContract)?.earnedByShare(poolAmount)
+          setEarned(parseFloat(web3.utils.fromWei(earned.toString())).toFixed(6)) 
+          setUnderlyingTokenInputValue(value)
+          setBnbInputPanelValue(parseFloat(web3.utils.fromWei(bnbAmount.toString())).toFixed(6))
+        } else {
+          onUserInput2(Field.INPUT2, value)
+          onUserInput(Field.INPUT, '0')
+          setUnderlyingTokenInputValue(value)
+          setBnbInputPanelValue('0')
+        }
       }
     },
-    [onUserInput, onUserInput2, DexFormula, Router, web3.utils, UNDERLYING_TOKEN, inputCurrency]
-  
+    [onUserInput, onUserInput2, DexFormula, Router, web3.utils, UNDERLYING_TOKEN, inputCurrency,ClaimableStakeContract,NonClaimableStakeContract,isClaimable]
   )
 
   // const formattedAmounts = {
@@ -189,19 +226,23 @@ const Deposit = () => {
   //     : parsedAmounts[dependentField]?.toSignificant(6) ?? '',
   // }
 
-  const route = trade?.route 
+  const route = trade?.route
   const userHasSpecifiedInputOutput = Boolean(
     currencies[Field.INPUT] && currencies[Field.OUTPUT] && parsedAmounts[independentField]?.greaterThan(JSBI.BigInt(0))
   )
   const noRoute = !route
 
   // check whether the user has approved the router on the input token
-  const [approval, approveCallback] = useApproveCallback(new TokenAmount(new Token(ChainId.BSCTESTNET, UNDERLYING_TOKEN, 0), web3.utils.toWei(typedValue2===''?'0':typedValue2)), AddressDepositor)
+  const [approval, approveCallback] = useApproveCallback(
+    new TokenAmount(
+      new Token(ChainId.BSCTESTNET, UNDERLYING_TOKEN, 0),
+      web3.utils.toWei(typedValue2 === '' ? '0' : typedValue2)
+    ),
+    AddressDepositor
+  )
   // const hey=useApproveCallback(typedValue2 as unknown as CurrencyAmount, RouterAddress)
   // check if user has gone through approval process, used to show two step buttons, reset on token change
   const [approvalSubmitted, setApprovalSubmitted] = useState<boolean>(false)
-
-
 
   const maxAmountInput: CurrencyAmount | undefined = maxAmountSpend(currencyBalances[Field.INPUT])
   const maxAmountInput2: string = roverBalance
@@ -215,13 +256,13 @@ const Deposit = () => {
   // show approve flow when: no error on inputs, not approved or pending, or approved in current session
   // never show if price impact is above threshold in non expert mode
   const showApproveFlow =
-    !inputError && !inputErrorDeposit && 
+    !inputError &&
+    !inputErrorDeposit &&
     (approval === ApprovalState.NOT_APPROVED ||
       approval === ApprovalState.PENDING ||
       (approvalSubmitted && approval === ApprovalState.APPROVED))
 
-
-      // mark when a user has submitted an approval, reset onTokenSelection for input field
+  // mark when a user has submitted an approval, reset onTokenSelection for input field
   useEffect(() => {
     // console.log(Token)
     // console.log(inputError)
@@ -231,9 +272,8 @@ const Deposit = () => {
     // console.log(ApprovalState.NOT_APPROVED)
     if (approval === ApprovalState.PENDING) {
       setApprovalSubmitted(true)
-
     }
-  }, [approval, approvalSubmitted, showApproveFlow,inputError,inputErrorDeposit])
+  }, [approval, approvalSubmitted, showApproveFlow, inputError, inputErrorDeposit])
   // This will check to see if the user has selected Syrup to either buy or sell.
   // If so, they will be alerted with a warning message.
   const checkForSyrup = useCallback(
@@ -267,7 +307,7 @@ const Deposit = () => {
   const handleMaxInput2 = useCallback(() => {
     if (maxAmountInput2) {
       handleTypeInput2(maxAmountInput2)
-     // onUserInput2(Field.INPUT2, maxAmountInput2)
+      // onUserInput2(Field.INPUT2, maxAmountInput2)
     }
   }, [maxAmountInput2, handleTypeInput2])
 
@@ -287,17 +327,17 @@ const Deposit = () => {
     }
   }
 
-  const handleDepositWithRover=async()=>{
+  const handleDepositWithRover = async () => {
     if (account) {
       if (contract != null) {
         try {
-          const bnbAmount=parseEther(typedValue)
-          const roverAmount=parseEther(typedValue2)
-          // console.log(contract) 
-          // const finalAmount= web3.utils.toBN(amount._hex) 
+          const bnbAmount = parseEther(typedValue)
+          const roverAmount = parseEther(typedValue2)
+          // console.log(contract)
+          // const finalAmount= web3.utils.toBN(amount._hex)
           // console.log(finalAmount)
-          // console.log(typeof finalAmount)   
-          const txReceipt = await contract.depositETHAndERC20(isClaimable,roverAmount._hex,{value:bnbAmount._hex})  
+          // console.log(typeof finalAmount)
+          const txReceipt = await contract.depositETHAndERC20(isClaimable, roverAmount._hex, { value: bnbAmount._hex })
           addTransaction(txReceipt)
         } catch (error) {
           console.error('Could not deposit', error)
@@ -383,14 +423,21 @@ const Deposit = () => {
               ) : null} */}
 
               <div className="select-deposit">
-                <select onChange={(e) => setIsClaimable(e.currentTarget.value === 'true')} className="form-control">
+                <select
+                  onChange={(e) => {
+                    setIsClaimable(e.currentTarget.value === 'true')
+                    handleTypeInput(bnbInputPanelValue)
+                  }}
+                  className="form-control"
+                >
                   <option className="select-option" selected value="true">
                     {' '}
                     Claimable
                   </option>
                   <option value="false">Non-Claimable</option>
                 </select>
-              </div>
+              </div>   
+              <div>{isValid ?`Earned Rewards: ${earnedDisplayValue}`:null}</div>
 
               {/* {showWrap ? null : (
                 <Card padding=".25rem .75rem 0 .75rem" borderRadius="20px">
@@ -429,38 +476,39 @@ const Deposit = () => {
                   <Text mb="4px">{TranslateString(1194, 'Insufficient liquidity for this trade.')}</Text>
                 </GreyCard>
               ) : showApproveFlow ? (
-                
-                  <Button
-                    onClick={approveCallback}
-                    disabled={approval !== ApprovalState.NOT_APPROVED || approvalSubmitted}
-                    style={{ width: '100%' }}
-                    variant={approval === ApprovalState.APPROVED ? 'success' : 'primary'}
-                  >
-                
-                    {approval === ApprovalState.PENDING ? (
-                      <AutoRow gap="6px" justify="center">
-                        Approving <Loader stroke="white" />
-                      </AutoRow>
-                    ) : approvalSubmitted && approval === ApprovalState.APPROVED ? (
-                      'Approved'
-                    ) : (
-                      `Approve ${UNDERLYING_NAME}` 
-                    )}
-                  </Button>
-              
-              ) : (
                 <Button
-                  onClick={() => (roverBalance !== '' && roverBalance !== '0')?handleDepositWithRover():handleDeposit()}
-                  // onClick={() => handleDeposit()}
-                  id="deposit-button"
-                  disabled={!isValid}
-                  variant={!isValid ? 'danger' : 'primary'}
-                  width="100%"
+                  onClick={approveCallback}
+                  disabled={approval !== ApprovalState.NOT_APPROVED || approvalSubmitted}
+                  style={{ width: '100%' }}
+                  variant={approval === ApprovalState.APPROVED ? 'success' : 'primary'}
                 >
-                  {inputError || inputErrorDeposit || 'Deposit'}
+                  {approval === ApprovalState.PENDING ? (
+                    <AutoRow gap="6px" justify="center">
+                      Approving <Loader stroke="white" />
+                    </AutoRow>
+                  ) : approvalSubmitted && approval === ApprovalState.APPROVED ? (
+                    'Approved'
+                  ) : (
+                    `Approve ${UNDERLYING_NAME}`
+                  )}
                 </Button>
+              ) : (
+                <div>
+                  <Button
+                    onClick={() =>
+                      roverBalance !== '' && roverBalance !== '0' ? handleDepositWithRover() : handleDeposit()
+                    }
+                    // onClick={() => handleDeposit()}
+                    id="deposit-button"
+                    disabled={!isValid}
+                    variant={!isValid ? 'danger' : 'primary'}
+                    width="100%"
+                  >
+                    {inputError || inputErrorDeposit || 'Deposit'}
+                  </Button>
+                </div>
               )}
-               {showApproveFlow && <ProgressSteps steps={[approval === ApprovalState.APPROVED]} />}
+              {showApproveFlow && <ProgressSteps steps={[approval === ApprovalState.APPROVED]} />}
               {/* {isExpertMode && swapErrorMessage ? <SwapCallbackError error={swapErrorMessage} /> : null}  */}
             </BottomGrouping>
           </CardBody>

@@ -2,6 +2,7 @@ import { Contract } from '@ethersproject/contracts'
 import { ChainId, WETH } from '@pancakeswap-libs/sdk'
 import { abi as IUniswapV2PairABI } from '@uniswap/v2-core/build/IUniswapV2Pair.json'
 import { useMemo } from 'react'
+import ABIStake from 'constants/abis/ABIStake'
 import ABIDex from 'constants/abis/ABIDex'
 import ABIRouter from 'constants/abis/ABIRouter'
 import ABIDepositor from 'constants/abis/ABIDepositor'
@@ -35,17 +36,21 @@ export function useTokenContract(tokenAddress?: string, withSignerIfPossible?: b
   return useContract(tokenAddress, ERC20_ABI, withSignerIfPossible)
 }
 
+export function useStakeContract(tokenAddress?: string, withSignerIfPossible?: boolean): Contract | null {
+  return useContract(tokenAddress, ABIStake, withSignerIfPossible)
+}
+
 export function useDepositerContract(DepositorAddress?: string, withSignerIfPossible?: boolean): Contract | null {
   return useContract(
     DepositorAddress, ABIDepositor, withSignerIfPossible)
 }
 
-export function useWithdrawClaiamableContract(ClaimableAddress?: string, withSignerIfPossible?: boolean): Contract | null {
+export function useWithdrawClaimableContract(ClaimableAddress?: string, withSignerIfPossible?: boolean): Contract | null {
   return useContract(
     ClaimableAddress, ABIWithdraw, withSignerIfPossible)
 }
 
-export function useWithdrawNonClaiamableContract(NonClaimableAddress?: string, withSignerIfPossible?: boolean): Contract | null {
+export function useWithdrawNonClaimableContract(NonClaimableAddress?: string, withSignerIfPossible?: boolean): Contract | null {
   return useContract(
     NonClaimableAddress, ABIWithdraw, withSignerIfPossible)
 }

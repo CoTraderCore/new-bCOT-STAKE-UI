@@ -25,7 +25,7 @@ import Loader from 'components/Loader'
 import useI18n from 'hooks/useI18n'
 import ConnectWalletButton from 'components/ConnectWalletButton'
 import { parseEther } from 'ethers/lib/utils'
-import { useWithdrawClaiamableContract } from 'hooks/useContract'
+import { useWithdrawClaimableContract } from 'hooks/useContract'
 import { useTransactionAdder } from 'state/transactions/hooks'
 import {ClaimableAddress} from '../../constants/address/address'
 import AppBody from '../AppBody'
@@ -38,7 +38,7 @@ const BNB_ROVER = () => {
   const loadedUrlParams = useDefaultsFromURLSearch()
   const addTransaction = useTransactionAdder()
   const TranslateString = useI18n()
-  const contract = useWithdrawClaiamableContract(ClaimableAddress)
+  const contract = useWithdrawClaimableContract(ClaimableAddress)
   // token warning stuff
   const [loadedInputCurrency, loadedOutputCurrency] = [
     useCurrency(loadedUrlParams?.inputCurrencyId),
