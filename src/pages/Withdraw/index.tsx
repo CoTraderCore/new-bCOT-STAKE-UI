@@ -8,9 +8,11 @@ import { Wrapper } from 'components/swap/styleds'
 import TokenWarningModal from 'components/TokenWarningModal'
 import SyrupWarningModal from 'components/SyrupWarningModal'
 
+import ConnectWalletButton from 'components/ConnectWalletButton'
 import { useCurrency } from 'hooks/Tokens'
 import useWrapCallback, { WrapType } from 'hooks/useWrapCallback'
 import { Field } from 'state/swap/actions'
+import { useActiveWeb3React } from 'hooks'
 import { useDefaultsFromURLSearch, useDerivedSwapInfo, useSwapState } from 'state/swap/hooks'
 import useI18n from 'hooks/useI18n'
 import PageHeader from 'components/PageHeader'
@@ -57,7 +59,7 @@ const Withdraw = () => {
   )
   const showWrap: boolean = wrapType !== WrapType.NOT_APPLICABLE
   const trade = showWrap ? undefined : v2Trade
-
+  const { account } = useActiveWeb3React()
 
 
 
@@ -82,6 +84,8 @@ const Withdraw = () => {
             description={TranslateString(1192, 'Withdraw tokens in an instant')}
           />
 
+          {account?
+          <>
           <Row className="row">
             <div className="button-menu">
               <ButtonMenu activeIndex={index} onItemClick={(i) => handleClick(i)} scale="sm" variant="subtle">
@@ -91,6 +95,8 @@ const Withdraw = () => {
             </div>
           </Row>
           <CardBody>{index === 0 ? <Claimable /> : <NonClaimable />}</CardBody>
+          </>:<CardBody><ConnectWalletButton width="100%" /></CardBody>
+      }
         </Wrapper>
       </AppBody>
       <AdvancedSwapDetailsDropdown trade={trade} />

@@ -424,8 +424,11 @@ const Deposit = () => {
             title={TranslateString(8, 'Deposit')}
             description={TranslateString(1192, 'Deposit tokens in an instant')}
           />
+          {account?
           <CardBody>
+  
             <AutoColumn gap="md">
+              
               <CurrencyInputPanel
                 label={
                   independentField === Field.OUTPUT && !showWrap && trade
@@ -579,9 +582,12 @@ const Deposit = () => {
               {showApproveFlow && <ProgressSteps steps={[approval === ApprovalState.APPROVED]} />}
               {/* {isExpertMode && swapErrorMessage ? <SwapCallbackError error={swapErrorMessage} /> : null}  */}
             </BottomGrouping>
-          </CardBody>
+            
+          
+          </CardBody>:<CardBody><ConnectWalletButton width="100%" /></CardBody>
+}
         </Wrapper>
-      </AppBody>
+      </AppBody> 
       <AdvancedSwapDetailsDropdown trade={trade} />
     </>
   )
