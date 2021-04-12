@@ -484,12 +484,17 @@ const Deposit = () => {
                   onChange={async (e) => {
                     setIsClaimable(e.currentTarget.value === 'true')
                     const changedIsClaimable = e.currentTarget.value === 'true'
-                    const earned = await (changedIsClaimable
-                      ? ClaimableStakeContract
-                      : NonClaimableStakeContract
-                    )?.earnedByShare(calculatedPoolAmount)
-
-                    onChangeEarnedRewards(parseFloat(web3.utils.fromWei(earned.toString())).toFixed(6))
+                    if(calculatedPoolAmount)
+                    {
+                      const earned = await (changedIsClaimable
+                        ? ClaimableStakeContract
+                        : NonClaimableStakeContract
+                      )?.earnedByShare(calculatedPoolAmount)
+                      
+                      if(earned)
+                      onChangeEarnedRewards(parseFloat(web3.utils.fromWei(earned.toString())).toFixed(6))
+                    }
+                    
                   }}
                   className="form-control"
                 >
