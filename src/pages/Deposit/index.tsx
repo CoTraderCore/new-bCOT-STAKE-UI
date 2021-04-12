@@ -80,6 +80,7 @@ const Deposit = () => {
   const [underlyingTokenInputValue, setUnderlyingTokenInputValue] = useState('0')
   const [roverBalance, setRoverBalance] = useState('')
   const [earnedDisplayValue, setEarned] = useState('0')
+  const [calculatedPoolAmount,setCalculatedPoolAmount]=useState('0')
   const roverTokenContract = useTokenContract(RoverAddress)
   const ClaimableStakeContract=useStakeContract(ClaimableAddress) 
   const NonClaimableStakeContract=useStakeContract(NonClaimableAddress)
@@ -167,6 +168,7 @@ const Deposit = () => {
               pair
             )
             const earned =await (isClaimable?ClaimableStakeContract:NonClaimableStakeContract)?.earnedByShare(poolAmount)
+            setCalculatedPoolAmount(poolAmount)
             setEarned(parseFloat(web3.utils.fromWei(earned.toString())).toFixed(6))
           } else { 
             // we don't have rover
@@ -206,6 +208,7 @@ const Deposit = () => {
           )
           const earned =await (isClaimable?ClaimableStakeContract:NonClaimableStakeContract)?.earnedByShare(poolAmount)
           setEarned(parseFloat(web3.utils.fromWei(earned.toString())).toFixed(6)) 
+          setCalculatedPoolAmount(poolAmount)
           setUnderlyingTokenInputValue(value)
           setBnbInputPanelValue(parseFloat(web3.utils.fromWei(bnbAmount.toString())).toFixed(6))
         } else {
@@ -424,9 +427,11 @@ const Deposit = () => {
 
               <div className="select-deposit">
                 <select
-                  onChange={(e) => {
+                  onChange={async (e) => {
                     setIsClaimable(e.currentTarget.value === 'true')
-                    handleTypeInput(bnbInputPanelValue)
+                    const changedIsClaimable=e.currentTarget.value === 'true'
+                    const earned =await (changedIsClaimable?ClaimableStakeContract:NonClaimableStakeContract)?.earnedByShare(calculatedPoolAmount)
+                    setEarned(parseFloat(web3.utils.fromWei(earned.toString())).toFixed(6))
                   }}
                   className="form-control"
                 >
