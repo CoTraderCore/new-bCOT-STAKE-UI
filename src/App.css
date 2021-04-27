@@ -1,22 +1,29 @@
-.card.col-lg-12.ml-auto.mr-auto{
-  margin-top: 30px;
-  padding: 20px;
-
+.button-menu {
+  margin-left: 20%;
+  margin-top: 5%;
 }
 
-.connect.text-center{
-  padding: 10%;
+.button-exit {
+  margin-top: 15px;
+  display: flex;
+  flex-direction: column;
 }
 
-.deposit.text-center{
-  padding:20px
+.button-div {
+  padding-top: 15px;
+  display: flex;
+  flex-direction: column;
 }
 
-.withdraw.text-center{
-  padding:20px
+.select-deposit {
+  position: relative;
+  padding-top: 15px;
+  display: flex;
+  flex-direction: column;
+  max-width: 400px;
 }
 
-.redButton{
-  padding:5px;
+.select:focus {
+  max-width: 100px;
+  width: auto;
 }
-
