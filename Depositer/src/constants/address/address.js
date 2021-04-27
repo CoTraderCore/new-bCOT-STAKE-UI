@@ -1,0 +1,6 @@
+export const AddressDepositor='0xddBfdfA3535135e0517a84C627542Cc1751a3a55'
+export const ClaimableAddress='0xaa72d42e0eB92665ceba49edE5A444C7dE5FaC41'
+export const NonClaimableAddress='0x4A8f4cAdccf06dF816d9117E5889B9F2380416C1'
+export const DEXFormulaAddress='0x3a9EAB12041d0eE60db4fF8afF636F0bD024f402'
+export const RouterAddress='0xe776307ca4F26818540273AEa371516AFF1F0925'
+export const RoverAddress='0x44bdc3a48677e4814e338da0361c1fFfe9037d18'
