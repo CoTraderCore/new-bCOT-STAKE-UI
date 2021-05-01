@@ -1,4 +1,4 @@
-export const AddressDepositor='0x3ffa0CbFEf7E3a0112CCf7333193ac849248F375'
+export const AddressDepositor='0x11bf3cDc7F700C36C870eF671B841EF353b278ca'
 export const ClaimableAddress='0xF7861a665F5a1f10052Dd12370dBA653A521aa5f'
 export const NonClaimableAddress='0xF7861a665F5a1f10052Dd12370dBA653A521aa5f'
 export const DEXFormulaAddress='0xa74c42dC3AfE21fA3015E7c2e958dD613ba6829C'
