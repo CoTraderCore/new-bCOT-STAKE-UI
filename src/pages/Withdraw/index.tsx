@@ -1,6 +1,10 @@
 import { Token } from '@pancakeswap-libs/sdk'
 import React, { useCallback, useMemo, useState } from 'react'
-import { CardBody, ButtonMenu, ButtonMenuItem } from '@pancakeswap-libs/uikit'
+import {
+  CardBody,
+  // ButtonMenu,
+  // ButtonMenuItem
+} from '@pancakeswap-libs/uikit'
 import CardNav from 'components/CardNav'
 import Row from 'components/Row'
 import AdvancedSwapDetailsDropdown from 'components/swap/AdvancedSwapDetailsDropdown'
@@ -17,14 +21,14 @@ import { useDefaultsFromURLSearch, useDerivedSwapInfo, useSwapState } from 'stat
 import useI18n from 'hooks/useI18n'
 import PageHeader from 'components/PageHeader'
 import Claimable from '../Claimable'
-import NonClaimable from '../Non-Claimable'
+// import NonClaimable from '../Non-Claimable'
 import AppBody from '../AppBody'
 
 import '../../App.css'
 
 const Withdraw = () => {
-  const [index, setIndex] = useState(0)
-  const handleClick = (newIndex) => setIndex(newIndex)
+  // const [index, setIndex] = useState(0)
+  // const handleClick = (newIndex) => setIndex(newIndex)
   const loadedUrlParams = useDefaultsFromURLSearch()
   const TranslateString = useI18n()
 
@@ -87,14 +91,25 @@ const Withdraw = () => {
           {account?
           <>
           <Row className="row">
-            <div className="button-menu">
-              <ButtonMenu activeIndex={index} onItemClick={(i) => handleClick(i)} scale="sm" variant="subtle">
-                <ButtonMenuItem id="claimable-nav-link">Claimable</ButtonMenuItem>
-                <ButtonMenuItem id="non-claimable-nav-link">Non Claimable</ButtonMenuItem>
-              </ButtonMenu>
-            </div>
+          {
+           /*
+           <div className="button-menu">
+             <ButtonMenu activeIndex={index} onItemClick={(i) => handleClick(i)} scale="sm" variant="subtle">
+               <ButtonMenuItem id="claimable-nav-link">Claimable</ButtonMenuItem>
+               <ButtonMenuItem id="non-claimable-nav-link">Non Claimable</ButtonMenuItem>
+             </ButtonMenu>
+           </div>
+          */
+          }
+
           </Row>
-          <CardBody>{index === 0 ? <Claimable /> : <NonClaimable />}</CardBody>
+          {
+            /*
+             <CardBody>{index === 0 ? <Claimable /> : <NonClaimable />}</CardBody>
+            */
+          }
+
+          <Claimable />
           </>:<CardBody><ConnectWalletButton width="100%" /></CardBody>
       }
         </Wrapper>
