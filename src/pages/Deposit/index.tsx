@@ -45,7 +45,7 @@ import {
 } from '../../hooks/useContract'
 import {
   ClaimableAddress,
-  NonClaimableAddress,
+  // NonClaimableAddress,
   AddressDepositor,
   DEXFormulaAddress,
   RouterAddress,
@@ -74,12 +74,12 @@ const Deposit = () => {
   const Router = useRouterContract(RouterAddress)
   const loadedUrlParams = useDefaultsFromURLSearch()
   const TranslateString = useI18n()
-  const [isClaimable, setIsClaimable] = useState(true)
+  // const [isClaimable, setIsClaimable] = useState(true)
   const [roverBalance, setRoverBalance] = useState('')
   const [useRover, setUserRover] = useState(false)
   const roverTokenContract = useTokenContract(RoverAddress)
   const ClaimableStakeContract = useStakeContract(ClaimableAddress)
-  const NonClaimableStakeContract = useStakeContract(NonClaimableAddress)
+  // const NonClaimableStakeContract = useStakeContract(NonClaimableAddress)
 
   const [loadedInputCurrency, loadedOutputCurrency] = [
     useCurrency(loadedUrlParams?.inputCurrencyId),
@@ -157,7 +157,10 @@ const Deposit = () => {
 
     async function getEarnedRewards() {
       if (account && calculatedPoolAmount) {
-        const earned =  await (isClaimable ? ClaimableStakeContract : NonClaimableStakeContract) ?.earnedByShare(
+        // const earned =  await (isClaimable ? ClaimableStakeContract : NonClaimableStakeContract) ?.earnedByShare(
+        //   calculatedPoolAmount
+        // )
+        const earned =  await (ClaimableStakeContract) ?.earnedByShare(
           calculatedPoolAmount
         )
         onChangeEarnedRewards(parseFloat(web3.utils.fromWei(earned.toString())).toFixed(6))
@@ -168,7 +171,13 @@ const Deposit = () => {
     getRoverBalance()
     getEarnedRewards()
 
-  }, [account, roverTokenContract,ClaimableStakeContract,NonClaimableStakeContract,calculatedPoolAmount,isClaimable,onChangeEarnedRewards,web3.utils])
+  }, [account,
+      roverTokenContract,
+      ClaimableStakeContract,
+      // NonClaimableStakeContract,
+      calculatedPoolAmount,
+      // isClaimable,
+      onChangeEarnedRewards,web3.utils])
 
 
   const handleTypeInput = useCallback(
@@ -187,7 +196,11 @@ const Deposit = () => {
               web3.utils.toWei(UnderlyingAmount.toString()),
               pair
             )
-            const earned = await (isClaimable ? ClaimableStakeContract : NonClaimableStakeContract)?.earnedByShare(
+            // const earned = await (isClaimable ? ClaimableStakeContract : NonClaimableStakeContract)?.earnedByShare(
+            //   poolAmount
+            // )
+
+            const earned = await (ClaimableStakeContract)?.earnedByShare(
               poolAmount
             )
             onChangePoolAmount(poolAmount)
@@ -196,7 +209,11 @@ const Deposit = () => {
           } else {
             // we don't have rover
             const poolAmount = await DexFormula.calculatePoolToMint(BNBAmountHalf, UnderlyingAmountForRewards, pair)
-            const earned = await (isClaimable ? ClaimableStakeContract : NonClaimableStakeContract)?.earnedByShare(
+            // const earned = await (isClaimable ? ClaimableStakeContract : NonClaimableStakeContract)?.earnedByShare(
+            //   poolAmount
+            // )
+
+            const earned = await (ClaimableStakeContract)?.earnedByShare(
               poolAmount
             )
 
@@ -219,8 +236,8 @@ const Deposit = () => {
       UNDERLYING_TOKEN,
       inputCurrency,
       ClaimableStakeContract,
-      NonClaimableStakeContract,
-      isClaimable,
+      // NonClaimableStakeContract,
+      // isClaimable,
       roverBalance,
     ]
   )
@@ -242,7 +259,11 @@ const Deposit = () => {
             web3.utils.toWei(value),
             pair
           )
-          const earned = await (isClaimable ? ClaimableStakeContract : NonClaimableStakeContract)?.earnedByShare(
+          // const earned = await (isClaimable ? ClaimableStakeContract : NonClaimableStakeContract)?.earnedByShare(
+          //   poolAmount
+          // )
+
+          const earned = await (ClaimableStakeContract)?.earnedByShare(
             poolAmount
           )
 
@@ -265,8 +286,8 @@ const Deposit = () => {
       UNDERLYING_TOKEN,
       inputCurrency,
       ClaimableStakeContract,
-      NonClaimableStakeContract,
-      isClaimable,
+      // NonClaimableStakeContract,
+      // isClaimable,
     ]
   )
 
@@ -371,7 +392,7 @@ const Deposit = () => {
       if (contract != null) {
         try {
           const inputAmount = parseEther(typedValue)
-          const txReceipt = await contract.deposit(isClaimable, { value: inputAmount._hex })
+          const txReceipt = await contract.deposit(true, { value: inputAmount._hex })
           addTransaction(txReceipt)
         } catch (error) {
           console.error('Could not deposit', error)
@@ -402,7 +423,7 @@ const Deposit = () => {
           // const finalAmount= web3.utils.toBN(amount._hex)
           // console.log(finalAmount)
           // console.log(typeof finalAmount)
-          const txReceipt = await contract.depositETHAndERC20(isClaimable, roverAmount._hex, { value: bnbAmount._hex })
+          const txReceipt = await contract.depositETHAndERC20(true, roverAmount._hex, { value: bnbAmount._hex })
           addTransaction(txReceipt)
         } catch (error) {
           console.error('Could not deposit', error)
@@ -506,32 +527,37 @@ const Deposit = () => {
                 </>
               ) : null} */}
 
-              <div className="select-deposit">
-                <select
-                  onChange={async (e) => {
-                    setIsClaimable(e.currentTarget.value === 'true')
-                    const changedIsClaimable = e.currentTarget.value === 'true'
-                    if(calculatedPoolAmount)
-                    {
-                      const earned = await (changedIsClaimable
-                        ? ClaimableStakeContract
-                        : NonClaimableStakeContract
-                      )?.earnedByShare(calculatedPoolAmount)
+              {
+                /*
+                <div className="select-deposit">
+                  <select
+                    onChange={async (e) => {
+                      setIsClaimable(e.currentTarget.value === 'true')
+                      const changedIsClaimable = e.currentTarget.value === 'true'
+                      if(calculatedPoolAmount)
+                      {
+                        const earned = await (changedIsClaimable
+                          ? ClaimableStakeContract
+                          : NonClaimableStakeContract
+                        )?.earnedByShare(calculatedPoolAmount)
 
-                      if(earned)
-                      onChangeEarnedRewards(parseFloat(web3.utils.fromWei(earned.toString())).toFixed(6))
-                    }
+                        if(earned)
+                        onChangeEarnedRewards(parseFloat(web3.utils.fromWei(earned.toString())).toFixed(6))
+                      }
 
-                  }}
-                  className="form-control"
-                >
-                  <option className="select-option" selected value="true">
-                    {' '}
-                    Claimable
-                  </option>
-                  <option value="false">Non-Claimable</option>
-                </select>
-              </div>
+                    }}
+                    className="form-control"
+                  >
+                    <option className="select-option" selected value="true">
+                      {' '}
+                      Claimable
+                    </option>
+                    <option value="false">Non-Claimable</option>
+                  </select>
+                </div>
+                */
+              }
+
               <div>{isValid && earnedRewards ? `Estimated rewards: ${earnedRewards} ` : null}</div>
 
               {/* {showWrap ? null : (
