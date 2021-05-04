@@ -489,7 +489,7 @@ const Deposit = () => {
                 ?
                 (
                 <RoverInputPanel
-                  label={TranslateString(76, 'Rover Amount')}
+                  label={TranslateString(76, `${UNDERLYING_NAME} Amount`)}
                   value={typedValue2}
                   roverBalance={roverBalance}
                   showMaxButton

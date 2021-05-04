@@ -42,7 +42,7 @@ const Container = styled.div<{ hideInput: boolean }>`
   border-radius: 16px;
   background-color: ${({ theme }) => theme.colors.input};
   box-shadow: ${({ theme }) => theme.shadows.inset};
-  
+
 `
 
 interface RoverInputPanelProps {
@@ -95,8 +95,8 @@ export default function RoverInputPanel({
               <Text fontSize="14px">{translatedLabel}</Text>
               {account && (
                  <Text onClick={onMax} fontSize="14px" style={{ display: 'inline', cursor: 'pointer' }}>
-                {!hideBalance 
-                  ? `Rover Balance: ${roverBalance}`
+                {!hideBalance
+                  ? `balance: ${roverBalance}`
                   : ' -'}
               </Text>
               )}
@@ -121,7 +121,7 @@ export default function RoverInputPanel({
               )}
             </>
           )}
-         
+
         </InputRow>
       </Container>
       {!disableCurrencySelect && onCurrencySelect && (
