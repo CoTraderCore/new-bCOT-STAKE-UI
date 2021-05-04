@@ -45,7 +45,6 @@ import {
 } from '../../hooks/useContract'
 import {
   ClaimableAddress,
-  // NonClaimableAddress,
   AddressDepositor,
   DEXFormulaAddress,
   RouterAddress,
@@ -74,12 +73,11 @@ const Deposit = () => {
   const Router = useRouterContract(RouterAddress)
   const loadedUrlParams = useDefaultsFromURLSearch()
   const TranslateString = useI18n()
-  // const [isClaimable, setIsClaimable] = useState(true)
   const [roverBalance, setRoverBalance] = useState('')
   const [useRover, setUserRover] = useState(false)
   const roverTokenContract = useTokenContract(RoverAddress)
   const ClaimableStakeContract = useStakeContract(ClaimableAddress)
-  // const NonClaimableStakeContract = useStakeContract(NonClaimableAddress)
+
 
   const [loadedInputCurrency, loadedOutputCurrency] = [
     useCurrency(loadedUrlParams?.inputCurrencyId),
@@ -101,12 +99,6 @@ const Deposit = () => {
     setSyrupTransactionType('')
   }, [])
 
-
-  // const [isExpertMode] = useExpertModeManager()
-
-  // const [allowedSlippage] = useUserSlippageTolerance()
-
-  // swap state
   const { independentField, typedValue, typedValue2, earnedRewards, poolAmount: calculatedPoolAmount } = useSwapState()
   const { v2Trade, currencyBalances, parsedAmount, currencies, inputError, inputErrorDeposit } = useDerivedSwapInfo()
   const { wrapType, execute: onWrap, inputError: wrapInputError } = useWrapCallback(
@@ -135,15 +127,6 @@ const Deposit = () => {
     onChangePoolAmount,
   } = useSwapActionHandlers()
   const isValid = !inputError && !inputErrorDeposit
-  // const dependentField: Field = independentField === Field.INPUT ? Field.OUTPUT : Field.INPUT
-
-  //   const changedIsClaimable = e.currentTarget.value === 'true'
-  // const earned = await (changedIsClaimable
-  //   ? ClaimableStakeContract
-  //   : NonClaimableStakeContract
-  // )?.earnedByShare(calculatedPoolAmount)
-
-  // onChangeEarnedRewards(parseFloat(web3.utils.fromWei(earned.toString())).toFixed(6))
 
   useEffect(() => {
     async function getRoverBalance() {
@@ -157,26 +140,19 @@ const Deposit = () => {
 
     async function getEarnedRewards() {
       if (account && calculatedPoolAmount) {
-        // const earned =  await (isClaimable ? ClaimableStakeContract : NonClaimableStakeContract) ?.earnedByShare(
-        //   calculatedPoolAmount
-        // )
         const earned =  await (ClaimableStakeContract) ?.earnedByShare(
           calculatedPoolAmount
         )
         onChangeEarnedRewards(parseFloat(web3.utils.fromWei(earned.toString())).toFixed(6))
       }
     }
-
-
     getRoverBalance()
     getEarnedRewards()
 
   }, [account,
       roverTokenContract,
       ClaimableStakeContract,
-      // NonClaimableStakeContract,
       calculatedPoolAmount,
-      // isClaimable,
       onChangeEarnedRewards,web3.utils])
 
 
@@ -191,14 +167,12 @@ const Deposit = () => {
           const UnderlyingAmountForRewards = await DexFormula.routerRatio(addressTemp, UNDERLYING_TOKEN, BNBAmountHalf)
           if (roverBalance !== '' && roverBalance !== '0') {
             onUserInput2(Field.INPUT2, parseFloat(web3.utils.fromWei(UnderlyingAmount.toString())).toFixed(6))
+
             const poolAmount = await DexFormula.calculatePoolToMint(
               web3.utils.toWei(value),
               web3.utils.toWei(UnderlyingAmount.toString()),
               pair
             )
-            // const earned = await (isClaimable ? ClaimableStakeContract : NonClaimableStakeContract)?.earnedByShare(
-            //   poolAmount
-            // )
 
             const earned = await (ClaimableStakeContract)?.earnedByShare(
               poolAmount
@@ -209,9 +183,6 @@ const Deposit = () => {
           } else {
             // we don't have rover
             const poolAmount = await DexFormula.calculatePoolToMint(BNBAmountHalf, UnderlyingAmountForRewards, pair)
-            // const earned = await (isClaimable ? ClaimableStakeContract : NonClaimableStakeContract)?.earnedByShare(
-            //   poolAmount
-            // )
 
             const earned = await (ClaimableStakeContract)?.earnedByShare(
               poolAmount
@@ -236,8 +207,6 @@ const Deposit = () => {
       UNDERLYING_TOKEN,
       inputCurrency,
       ClaimableStakeContract,
-      // NonClaimableStakeContract,
-      // isClaimable,
       roverBalance,
     ]
   )
@@ -248,9 +217,6 @@ const Deposit = () => {
         // const display = web3.utils.toWei(value)
         const addressTemp = await Router.WETH()
         if (tryParseAmount(value, inputCurrency ?? undefined)) {
-          // const BNBAmountHalf = web3.utils.toWei(BigNumber.from(value).div(2).toString())
-          // const UnderlyingAmountForRewards = await DexFormula.routerRatio(addressTemp, UNDERLYING_TOKEN, BNBAmountHalf)
-
           onUserInput2(Field.INPUT2, value)
           const bnbAmount = await DexFormula.routerRatio(UNDERLYING_TOKEN, addressTemp, web3.utils.toWei(value))
           onUserInput(Field.INPUT, parseFloat(web3.utils.fromWei(bnbAmount.toString())).toFixed(6))
@@ -259,9 +225,6 @@ const Deposit = () => {
             web3.utils.toWei(value),
             pair
           )
-          // const earned = await (isClaimable ? ClaimableStakeContract : NonClaimableStakeContract)?.earnedByShare(
-          //   poolAmount
-          // )
 
           const earned = await (ClaimableStakeContract)?.earnedByShare(
             poolAmount
@@ -286,17 +249,8 @@ const Deposit = () => {
       UNDERLYING_TOKEN,
       inputCurrency,
       ClaimableStakeContract,
-      // NonClaimableStakeContract,
-      // isClaimable,
     ]
   )
-
-  // const formattedAmounts = {
-  //   [independentField]: typedValue,
-  //   [dependentField]: showWrap
-  //     ? parsedAmounts[independentField]?.toExact() ?? ''
-  //     : parsedAmounts[dependentField]?.toSignificant(6) ?? '',
-  // }
 
   const route = trade?.route
   const userHasSpecifiedInputOutput = Boolean(
@@ -317,16 +271,8 @@ const Deposit = () => {
   // check if user has gone through approval process, used to show two step buttons, reset on token change
   const [approvalSubmitted, setApprovalSubmitted] = useState<boolean>(false)
 
-  // const hey=useApproveCallback(typedValue2 as unknown as CurrencyAmount, RouterAddress)
-
   const maxAmountInput: CurrencyAmount | undefined = maxAmountSpend(currencyBalances[Field.INPUT])
   const maxAmountInput2: string = roverBalance
-  // const atMaxAmountInput = Boolean(maxAmountInput && parsedAmounts[Field.INPUT]?.equalTo(maxAmountInput))
-  // const atMaxAmountInput2 = Boolean(maxAmountInput2 && parsedAmounts[Field.INPUT2]?.equalTo(maxAmountInput2))
-  // const { priceImpactWithoutFee } = computeTradePriceBreakdown(trade)
-
-  // // warnings on slippage
-  // const priceImpactSeverity = warningSeverity(priceImpactWithoutFee)
 
   // mark when a user has submitted an approval, reset onTokenSelection for input field
   useEffect(() => {
@@ -338,18 +284,11 @@ const Deposit = () => {
   // show approve flow when: no error on inputs, not approved or pending, or approved in current session
   // never show if price impact is above threshold in non expert mode
   const showApproveFlow =
-    // !inputError &&
-    // !inputErrorDeposit &&
     (approval === ApprovalState.NOT_APPROVED ||
       approval === ApprovalState.PENDING ||
       (approvalSubmitted && approval === ApprovalState.APPROVED))
 
 
-  //   useLayoutEffect(() => {
-  //     return () => {
-  //        typedValue2='0'
-  //     }
-  // }, [])
   // This will check to see if the user has selected Syrup to either buy or sell.
   // If so, they will be alerted with a warning message.
   const checkForSyrup = useCallback(
@@ -419,10 +358,6 @@ const Deposit = () => {
         try {
           const bnbAmount = parseEther(typedValue)
           const roverAmount = parseEther(typedValue2)
-          // console.log(contract)
-          // const finalAmount= web3.utils.toBN(amount._hex)
-          // console.log(finalAmount)
-          // console.log(typeof finalAmount)
           const txReceipt = await contract.depositETHAndERC20(true, roverAmount._hex, { value: bnbAmount._hex })
           addTransaction(txReceipt)
         } catch (error) {
@@ -503,85 +438,9 @@ const Deposit = () => {
               null
             }
 
-              {/* <AutoColumn justify="space-between">
-                <AutoRow justify={isExpertMode ? 'space-between' : 'center'} style={{ padding: '0 1rem' }}>
-                  {recipient === null && !showWrap && isExpertMode ? (
-                    <LinkStyledButton id="add-recipient-button" onClick={() => onChangeRecipient('')}>
-                      + Add a send (optional)
-                    </LinkStyledButton>
-                  ) : null}
-                </AutoRow>
-              </AutoColumn> */}
 
-              {/* {recipient !== null && !showWrap ? (
-                <>
-                  <AutoRow justify="space-between" style={{ padding: '0 1rem' }}>
-                    <ArrowWrapper clickable={false}>
-                      <ArrowDown size="16" color={theme.colors.textSubtle} />
-                    </ArrowWrapper>
-                    <LinkStyledButton id="remove-recipient-button" onClick={() => onChangeRecipient(null)}>
-                      - Remove send
-                    </LinkStyledButton>
-                  </AutoRow>
-                  <AddressInputPanel id="recipient" value={recipient} onChange={onChangeRecipient} />
-                </>
-              ) : null} */}
+            <div>{isValid && earnedRewards ? `Estimated rewards: ${earnedRewards} ` : null}</div>
 
-              {
-                /*
-                <div className="select-deposit">
-                  <select
-                    onChange={async (e) => {
-                      setIsClaimable(e.currentTarget.value === 'true')
-                      const changedIsClaimable = e.currentTarget.value === 'true'
-                      if(calculatedPoolAmount)
-                      {
-                        const earned = await (changedIsClaimable
-                          ? ClaimableStakeContract
-                          : NonClaimableStakeContract
-                        )?.earnedByShare(calculatedPoolAmount)
-
-                        if(earned)
-                        onChangeEarnedRewards(parseFloat(web3.utils.fromWei(earned.toString())).toFixed(6))
-                      }
-
-                    }}
-                    className="form-control"
-                  >
-                    <option className="select-option" selected value="true">
-                      {' '}
-                      Claimable
-                    </option>
-                    <option value="false">Non-Claimable</option>
-                  </select>
-                </div>
-                */
-              }
-
-              <div>{isValid && earnedRewards ? `Estimated rewards: ${earnedRewards} ` : null}</div>
-
-              {/* {showWrap ? null : (
-                <Card padding=".25rem .75rem 0 .75rem" borderRadius="20px">
-                  <AutoColumn gap="4px">
-                    {Boolean(trade) && (
-                      <RowBetween align="center">
-                        <Text fontSize="14px">{TranslateString(1182, 'Price')}</Text>
-                        <TradePrice
-                          price={trade?.executionPrice}
-                          showInverted={showInverted}
-                          setShowInverted={setShowInverted}
-                        />
-                      </RowBetween>
-                    )}
-                    {allowedSlippage !== INITIAL_ALLOWED_SLIPPAGE && (
-                      <RowBetween align="center">
-                        <Text fontSize="14px">{TranslateString(88, 'Slippage Tolerance')}</Text>
-                        <Text fontSize="14px">{allowedSlippage / 100}%</Text>
-                      </RowBetween>
-                    )}
-                  </AutoColumn>
-                </Card>
-              )} */}
             </AutoColumn>
             <BottomGrouping>
               {!account ? (
@@ -632,12 +491,11 @@ const Deposit = () => {
                   {inputError || inputErrorDeposit || 'Deposit'}
                 </Button>
               </div>
-              {/* {isExpertMode && swapErrorMessage ? <SwapCallbackError error={swapErrorMessage} /> : null}  */}
             </BottomGrouping>
 
 
           </CardBody>:<CardBody><ConnectWalletButton width="100%" /></CardBody>
-}
+       }
         </Wrapper>
       </AppBody>
       <AdvancedSwapDetailsDropdown trade={trade} />
