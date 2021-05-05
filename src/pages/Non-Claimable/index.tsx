@@ -1,4 +1,4 @@
-import { JSBI, Token, Trade } from '@pancakeswap-libs/sdk'
+import { JSBI, Token, Trade } from 'pancakes-sdk'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { CardBody, Button, Text } from '@pancakeswap-libs/uikit'
 import { GreyCard } from 'components/Card'

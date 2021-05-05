@@ -1,4 +1,4 @@
-import { Token } from '@pancakeswap-libs/sdk'
+import { Token } from 'pancakes-sdk'
 import React, { useCallback, useMemo, useState } from 'react'
 import {
   CardBody,

@@ -1,4 +1,4 @@
-import { CurrencyAmount, JSBI, Token, TokenAmount } from '@pancakeswap-libs/sdk'
+import { CurrencyAmount, JSBI, Token, TokenAmount } from 'pancakes-sdk'
 import { ethers } from 'ethers'
 import { BigNumber } from '@ethersproject/bignumber'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
@@ -126,6 +126,7 @@ const Deposit = () => {
     onChangeEarnedRewards,
     onChangePoolAmount,
   } = useSwapActionHandlers()
+
   const isValid = !inputError && !inputErrorDeposit
 
   useEffect(() => {
@@ -153,7 +154,8 @@ const Deposit = () => {
       roverTokenContract,
       ClaimableStakeContract,
       calculatedPoolAmount,
-      onChangeEarnedRewards,web3.utils])
+      onChangeEarnedRewards,web3.utils]
+  )
 
 
   const handleTypeInput = useCallback(

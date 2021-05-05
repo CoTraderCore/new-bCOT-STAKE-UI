@@ -2,7 +2,7 @@ import React, { useState, useCallback,useEffect } from 'react'
 import { ethers } from "ethers";
 import { BigNumber } from '@ethersproject/bignumber'
 import { useTokenContract } from 'hooks/useContract'
-import { Currency } from '@pancakeswap-libs/sdk'
+import { Currency } from 'pancakes-sdk'
 import { Button, Text } from '@pancakeswap-libs/uikit'
 import styled from 'styled-components'
 import { darken } from 'polished'
