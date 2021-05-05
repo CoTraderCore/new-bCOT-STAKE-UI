@@ -5149,10 +5149,10 @@ code-point-at@^1.0.0:
   resolved "https://registry.yarnpkg.com/code-point-at/-/code-point-at-1.1.0.tgz#0d070b4d043a5bea33a2f1a40e2edb3d9a4ccf77"
   integrity sha1-DQcLTQQ6W+ozovGkDi7bPZpMz3c=
 
-cofetch-uikit@^0.15.2:
-  version "0.15.2"
-  resolved "https://registry.npmjs.org/cofetch-uikit/-/cofetch-uikit-0.15.2.tgz#23a2065c5888f571c5e2a0e8de4ba98fca4ad806"
-  integrity sha512-3QSzJK0P/nGtnknC4/GNZbOVS3tZ54fB/iiFs0mghOQSrNbVERr+t9LlabjdVJt36QNHAvHd4a5UEygwtCMqRw==
+cofetch-uikit@^0.15.3:
+  version "0.15.3"
+  resolved "https://registry.npmjs.org/cofetch-uikit/-/cofetch-uikit-0.15.3.tgz#ddfea57d665f2a81a56789b91743d2a83883c06f"
+  integrity sha512-KJFhsHxYHJyhOmxdwBYKT/ysMFRyZWCFH8Q81Y7lgcqPiuLf479aj+zT6lsUSkl/OQ9xa6L4u0UNUIrrph0hCA==
   dependencies:
     "@types/lodash" "^4.14.162"
     "@types/styled-system" "^5.1.10"
