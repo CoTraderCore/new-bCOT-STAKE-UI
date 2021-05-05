@@ -3,7 +3,7 @@ import { ethers } from "ethers";
 import { BigNumber } from '@ethersproject/bignumber'
 import { useTokenContract } from 'hooks/useContract'
 import { Currency } from 'pancakes-sdk'
-import { Button, Text } from '@pancakeswap-libs/uikit'
+import { Button, Text } from 'cofetch-uikit'
 import styled from 'styled-components'
 import { darken } from 'polished'
 import useI18n from 'hooks/useI18n'

@@ -1,6 +1,6 @@
 import React, { ReactNode } from 'react'
 import styled from 'styled-components'
-import { Heading, IconButton, Text, Flex, useModal, Svg } from '@pancakeswap-libs/uikit'
+import { Heading, IconButton, Text, Flex, useModal, Svg } from 'cofetch-uikit'
 import useI18n from 'hooks/useI18n'
 import RecentTransactionsModal from './RecentTransactionsModal'
 

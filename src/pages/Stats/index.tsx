@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { CardBody} from '@pancakeswap-libs/uikit'
+import { CardBody} from 'cofetch-uikit'
 import CardNav from 'components/CardNav'
 import {  BottomGrouping, Wrapper } from 'components/swap/styleds'
 

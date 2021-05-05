@@ -1,4 +1,4 @@
-import { ButtonMenu, ButtonMenuItem, CardBody } from "@pancakeswap-libs/uikit"
+import { ButtonMenu, ButtonMenuItem, CardBody } from "cofetch-uikit"
 import Row from "components/Row"
 import BNB_ROVER from "pages/BNB_ROVER"
 import React, { useState } from "react"

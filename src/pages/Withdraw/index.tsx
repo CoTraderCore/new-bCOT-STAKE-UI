@@ -4,7 +4,7 @@ import {
   CardBody,
   // ButtonMenu,
   // ButtonMenuItem
-} from '@pancakeswap-libs/uikit'
+} from 'cofetch-uikit'
 import CardNav from 'components/CardNav'
 import Row from 'components/Row'
 import AdvancedSwapDetailsDropdown from 'components/swap/AdvancedSwapDetailsDropdown'
