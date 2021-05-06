@@ -85,7 +85,6 @@ const Withdraw = () => {
         <Wrapper id="withdraw-page">
           <PageHeader
             title={TranslateString(8, 'Withdraw')}
-            description={TranslateString(1192, 'Withdraw tokens in an instant')}
           />
 
           {account?

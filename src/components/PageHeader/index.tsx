@@ -38,12 +38,12 @@ const PageHeader = ({ title, description, children }: PageHeaderProps) => {
         <Details>
           <Heading mb="8px">{title}</Heading>
           {description && (
-            <Text color="textSubtle" fontSize="14px">
+            <Text color="textSubtle" fontSize="18px" fontWeight="bold">
               {description}
             </Text>
           )}
         </Details>
-        
+
         <IconButton
           variant="text"
           onClick={onPresentRecentTransactions}

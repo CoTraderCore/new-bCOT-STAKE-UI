@@ -131,6 +131,24 @@ const Deposit = () => {
   const isValid = !inputError && !inputErrorDeposit
 
   useEffect(() => {
+    async function getAPR(){
+      if (account && roverTokenContract && ClaimableStakeContract){
+        const totalSupply = web3.utils.fromWei(String(await ClaimableStakeContract.totalSupply()))
+        const totalRewards = web3.utils.fromWei(String(await roverTokenContract.balanceOf(ClaimableAddress)))
+        // APR = 100% * ( deposits / rewards) * (365 / 30)
+        const _apr = 100 * (Number(totalRewards) / Number(totalSupply)) * (365 / 30)
+        const resApr = Number(_apr).toFixed(4)
+        setApr(resApr)
+      }
+    }
+    getAPR()
+  }, [apr,
+      account,
+      roverTokenContract,
+      ClaimableStakeContract,
+      web3.utils])
+
+  useEffect(() => {
     async function getRoverBalance() {
       if (account && roverTokenContract) {
         const amount = await roverTokenContract.balanceOf(account)
@@ -145,11 +163,6 @@ const Deposit = () => {
         const userShare = web3.utils.fromWei(String(calculatedPoolAmount))
         const totalSupply = web3.utils.fromWei(String(await ClaimableStakeContract.totalSupply()))
         const totalRewards = web3.utils.fromWei(String(await roverTokenContract.balanceOf(ClaimableAddress)))
-        // APR = 100% * ( deposits / rewards) * (365 / 30)
-        const _apr = 100 * (Number(totalRewards) / Number(totalSupply)) * (365 / 30)
-        const resApr = Number(_apr).toFixed(4)
-        setApr(resApr)
-        // not used
         const earned = Number(totalRewards) * Number(userShare) / Number(totalSupply)
         onChangeEarnedRewards(String(earned))
       }
@@ -161,7 +174,8 @@ const Deposit = () => {
       roverTokenContract,
       ClaimableStakeContract,
       calculatedPoolAmount,
-      onChangeEarnedRewards,web3.utils]
+      onChangeEarnedRewards,
+      web3.utils]
   )
 
 
@@ -393,8 +407,8 @@ const Deposit = () => {
       <AppBody>
         <Wrapper id="swap-page">
           <PageHeader
-            title={TranslateString(8, 'Deposit')}
-            description={TranslateString(1192, 'Deposit tokens in an instant')}
+            title={TranslateString(8, `Deposit to Earn APY:`)}
+            description={TranslateString(1192, `${Number(Number(Number(apr) * 2.718).toFixed(2)).toLocaleString()}  %`)}
           />
           {account?
           <CardBody>
@@ -449,10 +463,8 @@ const Deposit = () => {
 
             {
               // <div>{isValid && earnedRewards ? `Estimated rewards: ${earnedRewards} ` : null}</div>
+              // <strong>{isValid && apr ? `APR: ${Number(Number(apr).toFixed(2)).toLocaleString()} %` : null}</strong>
             }
-
-
-            <div>{isValid && apr ? `apr: ${apr} %` : null}</div>
 
             </AutoColumn>
             <BottomGrouping>
