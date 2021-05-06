@@ -100,7 +100,7 @@ const Deposit = () => {
     setSyrupTransactionType('')
   }, [])
 
-  const { independentField, typedValue, typedValue2, earnedRewards, poolAmount: calculatedPoolAmount } = useSwapState()
+  const { independentField, typedValue, typedValue2, poolAmount: calculatedPoolAmount } = useSwapState()
   const { v2Trade, currencyBalances, parsedAmount, currencies, inputError, inputErrorDeposit } = useDerivedSwapInfo()
   const { wrapType, execute: onWrap, inputError: wrapInputError } = useWrapCallback(
     currencies[Field.INPUT],
@@ -130,6 +130,7 @@ const Deposit = () => {
 
   const isValid = !inputError && !inputErrorDeposit
 
+  // GET APR
   useEffect(() => {
     async function getAPR(){
       if (roverTokenContract && ClaimableStakeContract){
@@ -148,6 +149,7 @@ const Deposit = () => {
       ClaimableStakeContract,
       web3.utils])
 
+  // GET UPDATE UNDERLYING Amount
   useEffect(() => {
     async function getRoverBalance() {
       if (account && roverTokenContract) {
@@ -158,17 +160,7 @@ const Deposit = () => {
       }
     }
 
-    async function getEarnedRewards() {
-      if (account && calculatedPoolAmount && roverTokenContract && ClaimableStakeContract) {
-        const userShare = web3.utils.fromWei(String(calculatedPoolAmount))
-        const totalSupply = web3.utils.fromWei(String(await ClaimableStakeContract.totalSupply()))
-        const totalRewards = web3.utils.fromWei(String(await roverTokenContract.balanceOf(ClaimableAddress)))
-        const earned = Number(totalRewards) * Number(userShare) / Number(totalSupply)
-        onChangeEarnedRewards(String(earned))
-      }
-    }
     getRoverBalance()
-    getEarnedRewards()
 
   }, [account,
       roverTokenContract,
@@ -459,11 +451,6 @@ const Deposit = () => {
               )
               :
               null
-            }
-
-            {
-              // <div>{isValid && earnedRewards ? `Estimated rewards: ${earnedRewards} ` : null}</div>
-              // <strong>{isValid && apr ? `APR: ${Number(Number(apr).toFixed(2)).toLocaleString()} %` : null}</strong>
             }
 
             </AutoColumn>
