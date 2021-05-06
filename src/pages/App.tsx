@@ -1,4 +1,5 @@
 import React, { Suspense, useEffect, useState } from 'react'
+import ReactGA from 'react-ga'
 import { HashRouter, Route, Switch } from 'react-router-dom'
 import styled from 'styled-components'
 import { Credentials, StringTranslations } from '@crowdin/crowdin-api-client'
@@ -11,7 +12,6 @@ import { RedirectPathToDepositOnly } from './Deposit/redirects'
 import { EN, allLanguages } from '../constants/localisation/languageCodes'
 import { LanguageContext } from '../hooks/LanguageContext'
 import { TranslationsContext } from '../hooks/TranslationsContext'
-
 import Menu from '../components/Menu'
 
 const AppWrapper = styled.div`
@@ -74,6 +74,10 @@ export default function App() {
   }
 
   useEffect(() => {
+    // init google analitics
+    ReactGA.initialize('G-ZJK3NHRRPV')
+    ReactGA.pageview(window.location.pathname + window.location.search)
+
     const storedLangCode = localStorage.getItem('pancakeSwapLanguage')
     if (storedLangCode) {
       const storedLang = getStoredLang(storedLangCode)
