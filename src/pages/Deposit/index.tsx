@@ -86,6 +86,7 @@ const Deposit = () => {
   const [dismissTokenWarning, setDismissTokenWarning] = useState<boolean>(false)
   const [isSyrup, setIsSyrup] = useState<boolean>(false)
   const [syrupTransactionType, setSyrupTransactionType] = useState<string>('')
+  const [apr, setApr] = useState<string>('')
   const urlLoadedTokens: Token[] = useMemo(
     () => [loadedInputCurrency, loadedOutputCurrency]?.filter((c): c is Token => c instanceof Token) ?? [],
     [loadedInputCurrency, loadedOutputCurrency]
@@ -141,10 +142,14 @@ const Deposit = () => {
 
     async function getEarnedRewards() {
       if (account && calculatedPoolAmount && roverTokenContract && ClaimableStakeContract) {
-        console.log("calculatedPoolAmount", Number(calculatedPoolAmount))
         const userShare = web3.utils.fromWei(String(calculatedPoolAmount))
         const totalSupply = web3.utils.fromWei(String(await ClaimableStakeContract.totalSupply()))
         const totalRewards = web3.utils.fromWei(String(await roverTokenContract.balanceOf(ClaimableAddress)))
+        // APR = 100% * ( deposits / rewards) * (365 / 30)
+        const _apr = 100 * (Number(totalRewards) / Number(totalSupply)) * (365 / 30)
+        const resApr = Number(_apr).toFixed(4)
+        setApr(resApr)
+        // not used
         const earned = Number(totalRewards) * Number(userShare) / Number(totalSupply)
         onChangeEarnedRewards(String(earned))
       }
@@ -442,8 +447,12 @@ const Deposit = () => {
               null
             }
 
+            {
+              // <div>{isValid && earnedRewards ? `Estimated rewards: ${earnedRewards} ` : null}</div>
+            }
 
-            <div>{isValid && earnedRewards ? `Estimated rewards: ${earnedRewards} ` : null}</div>
+
+            <div>{isValid && apr ? `apr: ${apr} %` : null}</div>
 
             </AutoColumn>
             <BottomGrouping>
