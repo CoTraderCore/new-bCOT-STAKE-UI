@@ -132,7 +132,7 @@ const Deposit = () => {
 
   useEffect(() => {
     async function getAPR(){
-      if (account && roverTokenContract && ClaimableStakeContract){
+      if (roverTokenContract && ClaimableStakeContract){
         const totalSupply = web3.utils.fromWei(String(await ClaimableStakeContract.totalSupply()))
         const totalRewards = web3.utils.fromWei(String(await roverTokenContract.balanceOf(ClaimableAddress)))
         // APR = 100% * ( deposits / rewards) * (365 / 30)
