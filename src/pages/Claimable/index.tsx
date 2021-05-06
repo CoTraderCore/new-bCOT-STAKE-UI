@@ -28,7 +28,7 @@ import { useWithdrawClaimableContract } from 'hooks/useContract'
 import { useTransactionAdder } from 'state/transactions/hooks'
 import {ClaimableAddress} from '../../constants/address/address'
 import AppBody from '../AppBody'
-
+import { UNDERLYING_NAME } from '../../constants'
 import '../../App.css'
 
 
@@ -252,8 +252,8 @@ const Claimable = () => {
               <CurrencyInputPanel
                 label={
                   independentField === Field.OUTPUT && !showWrap && trade
-                    ? TranslateString(194, 'Amount')
-                    : TranslateString(76, 'Amount')
+                    ? TranslateString(194, 'Enter LP Amount')
+                    : TranslateString(76, 'Enter LP Amount')
                 }
                 isClaimable
                 value={typedValueClaimable}
@@ -356,7 +356,7 @@ const Claimable = () => {
                   variant={!isValid ? 'danger' : 'primary'}
                   width="100%"
                 >
-                  {inputError || inputErrorClaimable || 'Withdraw'}
+                  {inputError || inputErrorClaimable || 'Withdraw LP tokens'}
                 </Button>
               )}
               <div className="button-div">
@@ -364,7 +364,7 @@ const Claimable = () => {
               <Button
               className="button-claim-rewards"
               onClick={() => {handleClaimableClaimRewards()}}
-              >Claim Rewards
+              >Claim {UNDERLYING_NAME} rewards
               </Button>
 
               <Button

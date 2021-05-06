@@ -11,7 +11,7 @@ import { ClaimableAddress, NonClaimableAddress } from 'constants/address/address
 import { useActiveWeb3React } from 'hooks'
 import { useStakeContract, useTokenContract } from 'hooks/useContract'
 import AppBody from '../AppBody'
-
+import { UNDERLYING_NAME } from '../../constants'
 
 import '../../App.css'
 
@@ -38,9 +38,9 @@ const Stats = () => {
     if(account && claimableTokenContract && nonClaimableTokenContract)
     {
       const claimableAmount = await claimableTokenContract.balanceOf(account)
-      if(claimableAmount)
+      if(claimableAmount > 0)
       {
-        const claimableEarned =await ClaimableStakeContract?.earnedByShare(claimableAmount)
+        const claimableEarned = await ClaimableStakeContract?.earned(account)
         if(claimableEarned)
         setDisplayClaimableEarned(parseFloat(web3.utils.fromWei(claimableEarned.toString())).toFixed(6))
       }
@@ -64,7 +64,7 @@ const Stats = () => {
               {!account ? (
                 <ConnectWalletButton width="100%" />
               ) : <div>
-                <span>Earned: {displayClaimableEarned}</span>
+                <span>Earned: {Number(displayClaimableEarned).toFixed(2)} {UNDERLYING_NAME}</span>
               </div>
               }
                 </BottomGrouping>
