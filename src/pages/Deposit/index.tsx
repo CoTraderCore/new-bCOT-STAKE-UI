@@ -49,6 +49,8 @@ import {
   DEXFormulaAddress,
   RouterAddress,
   RoverAddress,
+  BUSDAddress,
+  PancakeRouterAddress
 } from '../../constants/address/address'
 
 import '../../App.css'
@@ -75,6 +77,7 @@ const Deposit = () => {
   const TranslateString = useI18n()
   const [roverBalance, setRoverBalance] = useState('')
   const [bnbToCot, setBnbToCot] = useState('')
+  const [usdToCot, setUsdToCot] = useState('')
   const [useRover, setUserRover] = useState(false)
   const roverTokenContract = useTokenContract(RoverAddress)
   const ClaimableStakeContract = useStakeContract(ClaimableAddress)
@@ -135,9 +138,11 @@ const Deposit = () => {
   useEffect(() => {
     async function getAPR(){
       if (roverTokenContract && ClaimableStakeContract){
+        // Total pools deposited
         const totalSupply = web3.utils.fromWei(String(await ClaimableStakeContract.totalSupply()))
+        // Total rewards
         const totalRewards = web3.utils.fromWei(String(await roverTokenContract.balanceOf(ClaimableAddress)))
-        // APR = 100% * ( deposits / rewards) * (365 / 30)
+        // APR = 100% * ( rewards / deposits) * (365 / 30)
         const _apr = 100 * (Number(totalRewards) / Number(totalSupply)) * (365 / 30)
         const resApr = Number(_apr).toFixed(4)
         setApr(resApr)
@@ -176,17 +181,32 @@ const Deposit = () => {
     async function getBNBtoCOTPrice(){
       if(Router && DexFormula){
         const addressTemp = await Router.WETH()
+
+        // get BNB to COT
         const _bnbToCot = await DexFormula.routerRatio(
           addressTemp,
           UNDERLYING_TOKEN,
           web3.utils.toWei("1")
         )
+
+        const _bnbToUsd = await DexFormula.routerRatioByCustomRouter(
+          addressTemp,
+          BUSDAddress,
+          web3.utils.toWei("1"),
+          PancakeRouterAddress
+        )
+
+        const _usdToCot = Number(web3.utils.fromWei(String(_bnbToCot))) / Number(web3.utils.fromWei(String(_bnbToUsd)))
+
+        // set ratios
         setBnbToCot(web3.utils.fromWei(String(_bnbToCot)))
+        setUsdToCot(String(_usdToCot))
       }
     }
     getBNBtoCOTPrice()
   }, [bnbToCot,
       setBnbToCot,
+      setUsdToCot,
       DexFormula,
       Router,
       UNDERLYING_TOKEN,
@@ -535,6 +555,18 @@ const Deposit = () => {
          (
            <GreyCard style={{ textAlign: 'center' }}>
              <Text mb="4px">{TranslateString(1194, `1 BNB = ${Number(bnbToCot).toFixed()} COT`)}</Text>
+           </GreyCard>
+         )
+         :
+         null
+       }
+       <br/>
+       {
+         usdToCot
+         ?
+         (
+           <GreyCard style={{ textAlign: 'center' }}>
+             <Text mb="4px">{TranslateString(1194, `1 USD = ${Number(usdToCot).toFixed()} COT`)}</Text>
            </GreyCard>
          )
          :
