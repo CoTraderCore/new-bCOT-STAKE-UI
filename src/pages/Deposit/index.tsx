@@ -74,6 +74,7 @@ const Deposit = () => {
   const loadedUrlParams = useDefaultsFromURLSearch()
   const TranslateString = useI18n()
   const [roverBalance, setRoverBalance] = useState('')
+  const [bnbToCot, setBnbToCot] = useState('')
   const [useRover, setUserRover] = useState(false)
   const roverTokenContract = useTokenContract(RoverAddress)
   const ClaimableStakeContract = useStakeContract(ClaimableAddress)
@@ -169,6 +170,27 @@ const Deposit = () => {
       onChangeEarnedRewards,
       web3.utils]
   )
+
+  // get BNB to UNDERLYING
+  useEffect(() => {
+    async function getBNBtoCOTPrice(){
+      if(Router && DexFormula){
+        const addressTemp = await Router.WETH()
+        const _bnbToCot = await DexFormula.routerRatio(
+          addressTemp,
+          UNDERLYING_TOKEN,
+          web3.utils.toWei("1")
+        )
+        setBnbToCot(web3.utils.fromWei(String(_bnbToCot)))
+      }
+    }
+    getBNBtoCOTPrice()
+  }, [bnbToCot,
+      setBnbToCot,
+      DexFormula,
+      Router,
+      UNDERLYING_TOKEN,
+      web3.utils])
 
 
   const handleTypeInput = useCallback(
@@ -404,7 +426,6 @@ const Deposit = () => {
           />
           {account?
           <CardBody>
-
             <AutoColumn gap="md">
 
               <CurrencyInputPanel
@@ -507,6 +528,17 @@ const Deposit = () => {
 
 
           </CardBody>:<CardBody><ConnectWalletButton width="100%" /></CardBody>
+       }
+       {
+         bnbToCot
+         ?
+         (
+           <GreyCard style={{ textAlign: 'center' }}>
+             <Text mb="4px">{TranslateString(1194, `1 BNB = ${Number(bnbToCot).toFixed()} COT`)}</Text>
+           </GreyCard>
+         )
+         :
+         null
        }
         </Wrapper>
       </AppBody>

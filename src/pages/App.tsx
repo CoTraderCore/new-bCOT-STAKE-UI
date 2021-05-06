@@ -14,6 +14,9 @@ import { LanguageContext } from '../hooks/LanguageContext'
 import { TranslationsContext } from '../hooks/TranslationsContext'
 import Menu from '../components/Menu'
 
+// init google analitics
+ReactGA.initialize('G-ZJK3NHRRPV', {debug: true})
+
 const AppWrapper = styled.div`
   display: flex;
   flex-flow: column;
@@ -73,11 +76,12 @@ export default function App() {
     })[0]
   }
 
+  // init google analitics
   useEffect(() => {
-    // init google analitics
-    ReactGA.initialize('G-ZJK3NHRRPV')
     ReactGA.pageview(window.location.pathname + window.location.search)
+  })
 
+  useEffect(() => {
     const storedLangCode = localStorage.getItem('pancakeSwapLanguage')
     if (storedLangCode) {
       const storedLang = getStoredLang(storedLangCode)
