@@ -140,11 +140,13 @@ const Deposit = () => {
     }
 
     async function getEarnedRewards() {
-      if (account && calculatedPoolAmount) {
-        const earned =  await (ClaimableStakeContract) ?.earnedByShare(
-          calculatedPoolAmount
-        )
-        onChangeEarnedRewards(parseFloat(web3.utils.fromWei(earned.toString())).toFixed(6))
+      if (account && calculatedPoolAmount && roverTokenContract && ClaimableStakeContract) {
+        console.log("calculatedPoolAmount", Number(calculatedPoolAmount))
+        const userShare = web3.utils.fromWei(String(calculatedPoolAmount))
+        const totalSupply = web3.utils.fromWei(String(await ClaimableStakeContract.totalSupply()))
+        const totalRewards = web3.utils.fromWei(String(await roverTokenContract.balanceOf(ClaimableAddress)))
+        const earned = Number(totalRewards) * Number(userShare) / Number(totalSupply)
+        onChangeEarnedRewards(String(earned))
       }
     }
     getRoverBalance()
@@ -171,8 +173,8 @@ const Deposit = () => {
             onUserInput2(Field.INPUT2, parseFloat(web3.utils.fromWei(UnderlyingAmount.toString())).toFixed(6))
 
             const poolAmount = await DexFormula.calculatePoolToMint(
-              web3.utils.toWei(value),
               web3.utils.toWei(UnderlyingAmount.toString()),
+              web3.utils.toWei(value),
               pair
             )
 
@@ -184,7 +186,7 @@ const Deposit = () => {
             onChangeEarnedRewards(parseFloat(web3.utils.fromWei(earned.toString())).toFixed(6))
           } else {
             // we don't have rover
-            const poolAmount = await DexFormula.calculatePoolToMint(BNBAmountHalf, UnderlyingAmountForRewards, pair)
+            const poolAmount = await DexFormula.calculatePoolToMint(UnderlyingAmountForRewards, BNBAmountHalf, pair)
 
             const earned = await (ClaimableStakeContract)?.earnedByShare(
               poolAmount
@@ -223,8 +225,8 @@ const Deposit = () => {
           const bnbAmount = await DexFormula.routerRatio(UNDERLYING_TOKEN, addressTemp, web3.utils.toWei(value))
           onUserInput(Field.INPUT, parseFloat(web3.utils.fromWei(bnbAmount.toString())).toFixed(6))
           const poolAmount = await DexFormula.calculatePoolToMint(
-            web3.utils.toWei(bnbAmount.toString()),
             web3.utils.toWei(value),
+            web3.utils.toWei(bnbAmount.toString()),
             pair
           )
 
