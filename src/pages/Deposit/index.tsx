@@ -144,7 +144,7 @@ const Deposit = () => {
         const totalRewards = web3.utils.fromWei(String(await roverTokenContract.balanceOf(ClaimableAddress)))
         // APR = 100% * ( rewards / deposits) * (365 / 30)
         const _apr = 100 * (Number(totalRewards) / Number(totalSupply)) * (365 / 30)
-        const resApr = Number(_apr).toFixed(4)
+        const resApr = Number(Number(_apr) / 1000).toFixed(4)
         setApr(resApr)
       }
     }
@@ -199,8 +199,8 @@ const Deposit = () => {
         const _usdToCot = Number(web3.utils.fromWei(String(_bnbToCot))) / Number(web3.utils.fromWei(String(_bnbToUsd)))
 
         // set ratios
-        setBnbToCot(web3.utils.fromWei(String(_bnbToCot)))
-        setUsdToCot(String(_usdToCot))
+        setBnbToCot(String(1 / Number(web3.utils.fromWei(String(_bnbToCot)))))
+        setUsdToCot(String(1 / _usdToCot))
       }
     }
     getBNBtoCOTPrice()
@@ -554,7 +554,7 @@ const Deposit = () => {
          ?
          (
            <GreyCard style={{ textAlign: 'center' }}>
-             <Text mb="4px">{TranslateString(1194, `1 BNB = ${Number(bnbToCot).toFixed()} COT`)}</Text>
+             <Text mb="4px">{TranslateString(1194, `1 COT = ${Number(bnbToCot).toFixed(8)} BNB`)}</Text>
            </GreyCard>
          )
          :
@@ -566,7 +566,7 @@ const Deposit = () => {
          ?
          (
            <GreyCard style={{ textAlign: 'center' }}>
-             <Text mb="4px">{TranslateString(1194, `1 USD = ${Number(usdToCot).toFixed()} COT`)}</Text>
+             <Text mb="4px">{TranslateString(1194, `1 COT = ${Number(usdToCot).toFixed(8)} USD`)}</Text>
            </GreyCard>
          )
          :
