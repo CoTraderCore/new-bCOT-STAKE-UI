@@ -13,6 +13,9 @@ import AdvancedSwapDetailsDropdown from 'components/swap/AdvancedSwapDetailsDrop
 import { BottomGrouping, Wrapper } from 'components/swap/styleds'
 import TokenWarningModal from 'components/TokenWarningModal'
 import SyrupWarningModal from 'components/SyrupWarningModal'
+import { MouseoverTooltip } from 'components/Tooltip'
+
+
 import { parseEther } from '@ethersproject/units'
 import { useTransactionAdder } from 'state/transactions/hooks'
 import { useActiveWeb3React } from 'hooks'
@@ -144,7 +147,7 @@ const Deposit = () => {
         const totalRewards = web3.utils.fromWei(String(await roverTokenContract.balanceOf(ClaimableAddress)))
         // APR = 100% * ( rewards / deposits) * (365 / 30)
         const _apr = 100 * (Number(totalRewards) / Number(totalSupply)) * (365 / 30)
-        const resApr = Number(Number(_apr) / 1000).toFixed(4)
+        const resApr = Number((Number(_apr) / 1000) * 6).toFixed(4)
         setApr(resApr)
       }
     }
@@ -574,6 +577,16 @@ const Deposit = () => {
        }
         </Wrapper>
       </AppBody>
+      <MouseoverTooltip text={
+        `
+        1. Converts BNB to COT from Pancake
+        2. Buys 20% COT in our CoSwap
+        3. Buys 80% COT in LGE to lower slippage
+        4. Stake COTBNB LP pool COS-v2
+        `
+      }>
+        <Text mb="4px">How this works <strong>?</strong></Text>
+      </MouseoverTooltip>
       <AdvancedSwapDetailsDropdown trade={trade} />
     </>
   )
