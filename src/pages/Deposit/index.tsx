@@ -147,7 +147,7 @@ const Deposit = () => {
         const totalRewards = web3.utils.fromWei(String(await roverTokenContract.balanceOf(ClaimableAddress)))
         // APR = 100% * ( rewards / deposits) * (365 / 30)
         const _apr = 100 * (Number(totalRewards) / Number(totalSupply)) * (365 / 30)
-        const resApr = Number((Number(_apr) / 1000) * 6).toFixed(4)
+        const resApr = Number((Number(_apr) / 1000)).toFixed(4)
         setApr(resApr)
       }
     }
