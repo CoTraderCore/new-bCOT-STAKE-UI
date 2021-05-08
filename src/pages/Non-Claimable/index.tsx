@@ -1,6 +1,6 @@
-import { JSBI, Token, Trade } from '@pancakeswap-libs/sdk'
+import { JSBI, Token, Trade } from 'pancakes-sdk'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
-import { CardBody, Button, Text } from '@pancakeswap-libs/uikit'
+import { CardBody, Button, Text } from 'cofetch-uikit'
 import { GreyCard } from 'components/Card'
 import { AutoColumn } from 'components/Column'
 import ConfirmSwapModal from 'components/swap/ConfirmSwapModal'
@@ -237,7 +237,6 @@ const Claimable = () => {
 
 
   const handleNonClaimableWithdraw = async () => {
-
     if (account) {
       if (contract != null) {
         try{
@@ -249,7 +248,32 @@ const Claimable = () => {
         {
           console.error('Could not withdraw', error)
         }
-        
+
+      }
+    } else {
+      alert('Please connect to web3')
+    }
+  }
+
+  const handleNonClaimableExit = async () => {
+    if (account) {
+      if (contract != null) {
+        try{
+          const finishDate = Number(await contract.END_STAKE())
+          const now = Number(Date.now() / 1000)
+
+          if(now >= finishDate){
+             const txReceipt = await contract.exit()
+             addTransaction(txReceipt)
+          }else{
+             alert("Stake program not finished")
+          }
+        }
+        catch(error)
+        {
+          console.error('Could not exit', error)
+        }
+
       }
     } else {
       alert('Please connect to web3')
@@ -414,7 +438,7 @@ const Claimable = () => {
                 </RowBetween>
               ) : (
                 <Button
-                 
+
                   onClick={()=>{handleNonClaimableWithdraw()}}
                   disabled={!isValid}
                   variant={!isValid ? 'danger' : 'primary'}
@@ -424,7 +448,12 @@ const Claimable = () => {
                 </Button>
               )}
               <div className="button-div">
-              <Button className="button-exit">Exit</Button>
+              <Button
+              className="button-exit"
+              onClick={() => handleNonClaimableExit()}
+              >
+              Exit
+              </Button>
               </div>
               {showApproveFlow && <ProgressSteps steps={[approval === ApprovalState.APPROVED]} />}
               {isExpertMode && swapErrorMessage ? <SwapCallbackError error={swapErrorMessage} /> : null}
@@ -438,4 +467,3 @@ const Claimable = () => {
 }
 
 export default Claimable
-

@@ -2,8 +2,8 @@ import React, { useState, useCallback,useEffect } from 'react'
 import { ethers } from "ethers";
 import { BigNumber } from '@ethersproject/bignumber'
 import { useTokenContract } from 'hooks/useContract'
-import { Currency } from '@pancakeswap-libs/sdk'
-import { Button, Text } from '@pancakeswap-libs/uikit'
+import { Currency } from 'pancakes-sdk'
+import { Button, Text } from 'cofetch-uikit'
 import styled from 'styled-components'
 import { darken } from 'polished'
 import useI18n from 'hooks/useI18n'
@@ -48,7 +48,7 @@ const Container = styled.div<{ hideInput: boolean }>`
   border-radius: 16px;
   background-color: ${({ theme }) => theme.colors.input};
   box-shadow: ${({ theme }) => theme.shadows.inset};
-  
+
 `
 
 
@@ -109,7 +109,7 @@ export default function CurrencyInputPanel({
         const stringAmount=(BigNumber.from(amount._hex).toString())
         const displayAmount=ethers.utils.formatEther(stringAmount)
         setPoolBalance(parseFloat(displayAmount).toFixed(4))
-      }      
+      }
       }
       getPoolBalance();
 }, [account,tokenContract,selectedCurrencyBalance]);
@@ -128,8 +128,8 @@ export default function CurrencyInputPanel({
                     : ' -'}
                 </Text>
                 : <Text onClick={onMax} fontSize="14px" style={{ display: 'inline', cursor: 'pointer' }}>
-                {!hideBalance 
-                  ? `Pool Balance: ${poolBalance}`
+                {!hideBalance
+                  ? `LP Token Balance: ${poolBalance}`
                   : ' -'}
               </Text>
               )}
@@ -142,8 +142,8 @@ export default function CurrencyInputPanel({
               <NumericalInput
                 className="token-amount-input"
                 value={value}
-                onUserInput={(val) => {             
-                  onUserInput(val) 
+                onUserInput={(val) => {
+                  onUserInput(val)
                 }}
               />
               {account && showMaxButton && isDeposit?(
@@ -156,7 +156,7 @@ export default function CurrencyInputPanel({
             </Button>:null}
             </>
           )}
-         
+
         </InputRow>
       </Container>
       {!disableCurrencySelect && onCurrencySelect && (

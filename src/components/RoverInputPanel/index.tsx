@@ -1,6 +1,6 @@
 import React, { useState, useCallback } from 'react'
-import { Currency } from '@pancakeswap-libs/sdk'
-import { Button, Text } from '@pancakeswap-libs/uikit'
+import { Currency } from 'pancakes-sdk'
+import { Button, Text } from 'cofetch-uikit'
 import styled from 'styled-components'
 import { darken } from 'polished'
 import useI18n from 'hooks/useI18n'
@@ -42,7 +42,7 @@ const Container = styled.div<{ hideInput: boolean }>`
   border-radius: 16px;
   background-color: ${({ theme }) => theme.colors.input};
   box-shadow: ${({ theme }) => theme.shadows.inset};
-  
+
 `
 
 interface RoverInputPanelProps {
@@ -95,8 +95,8 @@ export default function RoverInputPanel({
               <Text fontSize="14px">{translatedLabel}</Text>
               {account && (
                  <Text onClick={onMax} fontSize="14px" style={{ display: 'inline', cursor: 'pointer' }}>
-                {!hideBalance 
-                  ? `Rover Balance: ${roverBalance}`
+                {!hideBalance
+                  ? `balance: ${roverBalance}`
                   : ' -'}
               </Text>
               )}
@@ -121,7 +121,7 @@ export default function RoverInputPanel({
               )}
             </>
           )}
-         
+
         </InputRow>
       </Container>
       {!disableCurrencySelect && onCurrencySelect && (

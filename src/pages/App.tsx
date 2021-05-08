@@ -1,4 +1,5 @@
 import React, { Suspense, useEffect, useState } from 'react'
+import ReactGA from 'react-ga'
 import { HashRouter, Route, Switch } from 'react-router-dom'
 import styled from 'styled-components'
 import { Credentials, StringTranslations } from '@crowdin/crowdin-api-client'
@@ -11,8 +12,10 @@ import { RedirectPathToDepositOnly } from './Deposit/redirects'
 import { EN, allLanguages } from '../constants/localisation/languageCodes'
 import { LanguageContext } from '../hooks/LanguageContext'
 import { TranslationsContext } from '../hooks/TranslationsContext'
-
 import Menu from '../components/Menu'
+
+// init google analitics
+ReactGA.initialize('G-ZJK3NHRRPV', {debug: true})
 
 const AppWrapper = styled.div`
   display: flex;
@@ -32,7 +35,6 @@ const BodyWrapper = styled.div`
   overflow-x: hidden;
   z-index: 1;
   justify-content: center;
-  background-image: url('/images/group-pancake.svg');
   background-repeat: no-repeat;
   background-position: bottom 24px center;
   background-size: 90%;
@@ -42,8 +44,7 @@ const BodyWrapper = styled.div`
   }
 
   ${({ theme }) => theme.mediaQueries.lg} {
-    background-image: url('/images/arch-${({ theme }) => (theme.isDark ? 'dark' : 'light')}.svg'),
-      url('/images/left-pancake.svg'), url('/images/right-pancake.svg');
+    background-image: url('/images/arch-${({ theme }) => (theme.isDark ? 'dark' : 'light')}.svg');
     background-repeat: no-repeat;
     background-position: center 420px, 10% 230px, 90% 230px;
     background-size: contain, 266px, 266px;
@@ -74,6 +75,11 @@ export default function App() {
       return language.code === storedLangCode
     })[0]
   }
+
+  // init google analitics
+  useEffect(() => {
+    ReactGA.pageview(window.location.pathname + window.location.search)
+  })
 
   useEffect(() => {
     const storedLangCode = localStorage.getItem('pancakeSwapLanguage')
@@ -126,8 +132,8 @@ export default function App() {
                       <Route exact strict path="/deposit" component={Deposit}/>
                       <Route exact strict path="/withdraw" component={Withdraw}/>
                       <Route exact strict path="/stats" component={Stats} />
-                    
-             
+
+
                       <Route component={RedirectPathToDepositOnly} />
                     </Switch>
                   </Web3ReactManager>

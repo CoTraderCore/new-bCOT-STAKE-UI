@@ -1,5 +1,5 @@
 import { parseUnits } from '@ethersproject/units'
-import { Currency, CurrencyAmount, ETHER, JSBI, Token, TokenAmount, Trade } from '@pancakeswap-libs/sdk'
+import { Currency, CurrencyAmount, ETHER, JSBI, Token, TokenAmount, Trade } from 'pancakes-sdk'
 import { ParsedQs } from 'qs'
 import { useCallback, useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
@@ -90,7 +90,7 @@ export function useSwapActionHandlers(): {
     },
     [dispatch]
   )
-  
+
   const onChangePoolAmount = useCallback(
     (poolAmount: string | null) => {
       dispatch(setPoolAmount({ poolAmount }))
@@ -115,7 +115,7 @@ export function useSwapActionHandlers(): {
     onChangeRecipient,
     onChangeEarnedRewards,
     onChangePoolAmount,
-    onChangeIsClaimable 
+    onChangeIsClaimable
   }
 }
 
@@ -339,7 +339,7 @@ export function queryParametersToSwapState(parsedQs: ParsedQs): SwapState {
     },
     [Field.INPUT_NONCLAIMABLE]: {
       currencyId: inputCurrency,
-    }, 
+    },
     [Field.OUTPUT]: {
       currencyId: outputCurrency,
     },

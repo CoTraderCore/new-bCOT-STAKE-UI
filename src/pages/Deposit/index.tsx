@@ -1,8 +1,8 @@
-import { ChainId, CurrencyAmount, JSBI, Token, TokenAmount } from '@pancakeswap-libs/sdk'
+import { CurrencyAmount, JSBI, Token, TokenAmount } from 'pancakes-sdk'
 import { ethers } from 'ethers'
 import { BigNumber } from '@ethersproject/bignumber'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
-import { CardBody, Button, Text } from '@pancakeswap-libs/uikit'
+import { CardBody, Button, Text } from 'cofetch-uikit'
 import { GreyCard } from 'components/Card'
 import { AutoColumn } from 'components/Column'
 import CurrencyInputPanel from 'components/CurrencyInputPanel'
@@ -13,6 +13,9 @@ import AdvancedSwapDetailsDropdown from 'components/swap/AdvancedSwapDetailsDrop
 import { BottomGrouping, Wrapper } from 'components/swap/styleds'
 import TokenWarningModal from 'components/TokenWarningModal'
 import SyrupWarningModal from 'components/SyrupWarningModal'
+import { MouseoverTooltip } from 'components/Tooltip'
+
+
 import { parseEther } from '@ethersproject/units'
 import { useTransactionAdder } from 'state/transactions/hooks'
 import { useActiveWeb3React } from 'hooks'
@@ -49,6 +52,8 @@ import {
   DEXFormulaAddress,
   RouterAddress,
   RoverAddress,
+  BUSDAddress,
+  PancakeRouterAddress
 } from '../../constants/address/address'
 
 import '../../App.css'
@@ -74,6 +79,8 @@ const Deposit = () => {
   const loadedUrlParams = useDefaultsFromURLSearch()
   const TranslateString = useI18n()
   const [roverBalance, setRoverBalance] = useState('')
+  const [bnbToCot, setBnbToCot] = useState('')
+  const [usdToCot, setUsdToCot] = useState('')
   const [useRover, setUserRover] = useState(false)
   const roverTokenContract = useTokenContract(RoverAddress)
   const ClaimableStakeContract = useStakeContract(ClaimableAddress)
@@ -86,6 +93,7 @@ const Deposit = () => {
   const [dismissTokenWarning, setDismissTokenWarning] = useState<boolean>(false)
   const [isSyrup, setIsSyrup] = useState<boolean>(false)
   const [syrupTransactionType, setSyrupTransactionType] = useState<string>('')
+  const [apr, setApr] = useState<string>('66857247')
   const urlLoadedTokens: Token[] = useMemo(
     () => [loadedInputCurrency, loadedOutputCurrency]?.filter((c): c is Token => c instanceof Token) ?? [],
     [loadedInputCurrency, loadedOutputCurrency]
@@ -99,7 +107,7 @@ const Deposit = () => {
     setSyrupTransactionType('')
   }, [])
 
-  const { independentField, typedValue, typedValue2, earnedRewards, poolAmount: calculatedPoolAmount } = useSwapState()
+  const { independentField, typedValue, typedValue2, poolAmount: calculatedPoolAmount } = useSwapState()
   const { v2Trade, currencyBalances, parsedAmount, currencies, inputError, inputErrorDeposit } = useDerivedSwapInfo()
   const { wrapType, execute: onWrap, inputError: wrapInputError } = useWrapCallback(
     currencies[Field.INPUT],
@@ -126,8 +134,31 @@ const Deposit = () => {
     onChangeEarnedRewards,
     onChangePoolAmount,
   } = useSwapActionHandlers()
+
   const isValid = !inputError && !inputErrorDeposit
 
+  // GET APR
+  useEffect(() => {
+    async function getAPR(){
+      if (roverTokenContract && ClaimableStakeContract){
+        // Total pools deposited
+        const totalSupply = web3.utils.fromWei(String(await ClaimableStakeContract.totalSupply()))
+        // Total rewards
+        const totalRewards = web3.utils.fromWei(String(await roverTokenContract.balanceOf(ClaimableAddress)))
+        // APR = 100% * ( rewards / deposits) * (365 / 30)
+        const _apr = 100 * (Number(totalRewards) / Number(totalSupply)) * (365 / 30)
+        const resApr = Number((Number(_apr) / 1000)).toFixed(4)
+        setApr(resApr)
+      }
+    }
+    getAPR()
+  }, [apr,
+      account,
+      roverTokenContract,
+      ClaimableStakeContract,
+      web3.utils])
+
+  // GET UPDATE UNDERLYING Amount
   useEffect(() => {
     async function getRoverBalance() {
       if (account && roverTokenContract) {
@@ -138,22 +169,51 @@ const Deposit = () => {
       }
     }
 
-    async function getEarnedRewards() {
-      if (account && calculatedPoolAmount) {
-        const earned =  await (ClaimableStakeContract) ?.earnedByShare(
-          calculatedPoolAmount
-        )
-        onChangeEarnedRewards(parseFloat(web3.utils.fromWei(earned.toString())).toFixed(6))
-      }
-    }
     getRoverBalance()
-    getEarnedRewards()
 
   }, [account,
       roverTokenContract,
       ClaimableStakeContract,
       calculatedPoolAmount,
-      onChangeEarnedRewards,web3.utils])
+      onChangeEarnedRewards,
+      web3.utils]
+  )
+
+  // get BNB to UNDERLYING
+  useEffect(() => {
+    async function getBNBtoCOTPrice(){
+      if(Router && DexFormula){
+        const addressTemp = await Router.WETH()
+
+        // get BNB to COT
+        const _bnbToCot = await DexFormula.routerRatio(
+          addressTemp,
+          UNDERLYING_TOKEN,
+          web3.utils.toWei("1")
+        )
+
+        const _bnbToUsd = await DexFormula.routerRatioByCustomRouter(
+          addressTemp,
+          BUSDAddress,
+          web3.utils.toWei("1"),
+          PancakeRouterAddress
+        )
+
+        const _usdToCot = Number(web3.utils.fromWei(String(_bnbToCot))) / Number(web3.utils.fromWei(String(_bnbToUsd)))
+
+        // set ratios
+        setBnbToCot(String(1 / Number(web3.utils.fromWei(String(_bnbToCot)))))
+        setUsdToCot(String(1 / _usdToCot))
+      }
+    }
+    getBNBtoCOTPrice()
+  }, [bnbToCot,
+      setBnbToCot,
+      setUsdToCot,
+      DexFormula,
+      Router,
+      UNDERLYING_TOKEN,
+      web3.utils])
 
 
   const handleTypeInput = useCallback(
@@ -169,8 +229,8 @@ const Deposit = () => {
             onUserInput2(Field.INPUT2, parseFloat(web3.utils.fromWei(UnderlyingAmount.toString())).toFixed(6))
 
             const poolAmount = await DexFormula.calculatePoolToMint(
-              web3.utils.toWei(value),
               web3.utils.toWei(UnderlyingAmount.toString()),
+              web3.utils.toWei(value),
               pair
             )
 
@@ -182,7 +242,7 @@ const Deposit = () => {
             onChangeEarnedRewards(parseFloat(web3.utils.fromWei(earned.toString())).toFixed(6))
           } else {
             // we don't have rover
-            const poolAmount = await DexFormula.calculatePoolToMint(BNBAmountHalf, UnderlyingAmountForRewards, pair)
+            const poolAmount = await DexFormula.calculatePoolToMint(UnderlyingAmountForRewards, BNBAmountHalf, pair)
 
             const earned = await (ClaimableStakeContract)?.earnedByShare(
               poolAmount
@@ -221,8 +281,8 @@ const Deposit = () => {
           const bnbAmount = await DexFormula.routerRatio(UNDERLYING_TOKEN, addressTemp, web3.utils.toWei(value))
           onUserInput(Field.INPUT, parseFloat(web3.utils.fromWei(bnbAmount.toString())).toFixed(6))
           const poolAmount = await DexFormula.calculatePoolToMint(
-            web3.utils.toWei(bnbAmount.toString()),
             web3.utils.toWei(value),
+            web3.utils.toWei(bnbAmount.toString()),
             pair
           )
 
@@ -261,10 +321,9 @@ const Deposit = () => {
   // check whether the user has approved the router on the input token
   const amount = parseFloat(typedValue2) > 0 ? web3.utils.toWei(String(typedValue2)) : '0'
 
-  
   const [approval, approveCallback] = useApproveCallback(
     new TokenAmount(
-      new Token(Number(ChainId.MAINNET), UNDERLYING_TOKEN, 0), amount
+      new Token(Number(process.env.REACT_APP_CHAIN_ID), UNDERLYING_TOKEN, 0), amount
     ),
     AddressDepositor
   )
@@ -385,12 +444,11 @@ const Deposit = () => {
       <AppBody>
         <Wrapper id="swap-page">
           <PageHeader
-            title={TranslateString(8, 'Deposit')}
-            description={TranslateString(1192, 'Deposit tokens in an instant')}
+            title={TranslateString(8, `Deposit to Earn APY:`)}
+            description={TranslateString(1192, `${Number(Number(Number(apr) * 2.718).toFixed(2)).toLocaleString()}  %`)}
           />
           {account?
           <CardBody>
-
             <AutoColumn gap="md">
 
               <CurrencyInputPanel
@@ -438,9 +496,6 @@ const Deposit = () => {
               :
               null
             }
-
-
-            <div>{isValid && earnedRewards ? `Estimated rewards: ${earnedRewards} ` : null}</div>
 
             </AutoColumn>
             <BottomGrouping>
@@ -497,8 +552,41 @@ const Deposit = () => {
 
           </CardBody>:<CardBody><ConnectWalletButton width="100%" /></CardBody>
        }
+       {
+         bnbToCot
+         ?
+         (
+           <GreyCard style={{ textAlign: 'center' }}>
+             <Text mb="4px">{TranslateString(1194, `1 COT = ${Number(bnbToCot).toFixed(8)} BNB`)}</Text>
+           </GreyCard>
+         )
+         :
+         null
+       }
+       <br/>
+       {
+         usdToCot
+         ?
+         (
+           <GreyCard style={{ textAlign: 'center' }}>
+             <Text mb="4px">{TranslateString(1194, `1 COT = ${Number(usdToCot).toFixed(8)} USD`)}</Text>
+           </GreyCard>
+         )
+         :
+         null
+       }
         </Wrapper>
       </AppBody>
+      <MouseoverTooltip text={
+        `
+        1. Converts BNB to COT from Pancake
+        2. Buys 20% COT in our CoSwap
+        3. Buys 80% COT in LGE to lower slippage
+        4. Stake COTBNB LP pool COS-v2
+        `
+      }>
+        <Text mb="4px">How this works <strong>?</strong></Text>
+      </MouseoverTooltip>
       <AdvancedSwapDetailsDropdown trade={trade} />
     </>
   )

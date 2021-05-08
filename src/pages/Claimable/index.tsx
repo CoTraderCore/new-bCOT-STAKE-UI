@@ -1,6 +1,6 @@
-import { JSBI, Token } from '@pancakeswap-libs/sdk'
+import { JSBI, Token } from 'pancakes-sdk'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
-import { CardBody, Button, Text } from '@pancakeswap-libs/uikit'
+import { CardBody, Button, Text } from 'cofetch-uikit'
 import { GreyCard } from 'components/Card'
 import { AutoColumn } from 'components/Column'
 import CurrencyInputPanel from 'components/CurrencyInputPanel'
@@ -28,7 +28,7 @@ import { useWithdrawClaimableContract } from 'hooks/useContract'
 import { useTransactionAdder } from 'state/transactions/hooks'
 import {ClaimableAddress} from '../../constants/address/address'
 import AppBody from '../AppBody'
-
+import { UNDERLYING_NAME } from '../../constants'
 import '../../App.css'
 
 
@@ -50,7 +50,7 @@ const Claimable = () => {
     () => [loadedInputCurrency, loadedOutputCurrency]?.filter((c): c is Token => c instanceof Token) ?? [],
     [loadedInputCurrency, loadedOutputCurrency]
   )
-  
+
   const handleConfirmTokenWarning = useCallback(() => {
     setDismissTokenWarning(true)
   }, [])
@@ -178,19 +178,54 @@ const Claimable = () => {
 
 
   const handleClaimableWithdraw = async () => {
-
     if (account) {
       if (contract != null) {
         try{
           const inputAmount=parseEther(formattedAmounts[Field.INPUT_CLAIMABLE].toString())
-          const txReceipt = await contract.withdraw(inputAmount._hex);
+          const txReceipt = await contract.withdraw(inputAmount._hex)
           addTransaction(txReceipt)
         }
         catch(error)
         {
           console.error('Could not withdraw', error)
         }
-        
+
+      }
+    } else {
+      alert('Please connect to web3')
+    }
+  }
+
+  const handleClaimableClaimRewards = async () => {
+    if (account) {
+      if (contract != null) {
+        try{
+          const txReceipt = await contract.getReward()
+          addTransaction(txReceipt)
+        }
+        catch(error)
+        {
+          console.error('Could not claim', error)
+        }
+
+      }
+    } else {
+      alert('Please connect to web3')
+    }
+  }
+
+  const handleClaimableExit = async () => {
+    if (account) {
+      if (contract != null) {
+        try{
+          const txReceipt = await contract.exit()
+          addTransaction(txReceipt)
+        }
+        catch(error)
+        {
+          console.error('Could not claim', error)
+        }
+
       }
     } else {
       alert('Please connect to web3')
@@ -217,8 +252,8 @@ const Claimable = () => {
               <CurrencyInputPanel
                 label={
                   independentField === Field.OUTPUT && !showWrap && trade
-                    ? TranslateString(194, 'Amount')
-                    : TranslateString(76, 'Amount')
+                    ? TranslateString(194, 'Enter LP Amount')
+                    : TranslateString(76, 'Enter LP Amount')
                 }
                 isClaimable
                 value={typedValueClaimable}
@@ -315,21 +350,30 @@ const Claimable = () => {
                 </RowBetween>
               ) : (
                 <Button
-                 
+
                   onClick={()=>{handleClaimableWithdraw()}}
                   disabled={!isValid}
                   variant={!isValid ? 'danger' : 'primary'}
                   width="100%"
                 >
-                  {inputError || inputErrorClaimable || 'Withdraw'}
+                  {inputError || inputErrorClaimable || 'Withdraw LP tokens'}
                 </Button>
               )}
               <div className="button-div">
-      
-              <Button className="button-claim-rewards">Claim Rewards</Button>
 
-              <Button className="button-exit">Exit</Button>
-         
+              <Button
+              className="button-claim-rewards"
+              onClick={() => {handleClaimableClaimRewards()}}
+              >Claim {UNDERLYING_NAME} rewards
+              </Button>
+
+              <Button
+              className="button-exit"
+              onClick={() => handleClaimableExit()}
+              >
+              Exit
+              </Button>
+
               </div>
               {showApproveFlow && <ProgressSteps steps={[approval === ApprovalState.APPROVED]} />}
             </BottomGrouping>
@@ -342,4 +386,3 @@ const Claimable = () => {
 }
 
 export default Claimable
-
