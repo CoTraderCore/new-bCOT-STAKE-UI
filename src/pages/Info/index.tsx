@@ -50,23 +50,39 @@ const Stats = () => {
 }, [account,claimableTokenContract,nonClaimableTokenContract,ClaimableStakeContract,NonClaimableStakeContract,web3.utils]);
   return (
     <>
-      <CardNav activeIndex={3} />
+      <CardNav activeIndex={4} />
       <AppBody>
         <Wrapper id="swap-page">
 
           <PageHeader
-            title={TranslateString(8, 'Stats')}
-            description={TranslateString(1192, 'Your stake stats')}
+            title={TranslateString(8, 'Instructions')}
+            description={TranslateString(1192, 'How to use STAKE page')}
           />
           <CardBody>
 
             <BottomGrouping>
-              {!account ? (
-                <ConnectWalletButton width="100%" />
-              ) : <div>
-                <span>Earned: {Number(displayClaimableEarned).toFixed(2)} {UNDERLYING_NAME}</span>
+              <div>
+              <span>Get Metamask.io and configure it for BSC
+
+(Use MetaMask For Binance Smart Chain - Binance Chain Docs)2. Send BNB (e.g. from Coinbase) to your BSC Metamask wallet
+
+</span> 
+<br/>
+<br/>
+<br/>
+<span>
+
+Use BNB below to get and stake COT+BNB to earn APY
+
+Note the price of COT in USD. It goes up as people go for APY
+
+Sometimes COT is cheaper on Ethereum exchanges like 1INCH
+
+(1inch - DeFi / DEX aggregator on Ethereum & Binance Smart Chain)You can bring COT from Ethereum to BSC using BurgerSwap bridge (BurgerSwap)
+
+</span>
+
               </div>
-              }
                 </BottomGrouping>
           </CardBody>
         </Wrapper>

@@ -6,7 +6,9 @@ import { Credentials, StringTranslations } from '@crowdin/crowdin-api-client'
 import Popups from '../components/Popups'
 import Web3ReactManager from '../components/Web3ReactManager'
 import Stats from './Stats'
-import Deposit from './Deposit'
+import Deposit from './Deposit' 
+import Stake from './Stake'  
+import Info from './Info' 
 import Withdraw from './Withdraw'
 import { RedirectPathToDepositOnly } from './Deposit/redirects'
 import { EN, allLanguages } from '../constants/localisation/languageCodes'
@@ -125,15 +127,15 @@ export default function App() {
             <TranslationsContext.Provider value={{ translations, setTranslations }}>
               <Menu>
                 <BodyWrapper>
-                  <Popups />
+                  <Popups /> 
                   <Web3ReactManager>
                     <Switch>
                       <Route exact strict path="/" component={Deposit} />
                       <Route exact strict path="/deposit" component={Deposit}/>
                       <Route exact strict path="/withdraw" component={Withdraw}/>
                       <Route exact strict path="/stats" component={Stats} />
-
-
+                      <Route exact strict path="/stake" component={Stake} />
+                      <Route exact strict path="/info" component={Info} />
                       <Route component={RedirectPathToDepositOnly} />
                     </Switch>
                   </Web3ReactManager>

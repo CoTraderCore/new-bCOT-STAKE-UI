@@ -24,8 +24,14 @@ function Nav({ activeIndex = 0 }: { activeIndex?: number }) {
         <ButtonMenuItem to="/withdraw" as={Link}>
           {TranslateString(1142, 'Withdraw')}
         </ButtonMenuItem>
+        <ButtonMenuItem to="/stake" as={Link}>
+          {TranslateString(1142, 'Stake')}
+        </ButtonMenuItem>
         <ButtonMenuItem to="/stats" as={Link}>
           {TranslateString(1142, 'Stats')}
+        </ButtonMenuItem>
+        <ButtonMenuItem to="/info" as={Link}>
+          {TranslateString(1142, 'Info')}
         </ButtonMenuItem>
       </ButtonMenu>
     </StyledNav>
