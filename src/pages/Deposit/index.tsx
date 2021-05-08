@@ -3,7 +3,7 @@ import { ethers } from 'ethers'
 import { BigNumber } from '@ethersproject/bignumber'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { CardBody, Button, Text } from 'cofetch-uikit'
-import { GreyCard } from 'components/Card'
+import { GreyCard } from 'components/Card' 
 import { AutoColumn } from 'components/Column'
 import CurrencyInputPanel from 'components/CurrencyInputPanel'
 import RoverInputPanel from 'components/RoverInputPanel'
@@ -13,7 +13,6 @@ import AdvancedSwapDetailsDropdown from 'components/swap/AdvancedSwapDetailsDrop
 import { BottomGrouping, Wrapper } from 'components/swap/styleds'
 import TokenWarningModal from 'components/TokenWarningModal'
 import SyrupWarningModal from 'components/SyrupWarningModal'
-import { MouseoverTooltip } from 'components/Tooltip'
 
 
 import { parseEther } from '@ethersproject/units'
@@ -577,16 +576,7 @@ const Deposit = () => {
        }
         </Wrapper>
       </AppBody>
-      <MouseoverTooltip text={
-        `
-        1. Converts BNB to COT from Pancake
-        2. Buys 20% COT in our CoSwap
-        3. Buys 80% COT in LGE to lower slippage
-        4. Stake COTBNB LP pool COS-v2
-        `
-      }>
-        <Text mb="4px">How this works <strong>?</strong></Text>
-      </MouseoverTooltip>
+     
       <AdvancedSwapDetailsDropdown trade={trade} />
     </>
   )

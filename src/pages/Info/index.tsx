@@ -6,12 +6,13 @@ import {  BottomGrouping, Wrapper } from 'components/swap/styleds'
 import Web3 from 'web3'
 import useI18n from 'hooks/useI18n'
 import PageHeader from 'components/PageHeader'
-import ConnectWalletButton from 'components/ConnectWalletButton'
+// import ConnectWalletButton from 'components/ConnectWalletButton'
 import { ClaimableAddress, NonClaimableAddress } from 'constants/address/address'
 import { useActiveWeb3React } from 'hooks'
 import { useStakeContract, useTokenContract } from 'hooks/useContract'
+// import Popups from 'components/Popups'
 import AppBody from '../AppBody'
-import { UNDERLYING_NAME } from '../../constants'
+// import { UNDERLYING_NAME } from '../../constants'
 
 import '../../App.css'
 
@@ -61,6 +62,7 @@ const Stats = () => {
           <CardBody>
 
             <BottomGrouping>
+           
               <div>
               <span>Get Metamask.io and configure it for BSC
 
