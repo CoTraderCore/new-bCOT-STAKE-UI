@@ -3,7 +3,7 @@ import { ethers } from 'ethers'
 import { BigNumber } from '@ethersproject/bignumber'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { CardBody, Button, Text } from 'cofetch-uikit'
-import { GreyCard } from 'components/Card' 
+import { GreyCard } from 'components/Card'
 import { AutoColumn } from 'components/Column'
 import CurrencyInputPanel from 'components/CurrencyInputPanel'
 import RoverInputPanel from 'components/RoverInputPanel'
@@ -439,7 +439,7 @@ const Deposit = () => {
         transactionType={syrupTransactionType}
         onConfirm={handleConfirmSyrupWarning}
       />
-      <CardNav activeIndex={0} />
+      <CardNav activeIndex={2} />
       <AppBody>
         <Wrapper id="swap-page">
           <PageHeader
@@ -576,7 +576,7 @@ const Deposit = () => {
        }
         </Wrapper>
       </AppBody>
-     
+    
       <AdvancedSwapDetailsDropdown trade={trade} />
     </>
   )

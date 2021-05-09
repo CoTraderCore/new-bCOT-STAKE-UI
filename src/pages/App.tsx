@@ -1,12 +1,16 @@
 import React, { Suspense, useEffect, useState } from 'react'
 import ReactGA from 'react-ga'
 import { HashRouter, Route, Switch } from 'react-router-dom'
+import PopupModal from 'components/PopupModal'
 import styled from 'styled-components'
 import { Credentials, StringTranslations } from '@crowdin/crowdin-api-client'
+import { Button } from 'cofetch-uikit' 
 import Popups from '../components/Popups'
 import Web3ReactManager from '../components/Web3ReactManager'
 import Stats from './Stats'
 import Deposit from './Deposit'
+import Stake from './Stake'
+import Info from './Info'
 import Withdraw from './Withdraw'
 import { RedirectPathToDepositOnly } from './Deposit/redirects'
 import { EN, allLanguages } from '../constants/localisation/languageCodes'
@@ -15,7 +19,7 @@ import { TranslationsContext } from '../hooks/TranslationsContext'
 import Menu from '../components/Menu'
 
 // init google analitics
-ReactGA.initialize('G-ZJK3NHRRPV', {debug: true})
+ReactGA.initialize('G-ZJK3NHRRPV', { debug: true })
 
 const AppWrapper = styled.div`
   display: flex;
@@ -57,6 +61,7 @@ const Marginer = styled.div`
 `
 
 export default function App() {
+  const [showModal,setShowModal]=useState(false)
   const [selectedLanguage, setSelectedLanguage] = useState<any>(undefined)
   const [translatedLanguage, setTranslatedLanguage] = useState<any>(undefined)
   const [translations, setTranslations] = useState<Array<any>>([])
@@ -115,6 +120,15 @@ export default function App() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedLanguage])
 
+  const openModal=()=>{
+    setShowModal(!showModal)
+  }
+
+  const popupModalProps={ 
+    showModal,
+    setShowModal
+  }
+
   return (
     <Suspense fallback={null}>
       <HashRouter>
@@ -129,14 +143,16 @@ export default function App() {
                   <Web3ReactManager>
                     <Switch>
                       <Route exact strict path="/" component={Deposit} />
-                      <Route exact strict path="/deposit" component={Deposit}/>
-                      <Route exact strict path="/withdraw" component={Withdraw}/>
+                      <Route exact strict path="/deposit" component={Deposit} />
+                      <Route exact strict path="/withdraw" component={Withdraw} />
                       <Route exact strict path="/stats" component={Stats} />
-
-
+                      <Route exact strict path="/stake" component={Stake} />
+                      <Route exact strict path="/info" component={Info} />
                       <Route component={RedirectPathToDepositOnly} />
                     </Switch>
                   </Web3ReactManager>
+                  <Button style={{marginTop:"20px"}} onClick={openModal}>How this works?</Button>
+                  <PopupModal {...popupModalProps}/>
                   <Marginer />
                 </BodyWrapper>
               </Menu>
