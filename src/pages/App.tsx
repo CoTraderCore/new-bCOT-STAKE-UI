@@ -4,7 +4,7 @@ import { HashRouter, Route, Switch } from 'react-router-dom'
 import PopupModal from 'components/PopupModal'
 import styled from 'styled-components'
 import { Credentials, StringTranslations } from '@crowdin/crowdin-api-client'
-import { Button } from 'cofetch-uikit' 
+import { Button, Text } from 'cofetch-uikit'
 import Popups from '../components/Popups'
 import Web3ReactManager from '../components/Web3ReactManager'
 import Stats from './Stats'
@@ -61,7 +61,7 @@ const Marginer = styled.div`
 `
 
 export default function App() {
-  const [showModal,setShowModal]=useState(false)
+  const [showModal, setShowModal] = useState(false)
   const [selectedLanguage, setSelectedLanguage] = useState<any>(undefined)
   const [translatedLanguage, setTranslatedLanguage] = useState<any>(undefined)
   const [translations, setTranslations] = useState<Array<any>>([])
@@ -120,13 +120,13 @@ export default function App() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedLanguage])
 
-  const openModal=()=>{
+  const openModal = () => {
     setShowModal(!showModal)
   }
 
-  const popupModalProps={ 
+  const popupModalProps = {
     showModal,
-    setShowModal
+    setShowModal,
   }
 
   return (
@@ -151,8 +151,11 @@ export default function App() {
                       <Route component={RedirectPathToDepositOnly} />
                     </Switch>
                   </Web3ReactManager>
-                  <Button style={{marginTop:"20px"}} onClick={openModal}>How this works?</Button>
-                  <PopupModal {...popupModalProps}/>
+                  <Button style={{ marginTop: '20px' }} onClick={openModal}>
+                    How this works?
+                  </Button>
+                  <Text style={{ marginTop: '50px' }}>Add token addresses to wallet <Button style={{ marginRight:'10px' }}>bCOT</Button><Button>COS</Button> - LP token</Text>
+                  <PopupModal {...popupModalProps} />
                   <Marginer />
                 </BodyWrapper>
               </Menu>
