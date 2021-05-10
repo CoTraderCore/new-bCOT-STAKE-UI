@@ -2,6 +2,8 @@ import { CurrencyAmount, JSBI, Token, TokenAmount } from 'pancakes-sdk'
 import { ethers } from 'ethers'
 import { BigNumber } from '@ethersproject/bignumber'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
+
+import styled from 'styled-components'
 import { CardBody, Button, Text } from 'cofetch-uikit'
 import { GreyCard } from 'components/Card' 
 import { AutoColumn } from 'components/Column'
@@ -438,6 +440,17 @@ const Deposit = () => {
     setShowModal,
   }
 
+  const Background = styled.div`
+  width:100%;
+  height:100%;
+  position: absolute;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 5; 
+  background: rgba(0, 0, 0, 0.8);
+`
+
   return (
     <>
       <TokenWarningModal
@@ -446,13 +459,14 @@ const Deposit = () => {
         onConfirm={handleConfirmTokenWarning}
       />
       <SyrupWarningModal
-        isOpen={isSyrup}
+        isOpen={isSyrup} 
         transactionType={syrupTransactionType}
         onConfirm={handleConfirmSyrupWarning}
       />
      
       <CardNav activeIndex={0} />
-      <AppBody>
+      {showModal?<Background/>:null}
+      <AppBody >
         <Wrapper id="swap-page">
         <div style={{display:'flex'}}>
         <Button style={{marginLeft:'12px',marginTop:'20px',padding:'10px',height:'33px',backgroundColor:'#7c6a9e'}} onClick={openModal}>How to</Button>
@@ -568,10 +582,11 @@ const Deposit = () => {
           </CardBody>:<CardBody><ConnectWalletButton width="100%" /></CardBody>
        }
        {
+         showModal?<Background/>:
          bnbToCot
          ?
          (
-           <GreyCard style={{ textAlign: 'center' }}>
+           <GreyCard style={{ textAlign: 'center'}}>
              <Text mb="4px">{TranslateString(1194, `1 COT = ${Number(bnbToCot).toFixed(8)} BNB`)}</Text>
            </GreyCard>
          )
@@ -580,10 +595,11 @@ const Deposit = () => {
        }
        <br/>
        {
+        showModal?<Background/>:
          usdToCot
          ?
          (
-           <GreyCard style={{ textAlign: 'center' }}>
+           <GreyCard style={{ textAlign: 'center'}}>
              <Text mb="4px">{TranslateString(1194, `1 COT = ${Number(usdToCot).toFixed(8)} USD`)}</Text>
            </GreyCard>
          )

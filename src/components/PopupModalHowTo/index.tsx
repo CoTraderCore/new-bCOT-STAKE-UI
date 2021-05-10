@@ -8,7 +8,7 @@ const Background = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 100;
+  z-index: 10;
 `
 
 const ModalWrapper = styled.div`
@@ -19,7 +19,7 @@ const ModalWrapper = styled.div`
   color: #000;
   display: grid;
   position: center;
-  z-index: 10;
+  z-index: 100;
   border-radius: 10px;
 `
 

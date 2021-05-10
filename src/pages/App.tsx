@@ -10,12 +10,11 @@ import Web3ReactManager from '../components/Web3ReactManager'
 import Stats from './Stats'
 import Deposit from './Deposit'
 import Stake from './Stake'
-import Info from './Info'
 import Withdraw from './Withdraw'
 import { RedirectPathToDepositOnly } from './Deposit/redirects'
 import { EN, allLanguages } from '../constants/localisation/languageCodes'
 import { LanguageContext } from '../hooks/LanguageContext'
-import { TranslationsContext } from '../hooks/TranslationsContext'
+import { TranslationsContext } from '../hooks/TranslationsContext' 
 import Menu from '../components/Menu'
 
 // init google analitics
@@ -147,7 +146,6 @@ export default function App() {
                       <Route exact strict path="/withdraw" component={Withdraw} />
                       <Route exact strict path="/stats" component={Stats} />
                       <Route exact strict path="/stake" component={Stake} />
-                      <Route exact strict path="/info" component={Info} />
                       <Route component={RedirectPathToDepositOnly} />
                     </Switch>
                   </Web3ReactManager>

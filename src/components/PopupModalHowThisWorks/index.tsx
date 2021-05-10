@@ -4,12 +4,14 @@ import styled from 'styled-components'
 import { CloseIcon } from 'cofetch-uikit'
 
 const Background = styled.div`
-  
-  position: fixed;
+  width:100%;
+  height:100%;
+  position: absolute;
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 100;
+  z-index: 10; 
+  background: rgba(0, 0, 0, 0.8);
 `
 
 const ModalWrapper = styled.div`
@@ -18,16 +20,16 @@ const ModalWrapper = styled.div`
   box-shadow: 0 5px 16px rgba(0, 0, 0, 0.2);
   background: #fff;
   color: #000;
-  display: grid;
-  position: center;
-  z-index: 10;
-  border-radius: 10px;
+  display: block; 
+  border-radius: 10px; 
+  position:relative;
+  
 `
-
+ 
 const ModalContent = styled.div`
+border-radius: 10px;
 position: relative;
-padding: 8px;
-margin: 8px;
+padding: 10px;
 margin-top:15px;
 background: #FFFFFF;
 .header{
@@ -50,7 +52,7 @@ background: #FFFFFF;
 
 .bottom{
   padding:10px;
-  font-size:14px;
+  font-size:15px;
 }
 
 hr {
@@ -79,20 +81,20 @@ const Modal = ({ showModal, setShowModal }) => {
           //   setShowModal(false)
           // }}
         >
-          <ModalWrapper>
+          <ModalWrapper className="popup">
             <CloseIcon style={{ marginLeft: '92%', marginTop: '3%',cursor: 'pointer'}}  onClick={() => setShowModal((prev) => !prev)} />
             <ModalContent>
               <div className="header">1-Step Simple - Total DeFi</div>
               <div className="middle">
                 <span>Converts BNB to bCOT from CoSwap & LGE
                 <p>
-                0xE81e92Bf8A02da1937B932d06ea6d1C6E35b7C01
+                0x73e982461370EB6E89aebEc687BA40524412610e
                 </p>
                 </span>
                 <hr />
                 <span>Buys 20% bCOT in our <a  href="https://swap.cotrader.com/#/swap" target="_blank" rel="noreferrer">CoSwap</a>
                 <p>
-                0xe72a8D9eee7d01bead1766dF312655828cFd837D
+                0xf1B735685416253A8F7c8a6686970cA2B0cceCce
                 </p>
                 </span>
                 <hr />
@@ -104,7 +106,7 @@ const Modal = ({ showModal, setShowModal }) => {
                 <hr />
                 <span>Stake COTBNB Liquidity Provider (LP) pool tokens COS-v2
                 <p>
-                0x73e982461370EB6E89aebEc687BA40524412610e
+                0xe72a8D9eee7d01bead1766dF312655828cFd837D
                 </p>
                 </span>
                 <hr />
