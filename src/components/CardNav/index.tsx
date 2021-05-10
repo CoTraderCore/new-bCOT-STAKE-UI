@@ -20,7 +20,7 @@ function Nav({ activeIndex = 0 }: { activeIndex?: number }) {
       <ButtonMenu activeIndex={index} onItemClick={(i) => handleClick(i)} scale="sm" variant="subtle">
         <ButtonMenuItem to="/deposit" as={Link}>
           {TranslateString(1142, 'Deposit')}
-        </ButtonMenuItem>
+        </ButtonMenuItem> 
         <ButtonMenuItem to="/withdraw" as={Link}>
           {TranslateString(1142, 'Withdraw')}
         </ButtonMenuItem>
@@ -29,10 +29,7 @@ function Nav({ activeIndex = 0 }: { activeIndex?: number }) {
         </ButtonMenuItem>
         <ButtonMenuItem to="/stats" as={Link}>
           {TranslateString(1142, 'Stats')}
-        </ButtonMenuItem>
-        <ButtonMenuItem to="/info" as={Link}>
-          {TranslateString(1142, 'Info')}
-        </ButtonMenuItem>
+        </ButtonMenuItem> 
       </ButtonMenu>
     </StyledNav>
   )

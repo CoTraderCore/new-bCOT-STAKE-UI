@@ -4,9 +4,7 @@ import styled from 'styled-components'
 import { CloseIcon } from 'cofetch-uikit'
 
 const Background = styled.div`
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.8);
+  
   position: fixed;
   display: flex;
   justify-content: center;
@@ -15,7 +13,7 @@ const Background = styled.div`
 `
 
 const ModalWrapper = styled.div`
-  width: 400px;
+  width: 450px;
   height: 550px;
   box-shadow: 0 5px 16px rgba(0, 0, 0, 0.2);
   background: #fff;
@@ -63,7 +61,7 @@ hr {
   background-color:#483D8B;
 }
 
-a{
+.middle a{
   background-color:#dec4ff;
 }
 
@@ -86,13 +84,13 @@ const Modal = ({ showModal, setShowModal }) => {
             <ModalContent>
               <div className="header">1-Step Simple - Total DeFi</div>
               <div className="middle">
-                <span>Converts BNB to bCOT from <a href="https://exchange.pancakeswap.finance/#/swap" target="_blank" rel="noreferrer">Pancake</a>
+                <span>Converts BNB to bCOT from CoSwap & LGE
                 <p>
                 0xE81e92Bf8A02da1937B932d06ea6d1C6E35b7C01
                 </p>
                 </span>
                 <hr />
-                <span>Buys 20% bCOT in our <a href="https://swap.cotrader.com/#/swap" target="_blank" rel="noreferrer">CoSwap</a>
+                <span>Buys 20% bCOT in our <a  href="https://swap.cotrader.com/#/swap" target="_blank" rel="noreferrer">CoSwap</a>
                 <p>
                 0xe72a8D9eee7d01bead1766dF312655828cFd837D
                 </p>
@@ -112,20 +110,21 @@ const Modal = ({ showModal, setShowModal }) => {
                 <hr />
               </div>
               <div className="bottom">
-                <span>{`1) Use "Claim" to get bCOT, which you can redeposit with more BNB to earn more APY. If you do this daily, you can compound up to ~2.7x more APY
-                `}</span>
+                <span>1) Use &quot;Claim&quot; to get bCOT, which you can redeposit with more BNB to earn more APY. If you do this daily, you can compound up to ~2.7x more APY
+                </span>
                 <br />
                 <br />
-                <span>{`
-2) Use "Withdraw" to stop earning APY 
-`}</span>
+                <span>
+2) Use &quot;Withdraw&quot; to stop earning APY 
+</span>
                 <br />
                 <br />
-                <span>{`
-3) Withdraw gives you back COS-v2. You'll need to go to swap.cotrader.com, "Liquidity" tab, and "Remove", to use COS to get back bCOT+BNB tokens.`}</span>
+                <span>
+3) Withdraw gives you back COS-v2. You&apos;ll need to go to <a style={{textDecoration:'underline'}} href="https://swap.cotrader.com/#/swap" target="_blank" rel="noreferrer">swap.cotrader.com</a>, 
+&quot;Liquidity&quot; tab, and &quot;Remove&quot;, to use COS to get back bCOT+BNB tokens.</span>
               </div>
             </ModalContent>
-          </ModalWrapper>
+          </ModalWrapper> 
         </Background>
       ) : null}
     </>

@@ -1,10 +1,10 @@
 import React, { Suspense, useEffect, useState } from 'react'
 import ReactGA from 'react-ga'
 import { HashRouter, Route, Switch } from 'react-router-dom'
-import PopupModal from 'components/PopupModal'
+import PopupModal from 'components/PopupModalHowThisWorks'
 import styled from 'styled-components'
 import { Credentials, StringTranslations } from '@crowdin/crowdin-api-client'
-import { Button, Text } from 'cofetch-uikit'
+import { Button, Text, MetamaskIcon } from 'cofetch-uikit'
 import Popups from '../components/Popups'
 import Web3ReactManager from '../components/Web3ReactManager'
 import Stats from './Stats'
@@ -154,8 +154,12 @@ export default function App() {
                   <Button style={{ marginTop: '20px' }} onClick={openModal}>
                     How this works?
                   </Button>
-                  <Text style={{ marginTop: '50px' }}>Add token addresses to wallet <Button style={{ marginRight:'10px' }}>bCOT</Button><Button>COS</Button> - LP token</Text>
                   <PopupModal {...popupModalProps} />
+                  <Text style={{ marginTop: '50px' }}>
+                    Add token addresses to wallet <MetamaskIcon style={{ verticalAlign: 'bottom' }} /> <br />{' '}
+                    <Button style={{ marginRight: '10px', marginLeft: '20px' }}>bCOT</Button>
+                    <Button>COS</Button>
+                  </Text>
                   <Marginer />
                 </BodyWrapper>
               </Menu>
