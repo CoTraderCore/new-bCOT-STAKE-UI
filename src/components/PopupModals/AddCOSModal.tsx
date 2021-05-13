@@ -1,5 +1,5 @@
 import React from 'react'
-import {  Flex, Text, Modal, Button } from 'cofetch-uikit'
+import {  Flex, Text, Modal, Button, LinkExternal } from 'cofetch-uikit'
 import styled from 'styled-components'
 
 type AddbCOTModalProps = {
@@ -9,6 +9,36 @@ type AddbCOTModalProps = {
 
 // TODO: Fix UI Kit typings
 const defaultOnDismiss = () => null
+
+const addToken=async ()=>{
+const tokenAddress = '0xE81e92Bf8A02da1937B932d06ea6d1C6E35b7C01';
+const tokenSymbol = 'COS';
+const tokenDecimals = 18;
+const tokenImage = '';
+
+try {
+  // wasAdded is a boolean. Like any RPC method, an error may be thrown.
+  if(window.web3)
+  {
+    await window.web3.currentProvider.request({
+        method: 'wallet_watchAsset',
+        params: {
+          type: 'ERC20', // Initially only supports ERC20, but eventually more!
+          options: {
+            address: tokenAddress, // The address that the token is at.
+            symbol: tokenSymbol, // A ticker symbol or shorthand, up to 5 chars.
+            decimals: tokenDecimals, // The number of decimals in the token
+            image: tokenImage, // A string url of the token logo
+          },
+        },
+      });
+    
+  }
+  
+} catch (error) {
+  console.log(error);
+}
+}
 
 
 
@@ -25,7 +55,7 @@ background: #FFFFFF;
 .header{
   fontWeight:bold;
   font-size:25px;
-  margin-left:15%;
+  margin-left:%;
   margin-bottom:5%;   
   padding:10px
 }
@@ -69,11 +99,12 @@ color: #483D8B;
               <div className="header">1-Step Simple - Total DeFi</div>
               <div className="bottom">
                 <Text>
-                Pool token that you can use to get back bCOT+BNB when <br/>  you “Remove” liquidity in <a style={{textDecoration:'underline'}} href="https://swap.cotrader.com/#/swap" target="_blank" rel="noreferrer">swap.cotrader.com</a>
+                Pool token that you can use to get back bCOT+BNB when <br/>  you “Remove” liquidity in <LinkExternal  href="https://swap.cotrader.com/#/swap" >swap.cotrader.com</LinkExternal>
                 <br/>
 Click address to add it to your Metamask:
                 <br/>
-                0xE81e92Bf8A02da1937B932d06ea6d1C6E35b7C01
+                <Button onClick={()=>addToken()}>
+                0xE81e92Bf8A02da1937B932d06ea6d1C6E35b7C01</Button>
                 
                 </Text>
                 

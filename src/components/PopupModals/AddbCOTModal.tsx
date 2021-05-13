@@ -10,7 +10,35 @@ type AddbCOTModalProps = {
 // TODO: Fix UI Kit typings
 const defaultOnDismiss = () => null
 
+const addToken=async ()=>{
+    const tokenAddress = '0x304fC73e86601a61a6C6db5B0eAfEA587622acdC';
+    const tokenSymbol = 'bCOT';
+    const tokenDecimals = 18;
+    const tokenImage = '';
+    
+    try {
+      // wasAdded is a boolean. Like any RPC method, an error may be thrown.
+      if(window.web3)
+      {
+        await window.web3.currentProvider.request({
+            method: 'wallet_watchAsset',
+            params: {
+              type: 'ERC20', // Initially only supports ERC20, but eventually more!
+              options: {
+                address: tokenAddress, // The address that the token is at.
+                symbol: tokenSymbol, // A ticker symbol or shorthand, up to 5 chars.
+                decimals: tokenDecimals, // The number of decimals in the token
+                image: tokenImage, // A string url of the token logo
+              },
+            },
+          });
 
+      }
+      
+    } catch (error) {
+      console.log(error);
+    }
+    }
 
 const AddbCOTModal = ({ onDismiss = defaultOnDismiss, translateString }: AddbCOTModalProps) => {
   const TranslateString = translateString
@@ -70,9 +98,10 @@ color: #483D8B;
               <div className="bottom">
                 <Text>
                 Can be changed to ETH COT using BurgerSwap.<br/> Click address to add it to your Metamask:
-                <p>
+                <br/>
+                <Button onClick={()=>{addToken()}}>
                 0x304fC73e86601a61a6C6db5B0eAfEA587622acdC
-                </p>
+                </Button > 
                 </Text>
                 
               </div>

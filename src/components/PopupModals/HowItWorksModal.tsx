@@ -109,10 +109,7 @@ color: #483D8B;
           <Button variant="tertiary" scale="sm" onClick={onDismiss}>
             Close
           </Button>
-        </Flex>
-      
-     
-      
+        </Flex>      
     </Modal>
   )
 }
