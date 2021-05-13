@@ -42,6 +42,74 @@ const ABIDex = [
 	{
 		"inputs": [
 			{
+				"internalType": "address",
+				"name": "_pool",
+				"type": "address"
+			},
+			{
+				"internalType": "address",
+				"name": "_toToken",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "_amount",
+				"type": "uint256"
+			}
+		],
+		"name": "convertPoolConnectorsToDestanationToken",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "_amount",
+				"type": "uint256"
+			},
+			{
+				"internalType": "address",
+				"name": "_exchange",
+				"type": "address"
+			}
+		],
+		"name": "getConnectorsAmountByPoolAmount",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "tokenAmountOne",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "tokenAmountTwo",
+				"type": "uint256"
+			},
+			{
+				"internalType": "address",
+				"name": "tokenAddressOne",
+				"type": "address"
+			},
+			{
+				"internalType": "address",
+				"name": "tokenAddressTwo",
+				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
 				"internalType": "uint256",
 				"name": "_wantAmount",
 				"type": "uint256"
@@ -62,35 +130,6 @@ const ABIDex = [
 			{
 				"internalType": "uint256",
 				"name": "liquidity",
-				"type": "uint256"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "liquidity",
-				"type": "uint256"
-			},
-			{
-				"internalType": "address",
-				"name": "pair",
-				"type": "address"
-			},
-			{
-				"internalType": "address",
-				"name": "want",
-				"type": "address"
-			}
-		],
-		"name": "getWantAmountByPool",
-		"outputs": [
-			{
-				"internalType": "uint256",
-				"name": "wantAmount",
 				"type": "uint256"
 			}
 		],
