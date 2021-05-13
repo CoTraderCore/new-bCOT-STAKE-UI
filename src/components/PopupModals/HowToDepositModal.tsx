@@ -32,7 +32,7 @@ background: #FFFFFF;
 
 .middle{
   padding:10px;
-  margin-left:15%;
+  margin-left:10%;
 }
 
 .middle span p{
@@ -68,27 +68,27 @@ color: #483D8B;
           <ModalContent>
               <div className="header">1-Step Simple - Total DeFi</div>
               <div className="middle">
-                <span>
+                <Text>
                   Get{' '}
                   <a href="https://docs.binance.org/smart-chain/wallet/metamask.html" target="_blank" rel="noreferrer">
                     Metamask.io
                   </a>{' '}
                   and configure it for BSC
-                </span>
+                </Text>
                 <hr />
-                <span>
+                <Text>
                   Send BNB (e.g. from{' '}
                   <a href="https://www.coinbase.com" target="_blank" rel="noreferrer">
                     Coinbase
                   </a>
                   ) to your BSC Metamask wallet
-                </span>
+                </Text>
                 <hr />
-                <span>Use BNB below to get and stake COT+BNB to earn APY</span>
+                <Text>Use BNB below to get and stake COT+BNB to earn APY</Text>
                 <hr />
               </div>
               <div className="bottom">
-                <span>Note the price of COT in USD. It goes up as people go for APY
+                <Text>Note the price of COT in USD. It goes up as people go for APY
                 <br />
                   Sometimes COT is cheaper on Ethereum exchanges like{' '}
                   <a style={{textDecoration:'underline'}} href="https://app.1inch.io/#/1/swap/ETH/COT" target="_blank" rel="noreferrer">
@@ -100,7 +100,7 @@ color: #483D8B;
                     BurgerSwap
                   </a>{' '}
                   bridge
-                </span>
+                </Text>
               </div>
             </ModalContent>
           <Button variant="tertiary" scale="sm" onClick={onDismiss}>

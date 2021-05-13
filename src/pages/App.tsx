@@ -4,8 +4,10 @@ import { HashRouter, Route, Switch } from 'react-router-dom'
 import styled from 'styled-components'
 import { Credentials, StringTranslations } from '@crowdin/crowdin-api-client'
 import { Button, Text, MetamaskIcon, useModal } from 'cofetch-uikit'
-import HowItWorksModal from 'components/PageHeader/HowItWorksModal'
+import HowItWorksModal from 'components/PopupModals/HowItWorksModal'
 import useI18n from 'hooks/useI18n'
+import AddbCOTModal from 'components/PopupModals/AddbCOTModal'
+import AddCOSModal from 'components/PopupModals/AddCOSModal'
 import Popups from '../components/Popups'
 import Web3ReactManager from '../components/Web3ReactManager' 
 import Stats from './Stats'
@@ -122,6 +124,8 @@ export default function App() {
  
   const TranslateString = useI18n()
   const [getHowItWorksModal] = useModal(<HowItWorksModal translateString={TranslateString}/>)
+  const [getAddbCOTModal] = useModal(<AddbCOTModal translateString={TranslateString}/>)
+  const [getAddCOSModal] = useModal(<AddCOSModal translateString={TranslateString}/>)
 
   return (
     <Suspense fallback={null}>
@@ -149,8 +153,8 @@ export default function App() {
                   </Button>
                   <Text style={{ marginTop: '50px' }}>
                     Add token addresses to wallet <MetamaskIcon style={{ verticalAlign: 'bottom' }} /> <br />{' '}
-                    <Button style={{ marginRight: '10px', marginLeft: '20px' }}>bCOT</Button>
-                    <Button>COS</Button>
+                    <Button onClick={getAddbCOTModal} style={{ marginRight: '10px', marginLeft: '20px' }}>bCOT</Button>
+                    <Button onClick={getAddCOSModal}>COS</Button>
                   </Text>
                   <Marginer />
                 </BodyWrapper>

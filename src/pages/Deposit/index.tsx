@@ -2,8 +2,7 @@ import { CurrencyAmount, JSBI, Token, TokenAmount } from 'pancakes-sdk'
 import { ethers } from 'ethers'
 import { BigNumber } from '@ethersproject/bignumber'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
-import HowToDepositModal from 'components/PageHeader/HowToDepositModal'
-import styled from 'styled-components'
+import HowToDepositModal from 'components/PopupModals/HowToDepositModal'
 import { CardBody, Button, Text, useModal } from 'cofetch-uikit'
 import { GreyCard } from 'components/Card' 
 import { AutoColumn } from 'components/Column'
@@ -15,8 +14,6 @@ import AdvancedSwapDetailsDropdown from 'components/swap/AdvancedSwapDetailsDrop
 import { BottomGrouping, Wrapper } from 'components/swap/styleds'
 import TokenWarningModal from 'components/TokenWarningModal'
 import SyrupWarningModal from 'components/SyrupWarningModal'
-import PopupModal from 'components/PopupModalHowTo' 
-
 import { parseEther } from '@ethersproject/units'
 import { useTransactionAdder } from 'state/transactions/hooks'
 import { useActiveWeb3React } from 'hooks'
@@ -80,7 +77,6 @@ const Deposit = () => {
   const loadedUrlParams = useDefaultsFromURLSearch()
   const TranslateString = useI18n()
   const [roverBalance, setRoverBalance] = useState('')
-  const [showModal, setShowModal] = useState(false)
   const [bnbToCot, setBnbToCot] = useState('')
   const [usdToCot, setUsdToCot] = useState('')
   const [useRover, setUserRover] = useState(false)
@@ -431,25 +427,7 @@ const Deposit = () => {
     }
   }
 
-  const openModal = () => {
-    setShowModal(!showModal)
-  }
 
-  const popupModalProps = {
-    showModal,
-    setShowModal,
-  }
-
-  const Background = styled.div`
-  width:100%;
-  height:100%;
-  position: absolute;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 5; 
-  background: rgba(0, 0, 0, 0.8);
-`
 
   return (
     <>
@@ -465,12 +443,10 @@ const Deposit = () => {
       />
      
       <CardNav activeIndex={0} />
-      {showModal?<Background/>:null}
       <AppBody >
         <Wrapper id="swap-page">
         <div style={{display:'flex'}}>
         <Button style={{marginLeft:'12px',marginTop:'20px',padding:'10px',height:'33px',backgroundColor:'#7c6a9e'}} onClick={getHowToDepositModal}>How to</Button>
-        <PopupModal {...popupModalProps} />
           <PageHeader
             title={TranslateString(8, `Deposit to Earn APY:`)}
             description={TranslateString(1192, `${Number(Number(Number(apr) * 2.718).toFixed(2)).toLocaleString()}  %`)}
@@ -582,7 +558,6 @@ const Deposit = () => {
           </CardBody>:<CardBody><ConnectWalletButton width="100%" /></CardBody>
        }
        {
-         showModal?<Background/>:
          bnbToCot
          ?
          (
@@ -595,7 +570,6 @@ const Deposit = () => {
        }
        <br/>
        {
-        showModal?<Background/>:
          usdToCot
          ?
          (
