@@ -30,7 +30,7 @@ const Stats = () => {
   const [displayClaimableEarned, setDisplayClaimableEarned] = useState('0')
   const [displayTotalDeposited, setDisplayTotalDeposited] = useState('0')
   const [displayPoolConnectorsCOT, setDisplayPoolConnectorsCOT] = useState('0')
-  const [displayPoolConnectorsBNB, setDisplayPoolConnectorsBNB] = useState('0')''
+  const [displayPoolConnectorsBNB, setDisplayPoolConnectorsBNB] = useState('0')
   const [displayPoolConnectorsCOTAddress, setDisplayPoolConnectorsCOTAddress] = useState('0x..')
   const [displayPoolConnectorsBNBAddress, setDisplayPoolConnectorsBNBAddress] = useState('0x..')
 
@@ -58,8 +58,8 @@ const Stats = () => {
     if(account && DexFormula && tokenContract)
     {
       try{
-        let poolAmount = await tokenContract.balanceOf(account)
-        //poolAmount='1000000000'
+        const poolAmount = await tokenContract.balanceOf(account)
+        // poolAmount='1000000000'
         setPoolBalance(poolAmount)
         // console.log(poolAmount)
         const totalDeposit=await DexFormula.convertPoolConnectorsToDestanationToken(

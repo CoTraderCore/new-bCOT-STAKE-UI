@@ -1,12 +1,13 @@
 import React, { Suspense, useEffect, useState } from 'react'
 import ReactGA from 'react-ga'
 import { HashRouter, Route, Switch } from 'react-router-dom'
-import PopupModal from 'components/PopupModalHowThisWorks'
 import styled from 'styled-components'
 import { Credentials, StringTranslations } from '@crowdin/crowdin-api-client'
-import { Button, Text, MetamaskIcon } from 'cofetch-uikit'
+import { Button, Text, MetamaskIcon, useModal } from 'cofetch-uikit'
+import HowItWorksModal from 'components/PageHeader/HowItWorksModal'
+import useI18n from 'hooks/useI18n'
 import Popups from '../components/Popups'
-import Web3ReactManager from '../components/Web3ReactManager'
+import Web3ReactManager from '../components/Web3ReactManager' 
 import Stats from './Stats'
 import Deposit from './Deposit'
 import Stake from './Stake'
@@ -60,7 +61,6 @@ const Marginer = styled.div`
 `
 
 export default function App() {
-  const [showModal, setShowModal] = useState(false)
   const [selectedLanguage, setSelectedLanguage] = useState<any>(undefined)
   const [translatedLanguage, setTranslatedLanguage] = useState<any>(undefined)
   const [translations, setTranslations] = useState<Array<any>>([])
@@ -119,14 +119,9 @@ export default function App() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedLanguage])
 
-  const openModal = () => {
-    setShowModal(!showModal)
-  }
-
-  const popupModalProps = {
-    showModal,
-    setShowModal,
-  }
+ 
+  const TranslateString = useI18n()
+  const [getHowItWorksModal] = useModal(<HowItWorksModal translateString={TranslateString}/>)
 
   return (
     <Suspense fallback={null}>
@@ -149,10 +144,9 @@ export default function App() {
                       <Route component={RedirectPathToDepositOnly} />
                     </Switch>
                   </Web3ReactManager>
-                  <Button style={{ marginTop: '20px' }} onClick={openModal}>
+                  <Button style={{ marginTop: '20px' }} onClick={getHowItWorksModal}>
                     How this works?
                   </Button>
-                  <PopupModal {...popupModalProps} />
                   <Text style={{ marginTop: '50px' }}>
                     Add token addresses to wallet <MetamaskIcon style={{ verticalAlign: 'bottom' }} /> <br />{' '}
                     <Button style={{ marginRight: '10px', marginLeft: '20px' }}>bCOT</Button>
