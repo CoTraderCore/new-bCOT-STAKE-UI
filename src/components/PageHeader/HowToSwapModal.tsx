@@ -2,7 +2,7 @@ import React from 'react'
 import {  Flex, Text, Modal, Button } from 'cofetch-uikit'
 import styled from 'styled-components'
 
-type HowItWorksModalProps = {
+type HowToSwapModalProps = {
   onDismiss?: () => void
   translateString: (translationId: number, fallback: string) => (string)
 }
@@ -12,7 +12,7 @@ const defaultOnDismiss = () => null
 
 
 
-const HowItWorksModal = ({ onDismiss = defaultOnDismiss, translateString }: HowItWorksModalProps) => {
+const HowToSwapModal = ({ onDismiss = defaultOnDismiss, translateString }: HowToSwapModalProps) => {
   const TranslateString = translateString
 
 
@@ -117,4 +117,4 @@ color: #483D8B;
   )
 }
 
-export default HowItWorksModal
+export default HowToSwapModal

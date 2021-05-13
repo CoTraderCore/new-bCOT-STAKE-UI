@@ -2,9 +2,9 @@ import { CurrencyAmount, JSBI, Token, TokenAmount } from 'pancakes-sdk'
 import { ethers } from 'ethers'
 import { BigNumber } from '@ethersproject/bignumber'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
-
+import HowToDepositModal from 'components/PageHeader/HowToDepositModal'
 import styled from 'styled-components'
-import { CardBody, Button, Text } from 'cofetch-uikit'
+import { CardBody, Button, Text, useModal } from 'cofetch-uikit'
 import { GreyCard } from 'components/Card' 
 import { AutoColumn } from 'components/Column'
 import CurrencyInputPanel from 'components/CurrencyInputPanel'
@@ -86,7 +86,7 @@ const Deposit = () => {
   const [useRover, setUserRover] = useState(false)
   const roverTokenContract = useTokenContract(RoverAddress)
   const ClaimableStakeContract = useStakeContract(ClaimableAddress)
-
+  const [getHowToDepositModal] = useModal(<HowToDepositModal translateString={TranslateString}/>)
 
   const [loadedInputCurrency, loadedOutputCurrency] = [
     useCurrency(loadedUrlParams?.inputCurrencyId),
@@ -469,7 +469,7 @@ const Deposit = () => {
       <AppBody >
         <Wrapper id="swap-page">
         <div style={{display:'flex'}}>
-        <Button style={{marginLeft:'12px',marginTop:'20px',padding:'10px',height:'33px',backgroundColor:'#7c6a9e'}} onClick={openModal}>How to</Button>
+        <Button style={{marginLeft:'12px',marginTop:'20px',padding:'10px',height:'33px',backgroundColor:'#7c6a9e'}} onClick={getHowToDepositModal}>How to</Button>
         <PopupModal {...popupModalProps} />
           <PageHeader
             title={TranslateString(8, `Deposit to Earn APY:`)}
