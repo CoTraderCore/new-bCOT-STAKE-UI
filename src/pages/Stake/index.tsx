@@ -52,14 +52,15 @@ import {
   RouterAddress,
   RoverAddress,
   BUSDAddress,
-  PancakeRouterAddress
+  PancakeRouterAddress,
+  UNDERLYING_Pool
 } from '../../constants/address/address'
 
 import '../../App.css'
 import { UNDERLYING_NAME } from '../../constants'
 import pair from '../../config/config'
 
-const Deposit = () => {
+const Stake = () => {
   let web3 = new Web3()
   if (typeof web3 !== 'undefined') {
     web3 = new Web3(web3.currentProvider)
@@ -69,7 +70,7 @@ const Deposit = () => {
   }
 
   const inputCurrency = useCurrency('BNB')
-  const UNDERLYING_TOKEN = RoverAddress
+  const UNDERLYING_TOKEN = UNDERLYING_Pool
   const addTransaction = useTransactionAdder()
   const { account } = useActiveWeb3React()
   const contract = useDepositerContract(AddressDepositor)
@@ -79,10 +80,11 @@ const Deposit = () => {
   const TranslateString = useI18n()
   const [roverBalance, setRoverBalance] = useState('')
   const [bnbToCot, setBnbToCot] = useState('')
-  const [usdToCot, setUsdToCot] = useState('')
+  const [usdToCot, setUsdToCot] = useState('') 
   const [useRover, setUserRover] = useState(false)
   const roverTokenContract = useTokenContract(RoverAddress)
   const ClaimableStakeContract = useStakeContract(ClaimableAddress)
+  
 
 
   const [loadedInputCurrency, loadedOutputCurrency] = [
@@ -387,13 +389,13 @@ const Deposit = () => {
 
   const handleDeposit = async () => {
     if (account) {
-      if (contract != null) {
+      if (ClaimableStakeContract != null) {
         try {
           const inputAmount = parseEther(typedValue)
-          const txReceipt = await contract.deposit(true, { value: inputAmount._hex })
+          const txReceipt = await ClaimableStakeContract.stake(true, { value: inputAmount._hex })
           addTransaction(txReceipt)
         } catch (error) {
-          console.error('Could not deposit', error)
+          console.error('Could not stake', error)
         }
       }
     } else {
@@ -413,14 +415,14 @@ const Deposit = () => {
     }
 
     if (account) {
-      if (contract != null) {
+      if (ClaimableStakeContract != null) {
         try {
           const bnbAmount = parseEther(typedValue)
           const roverAmount = parseEther(typedValue2)
-          const txReceipt = await contract.depositETHAndERC20(true, roverAmount._hex, { value: bnbAmount._hex })
+          const txReceipt = await ClaimableStakeContract.stake(web3.utils.toWei(String(typedValue2)))
           addTransaction(txReceipt)
         } catch (error) {
-          console.error('Could not deposit', error)
+          console.error('Could not stake', error)
         }
       }
     } else {
@@ -443,14 +445,14 @@ const Deposit = () => {
       <AppBody>
         <Wrapper id="swap-page">
           <PageHeader
-            title={TranslateString(8, `Deposit to Earn APY:`)}
+            title={TranslateString(8, `Stake to Earn APY:`)}
             description={TranslateString(1192, `${Number(Number(Number(apr) * 2.718).toFixed(2)).toLocaleString()}  %`)}
           />
           {account?
           <CardBody>
             <AutoColumn gap="md">
 
-              <CurrencyInputPanel
+              {/* <CurrencyInputPanel
                 label={
                   independentField === Field.OUTPUT && !showWrap && trade
                     ? TranslateString(194, 'BNB Amount (estimated)')
@@ -465,9 +467,9 @@ const Deposit = () => {
                 onCurrencySelect={handleInputSelect}
                 otherCurrency={currencies[Field.OUTPUT]}
                 id="swap-currency-input"
-              />
+              /> */}
 
-              <label htmlFor="understand-checkbox" style={{ cursor: 'pointer', userSelect: 'none' }}>
+              {/* <label htmlFor="understand-checkbox" style={{ cursor: 'pointer', userSelect: 'none' }}>
               <input
                 id="use-underlying-checkbox"
                 type="checkbox"
@@ -476,11 +478,10 @@ const Deposit = () => {
                 onChange={() => setUserRover(!useRover)}
               />
               <Text as="span">Use {UNDERLYING_NAME}</Text>
-              </label>
+              </label> */}
 
-              {useRover
-                ?
-                (
+              
+                
                 <RoverInputPanel
                   label={TranslateString(76, `${UNDERLYING_NAME} Amount`)}
                   value={typedValue2}
@@ -491,10 +492,9 @@ const Deposit = () => {
                   onMax={handleMaxInput2}
                   id="swap-currency-input"
                 />
-              )
-              :
-              null
-            }
+              
+              
+            
 
             </AutoColumn>
             <BottomGrouping>
@@ -510,7 +510,7 @@ const Deposit = () => {
                 <GreyCard style={{ textAlign: 'center' }}>
                   <Text mb="4px">{TranslateString(1194, 'Insufficient liquidity for this trade.')}</Text>
                 </GreyCard>
-              ) : useRover && showApproveFlow ? (
+              ) : showApproveFlow ? (
                 <Button
                   onClick={approveCallback}
                   disabled={approval !== ApprovalState.NOT_APPROVED || approvalSubmitted}
@@ -534,8 +534,8 @@ const Deposit = () => {
               <br/>
               <div>
                 <Button
-                  onClick={() =>
-                    useRover ? handleDepositWithRover() : handleDeposit()
+                  onClick={() => 
+                    handleDepositWithRover() 
                   }
                   // onClick={() => handleDeposit()}
                   id="deposit-button"
@@ -543,7 +543,7 @@ const Deposit = () => {
                   variant={!isValid ? 'danger' : 'primary'}
                   width="100%"
                 >
-                  {inputError || inputErrorDeposit || 'Deposit'}
+                  {inputError || inputErrorDeposit || 'Stake'}
                 </Button>
               </div>
             </BottomGrouping>
@@ -582,4 +582,4 @@ const Deposit = () => {
   )
 }
 
-export default Deposit
+export default Stake
