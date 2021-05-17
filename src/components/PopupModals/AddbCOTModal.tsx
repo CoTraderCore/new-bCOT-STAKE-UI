@@ -1,5 +1,5 @@
 import React from 'react'
-import {  Flex, Text, Modal, Button } from 'cofetch-uikit'
+import { Text, Modal, Button } from 'cofetch-uikit'
 import styled from 'styled-components'
 
 type AddbCOTModalProps = {
@@ -43,34 +43,47 @@ const addToken=async ()=>{
 const AddbCOTModal = ({ onDismiss = defaultOnDismiss, translateString }: AddbCOTModalProps) => {
   const TranslateString = translateString
 
+const Flex=styled.div`
+justifyContent:center
+flexDirection:column
+display:flex;
+`
 
 const ModalContent = styled.div`
 border-radius: 10px;
 position: relative;
-padding: 10px;
-margin-top:15px;
+overflow: auto;
+width: 100%;
+max-width: 390px;
+min-width:100px;
 background: #FFFFFF;
+
+font-family: calibri;
+color: #483D8B;
+
+  // word-wrap: break-all;
+  // text-align:justify;
+
 .header{
   fontWeight:bold;
   font-size:25px;
-  margin-left:15%;
+  float:left
   margin-bottom:5%;   
+  padding-left:40px;
   padding:10px
 }
 
 .middle{
-  padding:10px;
-  margin-left:15%;
+  float:left
 }
 
-.middle span p{
-  font-size:12px;
-  padding-top:5px;
+.middle p{
+  font-size:13px;
 }
 
 .bottom{
-  padding:10px;
   font-size:15px;
+  
 }
 
 hr {
@@ -84,34 +97,28 @@ hr {
 .middle a{
   background-color:#dec4ff;
 }
-
- 
-font-family: calibri;
-color: #483D8B;
 ` 
   return (
     <Modal title={TranslateString(1202, 'BSC COT token')} onDismiss={onDismiss}>
       
-        <Flex justifyContent="center" flexDirection="column" alignItems="center">
+        <Flex>
           <ModalContent>
               <div className="header">1-Step Simple - Total DeFi</div>
               <div className="bottom">
                 <Text>
                 Can be changed to ETH COT using BurgerSwap.<br/> Click address to add it to your Metamask:
                 <br/>
-                <Button onClick={()=>{addToken()}}>
-                0x304fC73e86601a61a6C6db5B0eAfEA587622acdC
+                <Button style={{display:"block", margin:"auto"}} onClick={()=>{addToken()}}>
+                0x304fC...87622acdC
                 </Button > 
                 </Text>
                 
               </div>
             </ModalContent>
-          <Button variant="tertiary" scale="sm" onClick={onDismiss}>
+          <Button style={{display:"block", margin:"auto"}} variant="tertiary" scale="sm" onClick={onDismiss}>
             Close
           </Button>
-        </Flex>
-      
-     
+        </Flex>    
       
     </Modal>
   )

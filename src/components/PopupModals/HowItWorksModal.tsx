@@ -1,5 +1,5 @@
 import React from 'react'
-import {  Flex, Text, Modal, Button } from 'cofetch-uikit'
+import {  Text, Modal, Button } from 'cofetch-uikit'
 import styled from 'styled-components'
 
 type HowItWorksModalProps = {
@@ -15,34 +15,46 @@ const defaultOnDismiss = () => null
 const HowItWorksModal = ({ onDismiss = defaultOnDismiss, translateString }: HowItWorksModalProps) => {
   const TranslateString = translateString
 
-
+const Flex=styled.div`
+justifyContent:center
+flexDirection:column
+display:flex;
+`
 const ModalContent = styled.div`
 border-radius: 10px;
 position: relative;
-padding: 10px;
-margin-top:15px;
+overflow: auto;
+width: 100%;
+max-width: 390px;
+min-width:100px;
 background: #FFFFFF;
+
+font-family: calibri;
+color: #483D8B;
+
+  word-wrap: break-all;
+  text-align:justify;
+
 .header{
   fontWeight:bold;
   font-size:25px;
-  margin-left:20%;
+  float:left
   margin-bottom:5%;   
+  padding-left:40px;
   padding:10px
 }
 
 .middle{
-  padding:10px;
-  margin-left:15%;
+  float:left
 }
 
-.middle span p{
-  font-size:12px;
-  padding-top:5px;
+.middle p{
+  font-size:13px;
 }
 
 .bottom{
-  padding:10px;
   font-size:15px;
+  
 }
 
 hr {
@@ -56,23 +68,20 @@ hr {
 .middle a{
   background-color:#dec4ff;
 }
-
- 
-font-family: calibri;
-color: #483D8B;
 ` 
   return (
     <Modal title={TranslateString(1202, 'How it works')} onDismiss={onDismiss}>
       
-        <Flex justifyContent="center" flexDirection="column" alignItems="center">
+        <Flex  >
           <ModalContent>
               <div className="header">1-Step Simple - Total DeFi</div>
               <div className="middle">
                 <Text>Converts BNB to bCOT from CoSwap & LGE
-                <p>
+                <p >
                 0x73e982461370EB6E89aebEc687BA40524412610e
                 </p>
                 </Text>
+               
                 <hr />
                 <Text>Buys 20% bCOT in our <a  href="https://swap.cotrader.com/#/swap" target="_blank" rel="noreferrer">CoSwap</a>
                 <p>
@@ -94,7 +103,7 @@ color: #483D8B;
                 <hr />
               </div>
               <div className="bottom">
-                <Text>1) Use &quot;Claim&quot; to get bCOT, which you can redeposit with more BNB to earn more APY.<br />If you do this daily, you can compound up to ~2.7x more APY
+                <Text>1) Use &quot;Claim&quot; to get bCOT, which you can redeposit with more BNB to earn more APY. If you do this daily, you can compound up to ~2.7x more APY
                 </Text>
                 <br />
                 <Text>
@@ -102,11 +111,11 @@ color: #483D8B;
 </Text>
                 <br />
                 <Text>
-3) Withdraw gives you back COS-v2. You&apos;ll need to go to <a style={{textDecoration:'underline'}} href="https://swap.cotrader.com/#/swap" target="_blank" rel="noreferrer">swap.cotrader.com</a>,<br /> 
+3) Withdraw gives you back COS-v2. You&apos;ll need to go to <a style={{textDecoration:'underline'}} href="https://swap.cotrader.com/#/swap" target="_blank" rel="noreferrer">swap.cotrader.com</a>, 
 &quot;Liquidity&quot; tab, and &quot;Remove&quot;, to use COS to get back bCOT+BNB tokens.</Text>
               </div>
             </ModalContent>
-          <Button variant="tertiary" scale="sm" onClick={onDismiss}>
+          <Button variant="tertiary" scale="sm" style={{margin: "auto",display:"block" }} onClick={onDismiss}>
             Close
           </Button>
         </Flex>      

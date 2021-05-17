@@ -1,5 +1,5 @@
 import React from 'react'
-import {  Flex, Text, Modal, Button } from 'cofetch-uikit'
+import { Text, Modal, Button } from 'cofetch-uikit'
 import styled from 'styled-components'
 
 type HowToDepositModalProps = {
@@ -16,55 +16,64 @@ const HowToDepositModal = ({ onDismiss = defaultOnDismiss, translateString }: Ho
   const TranslateString = translateString
 
 
-const ModalContent = styled.div`
-border-radius: 10px;
-position: relative;
-padding: 10px;
-margin-top:15px;
-background: #FFFFFF;
-.header{
-  fontWeight:bold;
-  font-size:25px;
-  margin-left:20%;
-  margin-bottom:5%;   
-  padding:10px
-}
-
-.middle{
-  padding:10px;
-  margin-left:10%;
-}
-
-.middle span p{
-  font-size:12px;
-  padding-top:5px;
-}
-
-.bottom{
-  padding:10px;
-  font-size:15px;
-}
-
-hr {
-  border-top: 1px  rgba(255,0,0,.1);
-  width: 320px;
-  height: 1px;
-  margin-left: 1px;
-  background-color:#483D8B;
-}
-
-.middle a{
-  background-color:#dec4ff;
-}
-
- 
-font-family: calibri;
-color: #483D8B;
-` 
+  const Flex=styled.div`
+  justifyContent:center
+  flexDirection:column
+  display:flex;
+  `
+  const ModalContent = styled.div`
+  border-radius: 10px;
+  position: relative;
+  overflow: auto;
+  width: 100%;
+  max-width: 390px;
+  min-width:100px;
+  background: #FFFFFF;
+  
+  font-family: calibri;
+  color: #483D8B;
+  
+    word-wrap: break-all;
+    text-align:justify;
+  
+  .header{
+    fontWeight:bold;
+    font-size:25px;
+    float:left
+    margin-bottom:5%;   
+    padding-left:40px;
+    padding:10px
+  }
+  
+  .middle{
+    float:left
+  }
+  
+  .middle p{
+    font-size:13px;
+  }
+  
+  .bottom{
+    font-size:15px;
+    
+  }
+  
+  hr {
+    border-top: 1px  rgba(255,0,0,.1);
+    width: 320px;
+    height: 1px;
+    margin-left: 1px;
+    background-color:#483D8B;
+  }
+  
+  .middle a{
+    background-color:#dec4ff;
+  }
+  ` 
   return (
     <Modal title={TranslateString(1202, 'How To Deposit')} onDismiss={onDismiss}>
       
-        <Flex justifyContent="center" flexDirection="column" alignItems="center">
+        <Flex>
           <ModalContent>
               <div className="header">1-Step Simple - Total DeFi</div>
               <div className="middle">
@@ -103,7 +112,7 @@ color: #483D8B;
                 </Text>
               </div>
             </ModalContent>
-          <Button variant="tertiary" scale="sm" onClick={onDismiss}>
+          <Button style={{margin: "auto",display:"block" }} variant="tertiary" scale="sm" onClick={onDismiss}>
             Close
           </Button>
         </Flex>

@@ -148,12 +148,12 @@ export default function App() {
                       <Route component={RedirectPathToDepositOnly} />
                     </Switch>
                   </Web3ReactManager>
-                  <Button style={{ marginTop: '20px' }} onClick={getHowItWorksModal}>
+                  <Button onClick={getHowItWorksModal}>
                     How this works?
                   </Button>
-                  <Text style={{ marginTop: '50px' }}>
+                  <Text style={{ marginTop: '5px' }}>
                     Add token addresses to wallet <MetamaskIcon style={{ verticalAlign: 'bottom' }} /> <br />{' '}
-                    <Button onClick={getAddbCOTModal} style={{ marginRight: '10px', marginLeft: '20px' }}>bCOT</Button>
+                    <Button onClick={getAddbCOTModal} style={{ marginRight: '10px', marginLeft: '28px' }}>bCOT</Button>
                     <Button onClick={getAddCOSModal}>COS</Button>
                   </Text>
                   <Marginer />

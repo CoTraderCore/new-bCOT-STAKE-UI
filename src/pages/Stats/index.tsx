@@ -121,7 +121,7 @@ useEffect(() => {
       <CardNav activeIndex={3} />
       <AppBody>
         <Wrapper id="swap-page">
-
+ 
           <PageHeader
             title={TranslateString(8, 'Stats')}
             description={TranslateString(1192, 'Your stake stats')}
@@ -132,13 +132,13 @@ useEffect(() => {
               {!account ? (
                 <ConnectWalletButton width="100%" />
               ) : <div>
-                <span>Earned: {Number(displayClaimableEarned).toFixed(2)} {UNDERLYING_NAME}</span>
+                <span>COT Claimable: {Number(displayClaimableEarned).toFixed(2)} {UNDERLYING_NAME}</span>
                 <br/>
-                <span>Total Deposit: {Number(displayTotalDeposited).toFixed(2)} {UNDERLYING_NAME}</span>
+                <span>COS-v2 LP staked: {Number(displayTotalDeposited).toFixed(2)} {UNDERLYING_NAME}</span>
                 <br/>
-                <span>Pool Connectors: {Number(displayPoolConnectorsCOT).toFixed(2)} {UNDERLYING_NAME}</span>
+                <span>COT in COS-v2: {Number(displayPoolConnectorsCOT).toFixed(2)} {UNDERLYING_NAME}</span>
                 <br/>
-                <span>Pool Connectors: {Number(displayPoolConnectorsBNB).toFixed(2)} BNB</span>
+                <span>BNB in COS-v2: {Number(displayPoolConnectorsBNB).toFixed(2)} BNB</span>
               </div>
               }
                 </BottomGrouping>
