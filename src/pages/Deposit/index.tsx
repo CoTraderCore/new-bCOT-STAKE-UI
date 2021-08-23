@@ -444,8 +444,7 @@ const Deposit = () => {
       <AppBody>
         <Wrapper id="swap-page">
           <PageHeader
-            title={TranslateString(8, `Deposit to Earn APY:`)}
-            description={TranslateString(1192, `${Number(Number(Number(apr) * 2.718).toFixed(2)).toLocaleString()}  %`)}
+            title={TranslateString(8, `APY is done. More soon`)}
           />
           {account?
           <CardBody>
