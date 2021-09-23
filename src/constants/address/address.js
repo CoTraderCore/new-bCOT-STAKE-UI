@@ -4,9 +4,9 @@
 // export const ClaimableAddress=''          // Stake
 // export const DEXFormulaAddress=''         // Dex formula with pancake Router
 // export const RouterAddress=''             // Pancake Roter
-// export const UNDERLYING_TOKEN =''
-// export const BUSDAddress=''
-// export const UNDERLYING_Pool=''
+// export const UNDERLYING_TOKEN =''         // bCOT
+// export const BUSDAddress=''               // BUSD address
+// export const UNDERLYING_Pool=''           // Pancake bCOT/WETH pool 
 
 // TESTNET
 
