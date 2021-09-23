@@ -370,7 +370,7 @@ const Deposit = () => {
       if (contract != null) {
         try {
           const inputAmount = parseEther(typedValue)
-          const txReceipt = await contract.deposit(true, { value: inputAmount._hex })
+          const txReceipt = await contract.deposit({ value: inputAmount._hex })
           addTransaction(txReceipt)
         } catch (error) {
           console.error('Could not deposit', error)
@@ -397,7 +397,7 @@ const Deposit = () => {
         try {
           const bnbAmount = parseEther(typedValue)
           const roverAmount = parseEther(typedValue2)
-          const txReceipt = await contract.depositETHAndERC20(true, roverAmount._hex, { value: bnbAmount._hex })
+          const txReceipt = await contract.depositETHAndERC20(roverAmount._hex, { value: bnbAmount._hex })
           addTransaction(txReceipt)
         } catch (error) {
           console.error('Could not deposit', error)
