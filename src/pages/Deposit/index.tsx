@@ -52,8 +52,7 @@ import {
   DEXFormulaAddress,
   RouterAddress,
   UNDERLYING_TOKEN,
-  BUSDAddress,
-  PancakeRouterAddress
+  BUSDAddress
 } from '../../constants/address/address'
 
 import '../../App.css'
@@ -178,41 +177,34 @@ const Deposit = () => {
       web3.utils]
   )
 
-  // // get BNB to UNDERLYING
-  // useEffect(() => {
-  //   async function getBNBtoCOTPrice(){
-  //     if(Router && DexFormula){
-  //       const addressTemp = await Router.WETH()
-  //
-  //       // get BNB to COT
-  //       const _bnbToCot = await DexFormula.routerRatio(
-  //         addressTemp,
-  //         UNDERLYING_TOKEN,
-  //         web3.utils.toWei("1")
-  //       )
-  //
-  //       const _bnbToUsd = await DexFormula.routerRatioByCustomRouter(
-  //         addressTemp,
-  //         BUSDAddress,
-  //         web3.utils.toWei("1"),
-  //         PancakeRouterAddress
-  //       )
-  //
-  //       const _usdToCot = Number(web3.utils.fromWei(String(_bnbToCot))) / Number(web3.utils.fromWei(String(_bnbToUsd)))
-  //
-  //       // set ratios
-  //       setBnbToCot(String(1 / Number(web3.utils.fromWei(String(_bnbToCot)))))
-  //       setUsdToCot(String(1 / _usdToCot))
-  //     }
-  //   }
-  //   getBNBtoCOTPrice()
-  // }, [bnbToCot,
-  //     setBnbToCot,
-  //     setUsdToCot,
-  //     DexFormula,
-  //     Router,
-  //     UNDERLYING_TOKEN,
-  //     web3.utils])
+  // get BNB to UNDERLYING
+  useEffect(() => {
+    async function getBNBtoCOTPrice(){
+      if(Router && DexFormula){
+        const addressTemp = await Router.WETH()
+
+        // get BNB to COT
+        const _bnbToCot = await Router.getAmountsOut(
+          web3.utils.toWei("1"),
+          [addressTemp,UNDERLYING_TOKEN])
+
+
+        const _usdToCot = await Router.getAmountsOut(
+          web3.utils.toWei("1"),
+          [BUSDAddress,UNDERLYING_TOKEN])
+
+        // set ratios
+        setBnbToCot(String(1 / Number(web3.utils.fromWei(String(_bnbToCot)))))
+        setUsdToCot(String(1 / _usdToCot))
+      }
+    }
+    getBNBtoCOTPrice()
+  }, [bnbToCot,
+      setBnbToCot,
+      setUsdToCot,
+      DexFormula,
+      Router,
+      web3.utils])
 
 
   const handleTypeInput = useCallback(
