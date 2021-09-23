@@ -184,27 +184,17 @@ const Deposit = () => {
         const addressTemp = await Router.WETH()
 
         // get BNB to COT
-        const _bnbToCot = await Router.getAmountsOut(
-          web3.utils.toWei("1"),
-          [addressTemp,UNDERLYING_TOKEN])
+        const _bnbToCot = 1 // await Router.getAmountsOut("1000000000000000000",[addressTemp,UNDERLYING_TOKEN])
 
-
-        const _usdToCot = await Router.getAmountsOut(
-          web3.utils.toWei("1"),
-          [BUSDAddress,UNDERLYING_TOKEN])
+        const _usdToCot = 1 // await Router.getAmountsOut("1000000000000000000",[BUSDAddress,UNDERLYING_TOKEN])
 
         // set ratios
-        setBnbToCot(String(1 / Number(web3.utils.fromWei(String(_bnbToCot)))))
-        setUsdToCot(String(1 / _usdToCot))
+        setBnbToCot(String(_bnbToCot))
+        setUsdToCot(String(_usdToCot))
       }
     }
     getBNBtoCOTPrice()
-  }, [bnbToCot,
-      setBnbToCot,
-      setUsdToCot,
-      DexFormula,
-      Router,
-      web3.utils])
+  }, [DexFormula, Router])
 
 
   const handleTypeInput = useCallback(
@@ -568,9 +558,7 @@ const Deposit = () => {
       <MouseoverTooltip text={
         `
         1. Converts BNB to COT from Pancake
-        2. Buys 20% COT in our CoSwap
-        3. Buys 80% COT in LGE to lower slippage
-        4. Stake COTBNB LP pool COS-v2
+        2. Stake COTBNB LP pool COS-v2
         `
       }>
         <Text mb="4px">How this works <strong>?</strong></Text>
