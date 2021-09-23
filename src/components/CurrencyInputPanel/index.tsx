@@ -13,7 +13,7 @@ import { RowBetween } from '../Row'
 import { Input as NumericalInput } from '../NumericalInput'
 
 import { useActiveWeb3React } from '../../hooks'
-import { ClaimableAddress,NonClaimableAddress } from '../../constants/address/address';
+import { ClaimableAddress } from '../../constants/address/address';
 
 const InputRow = styled.div<{ selected: boolean }>`
   display: flex;
@@ -90,7 +90,7 @@ export default function CurrencyInputPanel({
   showCommonBases,
 }: CurrencyInputPanelProps) {
   const { account } = useActiveWeb3React()
-  const stakePoolAddress=isClaimable?ClaimableAddress:NonClaimableAddress
+  const stakePoolAddress=ClaimableAddress
   const tokenContract = useTokenContract(stakePoolAddress)
   const [modalOpen, setModalOpen] = useState(false)
   const [poolBalance,setPoolBalance]=useState('')

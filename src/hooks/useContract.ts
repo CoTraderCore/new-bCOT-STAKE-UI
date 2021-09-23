@@ -50,11 +50,6 @@ export function useWithdrawClaimableContract(ClaimableAddress?: string, withSign
     ClaimableAddress, ABIWithdraw, withSignerIfPossible)
 }
 
-export function useWithdrawNonClaimableContract(NonClaimableAddress?: string, withSignerIfPossible?: boolean): Contract | null {
-  return useContract(
-    NonClaimableAddress, ABIWithdraw, withSignerIfPossible)
-}
-
 export function useDexFormulaContract(DexFormulaAddress?: string, withSignerIfPossible?: boolean): Contract | null {
   return useContract(
     DexFormulaAddress, ABIDex, withSignerIfPossible)

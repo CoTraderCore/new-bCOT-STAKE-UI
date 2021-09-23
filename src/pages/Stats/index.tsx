@@ -7,7 +7,7 @@ import Web3 from 'web3'
 import useI18n from 'hooks/useI18n'
 import PageHeader from 'components/PageHeader'
 import ConnectWalletButton from 'components/ConnectWalletButton'
-import { ClaimableAddress, NonClaimableAddress } from 'constants/address/address'
+import { ClaimableAddress } from 'constants/address/address'
 import { useActiveWeb3React } from 'hooks'
 import { useStakeContract, useTokenContract } from 'hooks/useContract'
 import AppBody from '../AppBody'
@@ -21,9 +21,7 @@ const Stats = () => {
   const TranslateString = useI18n()
   const { account } = useActiveWeb3React()
   const claimableTokenContract = useTokenContract(ClaimableAddress)
-  const nonClaimableTokenContract = useTokenContract(NonClaimableAddress)
   const ClaimableStakeContract = useStakeContract(ClaimableAddress)
-  const NonClaimableStakeContract = useStakeContract(NonClaimableAddress)
   const [displayClaimableEarned, setDisplayClaimableEarned] = useState('0')
   let web3 = new Web3()
   if (typeof web3 !== 'undefined') {
@@ -35,7 +33,7 @@ const Stats = () => {
 
   useEffect(() => {
     async function getPoolBalance(){
-    if(account && claimableTokenContract && nonClaimableTokenContract)
+    if(account && claimableTokenContract)
     {
       const claimableAmount = await claimableTokenContract.balanceOf(account)
       if(claimableAmount > 0)
@@ -47,7 +45,7 @@ const Stats = () => {
     }
     }
     getPoolBalance();
-}, [account,claimableTokenContract,nonClaimableTokenContract,ClaimableStakeContract,NonClaimableStakeContract,web3.utils]);
+}, [account,claimableTokenContract,ClaimableStakeContract,web3.utils]);
   return (
     <>
       <CardNav activeIndex={2} />
