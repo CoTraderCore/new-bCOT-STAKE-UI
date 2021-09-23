@@ -77,8 +77,8 @@ const Deposit = () => {
   const loadedUrlParams = useDefaultsFromURLSearch()
   const TranslateString = useI18n()
   const [roverBalance, setRoverBalance] = useState('')
-  const [bnbToCot, setBnbToCot] = useState('')
-  const [usdToCot, setUsdToCot] = useState('')
+  const [CotToBnb, setCotToBnb] = useState('')
+  const [CotToUsd, setCotToUsd] = useState('')
   const [useRover, setUserRover] = useState(false)
   const roverTokenContract = useTokenContract(UNDERLYING_TOKEN)
   const ClaimableStakeContract = useStakeContract(ClaimableAddress)
@@ -179,22 +179,22 @@ const Deposit = () => {
 
   // get BNB to UNDERLYING
   useEffect(() => {
-    async function getBNBtoCOTPrice(){
+    async function getCotToBnbPrice(){
       if(Router && DexFormula){
         const addressTemp = await Router.WETH()
 
-        // get BNB to COT
-        const _bnbToCot = 1 // await Router.getAmountsOut("1000000000000000000",[addressTemp,UNDERLYING_TOKEN])
-
-        const _usdToCot = 1 // await Router.getAmountsOut("1000000000000000000",[BUSDAddress,UNDERLYING_TOKEN])
+        // get COT to BNB
+        const _CotToBnb = await Router.getAmountsOut("1000000000000000000",[UNDERLYING_TOKEN, addressTemp])
+        // get COT to USD
+        const _CotToUsd = await Router.getAmountsOut("1000000000000000000",[UNDERLYING_TOKEN, addressTemp, BUSDAddress])
 
         // set ratios
-        setBnbToCot(String(_bnbToCot))
-        setUsdToCot(String(_usdToCot))
+        setCotToBnb(web3.utils.fromWei(String(_CotToBnb[1])))
+        setCotToUsd(web3.utils.fromWei(String(_CotToUsd[2])))
       }
     }
-    getBNBtoCOTPrice()
-  }, [DexFormula, Router])
+    getCotToBnbPrice()
+  }, [DexFormula, Router, web3.utils])
 
 
   const handleTypeInput = useCallback(
@@ -531,11 +531,11 @@ const Deposit = () => {
           </CardBody>:<CardBody><ConnectWalletButton width="100%" /></CardBody>
        }
        {
-         bnbToCot
+         CotToBnb
          ?
          (
            <GreyCard style={{ textAlign: 'center' }}>
-             <Text mb="4px">{TranslateString(1194, `1 COT = ${Number(bnbToCot).toFixed(8)} BNB`)}</Text>
+             <Text mb="4px">{TranslateString(1194, `1 COT = ${Number(CotToBnb).toFixed(8)} BNB`)}</Text>
            </GreyCard>
          )
          :
@@ -543,11 +543,11 @@ const Deposit = () => {
        }
        <br/>
        {
-         usdToCot
+         CotToUsd
          ?
          (
            <GreyCard style={{ textAlign: 'center' }}>
-             <Text mb="4px">{TranslateString(1194, `1 COT = ${Number(usdToCot).toFixed(8)} USD`)}</Text>
+             <Text mb="4px">{TranslateString(1194, `1 COT = ${Number(CotToUsd).toFixed(8)} USD`)}</Text>
            </GreyCard>
          )
          :
