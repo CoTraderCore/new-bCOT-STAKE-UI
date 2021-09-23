@@ -255,7 +255,6 @@ const Claimable = () => {
                     ? TranslateString(194, 'Enter LP Amount')
                     : TranslateString(76, 'Enter LP Amount')
                 }
-                isClaimable
                 value={typedValueClaimable}
                 showMaxButton
                 isDeposit={false}

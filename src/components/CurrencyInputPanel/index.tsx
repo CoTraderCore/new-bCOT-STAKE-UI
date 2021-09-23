@@ -66,7 +66,6 @@ interface CurrencyInputPanelProps {
   hideBalance?: boolean
   hideInput?: boolean
   isDeposit?:boolean
-  isClaimable?:boolean
   otherCurrency?: Currency | null
   id: string
   showCommonBases?: boolean
@@ -82,7 +81,6 @@ export default function CurrencyInputPanel({
   currency,
   disableCurrencySelect = false,
   isDeposit=true,
-  isClaimable=true,
   hideBalance = false,
   hideInput = false,
   otherCurrency,

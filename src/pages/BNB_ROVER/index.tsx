@@ -191,7 +191,7 @@ const BNB_ROVER = () => {
         {
           console.error('Could not withdraw', error)
         }
-        
+
       }
     } else {
       alert('Please connect to web3')
@@ -215,70 +215,6 @@ const BNB_ROVER = () => {
         <Wrapper id="swap-page">
           <CardBody>
             <AutoColumn gap="md">
-              {/* <CurrencyInputPanel
-                label={
-                  independentField === Field.OUTPUT && !showWrap && trade
-                    ? TranslateString(194, 'Amount')
-                    : TranslateString(76, 'Amount')
-                }
-                isClaimable
-                value={formattedAmounts[Field.INPUT]}
-                showMaxButton={!atMaxAmountInput}
-                isDeposit
-                currency={currencies[Field.INPUT]}
-                onUserInput={handleTypeInput}
-                onMax={handleMaxInput}
-                onCurrencySelect={handleInputSelect}
-                otherCurrency={currencies[Field.OUTPUT]}
-                id="swap-currency-input"
-              /> */}
-
-              {/* <AutoColumn justify="space-between">
-                <AutoRow justify={isExpertMode ? 'space-between' : 'center'} style={{ padding: '0 1rem' }}>
-                  {recipient === null && !showWrap && isExpertMode ? (
-                    <LinkStyledButton id="add-recipient-button" onClick={() => onChangeRecipient('')}>
-                      + Add a send (optional)
-                    </LinkStyledButton>
-                  ) : null}
-                </AutoRow>
-              </AutoColumn> */}
-
-              {/* {recipient !== null && !showWrap ? (
-                <>
-                  <AutoRow justify="space-between" style={{ padding: '0 1rem' }}>
-                    <ArrowWrapper clickable={false}>
-                      <ArrowDown size="16" color={theme.colors.textSubtle} />
-                    </ArrowWrapper>
-                    <LinkStyledButton id="remove-recipient-button" onClick={() => onChangeRecipient(null)}>
-                      - Remove send
-                    </LinkStyledButton>
-                  </AutoRow>
-                  <AddressInputPanel id="recipient" value={recipient} onChange={onChangeRecipient} />
-                </>
-              ) : null} */}
-
-              {/* {showWrap ? null : (
-                <Card padding=".25rem .75rem 0 .75rem" borderRadius="20px">
-                  <AutoColumn gap="4px">
-                    {Boolean(trade) && (
-                      <RowBetween align="center">
-                        <Text fontSize="14px">{TranslateString(1182, 'Price')}</Text>
-                        <TradePrice
-                          price={trade?.executionPrice}
-                          showInverted={showInverted}
-                          setShowInverted={setShowInverted}
-                        />
-                      </RowBetween>
-                    )}
-                    {allowedSlippage !== INITIAL_ALLOWED_SLIPPAGE && (
-                      <RowBetween align="center">
-                        <Text fontSize="14px">{TranslateString(88, 'Slippage Tolerance')}</Text>
-                        <Text fontSize="14px">{allowedSlippage / 100}%</Text>
-                      </RowBetween>
-                    )}
-                  </AutoColumn>
-                </Card>
-              )} */}
             </AutoColumn>
             <BottomGrouping>
               {!account ? (
@@ -316,7 +252,7 @@ const BNB_ROVER = () => {
                 </RowBetween>
               ) : (
                 <Button
-                 
+
                   onClick={()=>{handleClaimableWithdraw()}}
                   disabled={!isValid}
                   variant={!isValid ? 'danger' : 'primary'}
@@ -326,11 +262,11 @@ const BNB_ROVER = () => {
                 </Button>
               )}
               {/* <div className="button-div">
-      
+
               <Button className="button-claim-rewards">Claim Rewards</Button>
 
               <Button className="button-exit">Exit</Button>
-         
+
               </div> */}
               {showApproveFlow && <ProgressSteps steps={[approval === ApprovalState.APPROVED]} />}
             </BottomGrouping>
@@ -343,4 +279,3 @@ const BNB_ROVER = () => {
 }
 
 export default BNB_ROVER
-
