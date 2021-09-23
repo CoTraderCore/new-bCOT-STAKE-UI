@@ -51,7 +51,7 @@ import {
   AddressDepositor,
   DEXFormulaAddress,
   RouterAddress,
-  RoverAddress,
+  UNDERLYING_TOKEN,
   BUSDAddress,
   PancakeRouterAddress
 } from '../../constants/address/address'
@@ -70,7 +70,6 @@ const Deposit = () => {
   }
 
   const inputCurrency = useCurrency('BNB')
-  const UNDERLYING_TOKEN = RoverAddress
   const addTransaction = useTransactionAdder()
   const { account } = useActiveWeb3React()
   const contract = useDepositerContract(AddressDepositor)
@@ -82,7 +81,7 @@ const Deposit = () => {
   const [bnbToCot, setBnbToCot] = useState('')
   const [usdToCot, setUsdToCot] = useState('')
   const [useRover, setUserRover] = useState(false)
-  const roverTokenContract = useTokenContract(RoverAddress)
+  const roverTokenContract = useTokenContract(UNDERLYING_TOKEN)
   const ClaimableStakeContract = useStakeContract(ClaimableAddress)
 
 
@@ -179,41 +178,41 @@ const Deposit = () => {
       web3.utils]
   )
 
-  // get BNB to UNDERLYING
-  useEffect(() => {
-    async function getBNBtoCOTPrice(){
-      if(Router && DexFormula){
-        const addressTemp = await Router.WETH()
-
-        // get BNB to COT
-        const _bnbToCot = await DexFormula.routerRatio(
-          addressTemp,
-          UNDERLYING_TOKEN,
-          web3.utils.toWei("1")
-        )
-
-        const _bnbToUsd = await DexFormula.routerRatioByCustomRouter(
-          addressTemp,
-          BUSDAddress,
-          web3.utils.toWei("1"),
-          PancakeRouterAddress
-        )
-
-        const _usdToCot = Number(web3.utils.fromWei(String(_bnbToCot))) / Number(web3.utils.fromWei(String(_bnbToUsd)))
-
-        // set ratios
-        setBnbToCot(String(1 / Number(web3.utils.fromWei(String(_bnbToCot)))))
-        setUsdToCot(String(1 / _usdToCot))
-      }
-    }
-    getBNBtoCOTPrice()
-  }, [bnbToCot,
-      setBnbToCot,
-      setUsdToCot,
-      DexFormula,
-      Router,
-      UNDERLYING_TOKEN,
-      web3.utils])
+  // // get BNB to UNDERLYING
+  // useEffect(() => {
+  //   async function getBNBtoCOTPrice(){
+  //     if(Router && DexFormula){
+  //       const addressTemp = await Router.WETH()
+  //
+  //       // get BNB to COT
+  //       const _bnbToCot = await DexFormula.routerRatio(
+  //         addressTemp,
+  //         UNDERLYING_TOKEN,
+  //         web3.utils.toWei("1")
+  //       )
+  //
+  //       const _bnbToUsd = await DexFormula.routerRatioByCustomRouter(
+  //         addressTemp,
+  //         BUSDAddress,
+  //         web3.utils.toWei("1"),
+  //         PancakeRouterAddress
+  //       )
+  //
+  //       const _usdToCot = Number(web3.utils.fromWei(String(_bnbToCot))) / Number(web3.utils.fromWei(String(_bnbToUsd)))
+  //
+  //       // set ratios
+  //       setBnbToCot(String(1 / Number(web3.utils.fromWei(String(_bnbToCot)))))
+  //       setUsdToCot(String(1 / _usdToCot))
+  //     }
+  //   }
+  //   getBNBtoCOTPrice()
+  // }, [bnbToCot,
+  //     setBnbToCot,
+  //     setUsdToCot,
+  //     DexFormula,
+  //     Router,
+  //     UNDERLYING_TOKEN,
+  //     web3.utils])
 
 
   const handleTypeInput = useCallback(
@@ -264,7 +263,6 @@ const Deposit = () => {
       DexFormula,
       Router,
       web3.utils,
-      UNDERLYING_TOKEN,
       inputCurrency,
       ClaimableStakeContract,
       roverBalance,
@@ -306,7 +304,6 @@ const Deposit = () => {
       DexFormula,
       Router,
       web3.utils,
-      UNDERLYING_TOKEN,
       inputCurrency,
       ClaimableStakeContract,
     ]
