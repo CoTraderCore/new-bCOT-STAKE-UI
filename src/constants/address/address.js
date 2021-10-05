@@ -10,8 +10,8 @@
 
 // TESTNET
 
-export const AddressDepositor='0xDB517aFa4E772023E3a1504521F99371489e7EcA'
-export const ClaimableAddress='0x15eE7BF458b4dD11855dd3755b501562b0eFc60E'
+export const AddressDepositor='0xeA5Eecaf06839C407e56c2B839c0fC4C180A7524'
+export const ClaimableAddress='0xde2982659F430d9fb53F9d95Ab3ff31960555280'
 export const DEXFormulaAddress='0x899F45Bd11FC2DEA7c85dD9a8bb1aceF886424c7'
 export const RouterAddress='0xcCb6973225FE7e61B97E0fe1a7822EEc56884d92'
 export const UNDERLYING_TOKEN ='0xD3B6933A448fF602711390f96E15c0B9cab5fF11'
