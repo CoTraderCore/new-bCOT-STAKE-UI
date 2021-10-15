@@ -62,7 +62,7 @@ const Stats = () => {
               {!account ? (
                 <ConnectWalletButton width="100%" />
               ) : <div>
-                <span>Earned: {Number(displayClaimableEarned).toFixed(2)} {UNDERLYING_NAME}</span>
+                <span>Earned: {Number(displayClaimableEarned)} {UNDERLYING_NAME}</span>
               </div>
               }
                 </BottomGrouping>
