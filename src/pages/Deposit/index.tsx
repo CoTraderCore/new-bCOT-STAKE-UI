@@ -536,7 +536,7 @@ const Deposit = () => {
          ?
          (
            <GreyCard style={{ textAlign: 'center' }}>
-             <Text mb="4px">{TranslateString(1194, `1 COT = ${Number(CotToBnb).toFixed(8)} BNB`)}</Text>
+             <Text mb="4px">{TranslateString(1194, `1 TEST TOKEN = ${Number(CotToBnb).toFixed(8)} BNB`)}</Text>
            </GreyCard>
          )
          :
@@ -548,7 +548,7 @@ const Deposit = () => {
          ?
          (
            <GreyCard style={{ textAlign: 'center' }}>
-             <Text mb="4px">{TranslateString(1194, `1 COT = ${Number(CotToUsd).toFixed(8)} USD`)}</Text>
+             <Text mb="4px">{TranslateString(1194, `1 TEST TOKEN = ${Number(CotToUsd).toFixed(8)} USD`)}</Text>
            </GreyCard>
          )
          :
